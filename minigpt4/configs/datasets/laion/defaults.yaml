@@ -1,0 +1,5 @@
+datasets:
+  laion:
+    data_type: images
+    build_info:
+      storage: /path/to/laion_dataset/{00000..10488}.tar
