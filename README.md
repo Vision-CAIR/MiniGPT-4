@@ -24,11 +24,9 @@ More examples can be found in the [project page](https://minigpt-4.github.io).
 
 ## Introduction
 - MiniGPT-4 aligns a frozen visual encoder from BLIP-2 with a frozen LLM, Vicuna, using just one projection layer. 
-- The training of MiniGPT-4 consists of a first pretrain stage using roughly 5 million aligned image-text pairs for 10 hours on 4 A100s and a second finetuning stage using additional 3,500 carefully curated high-quality pairs for 7 minutes on 1 A100.
-- MiniGPT-4 processes many emerging vision-language capabilities similar to those exhibited by GPT-4. 
+- We train MiniGPT-4 with two stages. The first pretraining stage is trained using roughly 5 million aligned image-text pairs with around 40 A100 hours.  The second finetuning stage is trained using additional 3,500 carefully curated high-quality pairs with around 7 A100 minutes.
+- MiniGPT-4 yields many emerging vision-language capabilities similar to those demonstrated in GPT-4. 
 ![overview](figs/overview.png)
-
-
 
 
 
