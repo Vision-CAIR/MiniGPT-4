@@ -1,5 +1,6 @@
 import os
 import logging
+import warnings
 
 from minigpt4.common.registry import registry
 from minigpt4.datasets.builders.base_dataset_builder import BaseDatasetBuilder
@@ -90,7 +91,7 @@ class CCSBUAlignBuilder(BaseDatasetBuilder):
         datasets = dict()
 
         if not os.path.exists(storage_path):
-            warnings.warn("storage path {} does not exist.".format(vis_path))
+            warnings.warn("storage path {} does not exist.".format(storage_path))
 
         # create datasets
         dataset_cls = self.train_dataset_cls

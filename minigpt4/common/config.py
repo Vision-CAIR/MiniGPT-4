@@ -71,7 +71,7 @@ class Config:
         model_config_path = model_cls.default_config_path(model_type=model_type)
 
         model_config = OmegaConf.create()
-        # hiararchy override, customized config > default config
+        # hierarchy override, customized config > default config
         model_config = OmegaConf.merge(
             model_config,
             OmegaConf.load(model_config_path),
@@ -102,7 +102,7 @@ class Config:
                 type=dataset_config_type
             )
 
-            # hiararchy override, customized config > default config
+            # hierarchy override, customized config > default config
             dataset_config = OmegaConf.merge(
                 dataset_config,
                 OmegaConf.load(dataset_config_path),
