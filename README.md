@@ -127,6 +127,7 @@ After the second stage alignment, MiniGPT-4 is able to talk about the image cohe
 ## Acknowledgement
 
 + [BLIP2](https://huggingface.co/docs/transformers/main/model_doc/blip-2)
++ [Lavis](https://github.com/salesforce/LAVIS)
 + [Vicuna](https://github.com/lm-sys/FastChat)
 
 
@@ -138,6 +139,7 @@ If you're using MiniGPT-4 in your research or applications, please cite using th
       year={2023},
 }
 ```
+
 
 ## License
 This repository is under [BSD 3-Clause License](LICENSE.md).
