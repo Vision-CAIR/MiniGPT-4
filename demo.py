@@ -113,8 +113,8 @@ with gr.Blocks() as demo:
             
             num_beams = gr.Slider(
                 minimum=1,
-                maximum=16,
-                value=5,
+                maximum=10,
+                value=1,
                 step=1,
                 interactive=True,
                 label="beam search numbers)",
