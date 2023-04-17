@@ -135,14 +135,15 @@ class Chat:
             conv.append_message(conv.roles[0], text)
 
     def answer(self, conv, img_list, max_new_tokens=200, num_beams=5, min_length=1, top_p=0.9,
-               repetition_penalty=1.0, length_penalty=1, temperature=1):
+               repetition_penalty=1.0, length_penalty=1, temperature=1.0):
         conv.append_message(conv.roles[1], None)
         embs = self.get_context_emb(conv, img_list)
         outputs = self.model.llama_model.generate(
             inputs_embeds=embs,
             max_new_tokens=max_new_tokens,
             stopping_criteria=self.stopping_criteria,
-            num_beams=num_beams,
+            #num_beams=num_beams,
+            do_sample=True,
             min_length=min_length,
             top_p=top_p,
             repetition_penalty=repetition_penalty,
