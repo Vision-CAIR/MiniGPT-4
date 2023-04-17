@@ -66,13 +66,15 @@ print('Initialization Finished')
 # ========================================
 
 def gradio_reset(chat_state, img_list):
-    chat_state.messages = []
-    img_list = []
+    if chat_state is not None:
+        chat_state.messages = []
+    if img_list is not None:
+        img_list = []
     return None, gr.update(value=None, interactive=True), gr.update(placeholder='Please upload your image first', interactive=False),gr.update(value="Upload & Start Chat", interactive=True), chat_state, img_list
 
 def upload_img(gr_img, text_input, chat_state):
     if gr_img is None:
-        return None, None, gr.update(interactive=True)
+        return None, None, gr.update(interactive=True), chat_state, None
     chat_state = CONV_VISION.copy()
     img_list = []
     llm_message = chat.upload_img(gr_img, chat_state, img_list)
@@ -93,9 +95,7 @@ def gradio_answer(chatbot, chat_state, img_list, num_beams, temperature):
 
 title = """<h1 align="center">Demo of MiniGPT-4</h1>"""
 description = """<h3>This is the demo of MiniGPT-4. Upload your images and start chatting!</h3>"""
-article = """<strong>Paper</strong>: <a href='https://github.com/Vision-CAIR/MiniGPT-4/blob/main/MiniGPT_4.pdf' target='_blank'>Here</a>
-<strong>Code</strong>: <a href='https://github.com/Vision-CAIR/MiniGPT-4' target='_blank'>Here</a>
-<strong>Project Page</strong>: <a href='https://minigpt-4.github.io/' target='_blank'>Here</a>
+article = """<p><a href='https://minigpt-4.github.io'><img src='https://img.shields.io/badge/Project-Page-Green'></a></p><p><a href='https://github.com/Vision-CAIR/MiniGPT-4'><img src='https://img.shields.io/badge/Github-Code-blue'></a></p><p><a href='https://github.com/TsuTikgiau/blip2-llm/blob/release_prepare/MiniGPT_4.pdf'><img src='https://img.shields.io/badge/Paper-PDF-red'></a></p>
 """
 
 #TODO show examples below
