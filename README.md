@@ -50,7 +50,7 @@ conda activate minigpt4
 
 **2. Prepare the pretrained Vicuna weights**
 
-The current version of MiniGPT-4 is built on the v0 versoin of Vicuna-13B.
+The current version of MiniGPT-4 is built on the v0 version of Vicuna-13B.
 Please refer to their instructions [here](https://huggingface.co/lmsys/vicuna-13b-delta-v0) to obtaining the weights.
 The final weights would be in a single folder with the following structure:
 
