@@ -24,7 +24,9 @@ More examples can be found in the [project page](https://minigpt-4.github.io).
 
 ## Introduction
 - MiniGPT-4 aligns a frozen visual encoder from BLIP-2 with a frozen LLM, Vicuna, using just one projection layer. 
-- We train MiniGPT-4 with two stages. The first pretraining stage is trained using roughly 5 million aligned image-text pairs with around 40 A100 hours.  The second finetuning stage is trained using additional 3,500 carefully curated high-quality pairs with around 7 A100 minutes.
+- We train MiniGPT-4 with two stages. The first traditional pretraining stage is trained using roughly 5 million aligned image-text pairs in 10 hours using 4 A100s. After the first stage, Vicuna is able to understand the image. But the generation ability of Vicuna is heavilly impacted.
+- To address this issue and improve usability, we propose a novel way to create high-quality image-text pairs by the model itself and ChatGPT together. Based on this, we then create a small (3500 pairs in total) yet high-quality dataset.
+- The second finetuning stage is trained on this dataset in a conversation template to significantly improve its generation reliability and overall usability. To our surprise, this stage is computationally efficient and takes only around 7 minutes with a single A100.
 - MiniGPT-4 yields many emerging vision-language capabilities similar to those demonstrated in GPT-4. 
 
 
@@ -126,9 +128,9 @@ After the second stage alignment, MiniGPT-4 is able to talk about the image cohe
 
 ## Acknowledgement
 
-+ [BLIP2](https://huggingface.co/docs/transformers/main/model_doc/blip-2)
-+ [Lavis](https://github.com/salesforce/LAVIS)
-+ [Vicuna](https://github.com/lm-sys/FastChat)
++ [BLIP2](https://huggingface.co/docs/transformers/main/model_doc/blip-2) The model architecture of MiniGPT-4 follows BLIP-2. Don't forget to check this great open-source work if you don't know it before!
++ [Lavis](https://github.com/salesforce/LAVIS) This repository is built upon Lavis!
++ [Vicuna](https://github.com/lm-sys/FastChat) The fantastic language ability of Vicuna with only 13B parameters is just amazing. And it is open-source!
 
 
 If you're using MiniGPT-4 in your research or applications, please cite using this BibTeX:
