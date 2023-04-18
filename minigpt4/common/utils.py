@@ -314,7 +314,7 @@ def load_file(filename, mmap_mode=None, verbose=True, allow_pickle=False):
     """
     Common i/o utility to handle loading data from various file formats.
     Supported:
-        .pkl, .pickle, .npy, .json
+        .txt, .pkl, .pickle, .npy, .json, .yaml, .csv, .xlsx, .xls
     For the npy files, we support reading the files in mmap_mode.
     If the mmap_mode of reading is not successful, we load data without the
     mmap_mode.
@@ -366,10 +366,12 @@ def load_file(filename, mmap_mode=None, verbose=True, allow_pickle=False):
     elif file_ext == ".csv":
         with g_pathmgr.open(filename, "r") as fopen:
             data = pd.read_csv(fopen)
+    elif file_ext in ["xlsx", "xls"]:
+        with g_pathmgr.open(filename, "r") as fopen:
+            data = pd.read_excel(fopen)
     else:
         raise Exception(f"Reading from {file_ext} is not supported yet")
     return data
-
 
 def abspath(resource_path: str):
     """
