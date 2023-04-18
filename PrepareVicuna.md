@@ -17,7 +17,7 @@ When these two weights are ready, we can use tools from Vicuna’s team to creat
 First, Install their library that is compatible with v0 Vicuna by
 
 ```
-pip install git+https://github.com/huggingface/transformers@v0.1.10
+pip install git+https://github.com/lm-sys/FastChat.git@v0.1.10
 ```
 
 Then, run the following command to create the final working weight
