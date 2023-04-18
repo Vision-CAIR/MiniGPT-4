@@ -53,7 +53,8 @@ conda activate minigpt4
 **2. Prepare the pretrained Vicuna weights**
 
 The current version of MiniGPT-4 is built on the v0 versoin of Vicuna-13B.
-Please refer to their instructions [here](https://huggingface.co/lmsys/vicuna-13b-delta-v0) to obtaining the weights.
+Please refer to our instruction [here](PrepareVicuna.md) 
+to prepare the Vicuna weights.
 The final weights would be in a single folder with the following structure:
 
 ```
@@ -105,7 +106,7 @@ You can change the save path in the config file
 torchrun --nproc-per-node NUM_GPU train.py --cfg-path train_configs/minigpt4_stage1_pretrain.yaml
 ```
 
-**1. Second finetuning stage**
+**2. Second finetuning stage**
 
 In the second stage, we use a small high quality image-text pair dataset created by ourselves
 and convert it to a conversation format to further align MiniGPT-4.
