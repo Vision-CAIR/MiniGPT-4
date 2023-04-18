@@ -33,8 +33,6 @@ More examples can be found in the [project page](https://minigpt-4.github.io).
 ![overview](figs/overview.png)
 
 
-
-
 ## Getting Started
 ### Installation
 
@@ -86,6 +84,12 @@ Try out our demo [demo.py](demo.py) on your local machine by running
 python demo.py --cfg-path eval_configs/minigpt4_eval.yaml
 ```
 
+Here, we load Vicuna as 8 bit by default to save some GPU memory usage. 
+Besides, the default beam search width is 1. 
+Under this setting, the demo cost about 23G GPU memory. 
+If you have a more powerful GPU with larger GPU memory, you can run the model 
+in 16 bit by setting low_resource to False in the config file 
+[minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml) and use a larger beam search width.
 
 
 ### Training
