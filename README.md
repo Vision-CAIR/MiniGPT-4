@@ -81,7 +81,7 @@ in [eval_configs/minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml#L10) at Lin
 Try out our demo [demo.py](demo.py) on your local machine by running
 
 ```
-python demo.py --cfg-path eval_configs/minigpt4_eval.yaml
+python demo.py --cfg-path eval_configs/minigpt4_eval.yaml  --gpu-id 0
 ```
 
 Here, we load Vicuna as 8 bit by default to save some GPU memory usage. 
