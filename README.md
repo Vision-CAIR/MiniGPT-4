@@ -24,7 +24,7 @@ More examples can be found in the [project page](https://minigpt-4.github.io).
 
 ## Introduction
 - MiniGPT-4 aligns a frozen visual encoder from BLIP-2 with a frozen LLM, Vicuna, using just one projection layer. 
-- We train MiniGPT-4 with two stages. The first traditional pretraining stage is trained using roughly 5 million aligned image-text pairs in 10 hours using 4 A100s. After the first stage, Vicuna is able to understand the image. But the generation ability of Vicuna is heavilly impacted.
+- We train MiniGPT-4 with two stages. The first traditional pretraining stage is trained using roughly 5 million aligned image-text pairs in 10 hours using 4 A100s. After the first stage, Vicuna is able to understand the image. But the generation ability of Vicuna is heavily impacted.
 - To address this issue and improve usability, we propose a novel way to create high-quality image-text pairs by the model itself and ChatGPT together. Based on this, we then create a small (3500 pairs in total) yet high-quality dataset.
 - The second finetuning stage is trained on this dataset in a conversation template to significantly improve its generation reliability and overall usability. To our surprise, this stage is computationally efficient and takes only around 7 minutes with a single A100.
 - MiniGPT-4 yields many emerging vision-language capabilities similar to those demonstrated in GPT-4. 
@@ -38,7 +38,7 @@ More examples can be found in the [project page](https://minigpt-4.github.io).
 
 **1. Prepare the code and the environment**
 
-Git clone our repository, creating a python environment and ativate it via the following command
+Git clone our repository, creating a python environment and activate it via the following command
 
 ```bash
 git clone https://github.com/Vision-CAIR/MiniGPT-4.git
@@ -50,7 +50,7 @@ conda activate minigpt4
 
 **2. Prepare the pretrained Vicuna weights**
 
-The current version of MiniGPT-4 is built on the v0 versoin of Vicuna-13B.
+The current version of MiniGPT-4 is built on the v0 version of Vicuna-13B.
 Please refer to our instruction [here](PrepareVicuna.md) 
 to prepare the Vicuna weights.
 The final weights would be in a single folder with the following structure:
