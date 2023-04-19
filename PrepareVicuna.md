@@ -11,7 +11,7 @@ git clone https://huggingface.co/lmsys/vicuna-13b-delta-v0
 
 Note that this is not directly the working weight, but the difference between the working weight and the original weight of LLAMA-13B. (Due to LLAMA’s rules, we cannot distribute the weight of LLAMA.)
 
-Then, you need to obtain the original LLAMA-13B weights in the HuggingFace format either following the instruction provided by HuggingFace [here](https://huggingface.co/docs/transformers/main/model_doc/llama) or from the Internet. 
+Then, you need to obtain the original LLAMA-13B weights in the Hugging Face format either following the instruction provided by Hugging Face [here](https://huggingface.co/docs/transformers/main/model_doc/llama) or from the Internet. 
 
 When these two weights are ready, we can use tools from Vicuna’s team to create the real working weight.
 First, Install their library that is compatible with v0 Vicuna by
