@@ -110,6 +110,11 @@ You can change the save path in the config file
 torchrun --nproc-per-node NUM_GPU train.py --cfg-path train_configs/minigpt4_stage1_pretrain.yaml
 ```
 
+A MiniGPT-4 checkpoint with only stage one training can be downloaded 
+[here](https://drive.google.com/file/d/1u9FRRBB3VovP1HxCAlpD9Lw4t4P6-Yq8/view?usp=share_link).
+Compared to the model after stage two, this checkpoint generate incomplete and repeated sentences frequently.
+
+
 **2. Second finetuning stage**
 
 In the second stage, we use a small high quality image-text pair dataset created by ourselves
