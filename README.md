@@ -69,8 +69,13 @@ Then, set the path to the vicuna weight in the model config file
 
 **3. Prepare the pretrained MiniGPT-4 checkpoint**
 
-To play with our pretrained model, download the pretrained checkpoint 
-[here](https://drive.google.com/file/d/1a4zLvaiDBr-36pasffmgpvH5P7CKmpze/view?usp=share_link).
+Download the pretrained checkpoints according to the Vicuna model you prepare.
+
+|                                Checkpoint Aligned with Vicuna 13B                                |                               Checkpoint Aligned with Vicuna 7B                                |
+:------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------:
+ [Downlad](https://drive.google.com/file/d/1a4zLvaiDBr-36pasffmgpvH5P7CKmpze/view?usp=share_link) | [Download](https://drive.google.com/file/d/1RY9jV0dyqLX-o38LrumkKRh6Jtaop58R/view?usp=sharing) 
+
+
 Then, set the path to the pretrained checkpoint in the evaluation config file 
 in [eval_configs/minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml#L10) at Line 11. 
 
@@ -84,10 +89,9 @@ Try out our demo [demo.py](demo.py) on your local machine by running
 python demo.py --cfg-path eval_configs/minigpt4_eval.yaml  --gpu-id 0
 ```
 
-Here, we load Vicuna as 8 bit by default to save some GPU memory usage. 
-Besides, the default beam search width is 1. 
-Under this setting, the demo cost about 23G GPU memory. 
-If you have a more powerful GPU with larger GPU memory, you can run the model 
+To save GPU memory, Vicuna loads as 8 bit by default, with a beam search width of 1. 
+This configuration requires about 23G GPU memory for Vicuna 13B and 11.5G GPU memory for Vicuna 7B. 
+For more powerful GPUs, you can run the model 
 in 16 bit by setting low_resource to False in the config file 
 [minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml) and use a larger beam search width.
 
