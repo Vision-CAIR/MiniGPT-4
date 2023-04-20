@@ -3,7 +3,7 @@
 
 **King Abdullah University of Science and Technology**
 
-<a href='https://minigpt-4.github.io'><img src='https://img.shields.io/badge/Project-Page-Green'></a>  <a href='MiniGPT_4.pdf'><img src='https://img.shields.io/badge/Paper-PDF-red'></a> 
+<a href='https://minigpt-4.github.io'><img src='https://img.shields.io/badge/Project-Page-Green'></a>  <a href='MiniGPT_4.pdf'><img src='https://img.shields.io/badge/Paper-PDF-red'></a> <a href='https://huggingface.co/spaces/Vision-CAIR/minigpt4'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue'></a> <a href='https://huggingface.co/Vision-CAIR/MiniGPT-4'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue'></a> [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/camenduru/MiniGPT-4-colab/blob/main/minigpt4_colab.ipynb) [![YouTube](https://badges.aleen42.com/src/youtube.svg)](https://www.youtube.com/watch?v=__tftoxpBAw&feature=youtu.be)
 
 
 ## Online Demo
@@ -53,7 +53,7 @@ conda activate minigpt4
 The current version of MiniGPT-4 is built on the v0 versoin of Vicuna-13B.
 Please refer to our instruction [here](PrepareVicuna.md) 
 to prepare the Vicuna weights.
-The final weights would be in a single folder with the following structure:
+The final weights would be in a single folder in a structure similar to the following:
 
 ```
 vicuna_weights
@@ -91,9 +91,11 @@ python demo.py --cfg-path eval_configs/minigpt4_eval.yaml  --gpu-id 0
 
 To save GPU memory, Vicuna loads as 8 bit by default, with a beam search width of 1. 
 This configuration requires about 23G GPU memory for Vicuna 13B and 11.5G GPU memory for Vicuna 7B. 
-For more powerful GPUs, you can run the model 
+For more powerful GPUs, you can run the model
 in 16 bit by setting low_resource to False in the config file 
 [minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml) and use a larger beam search width.
+
+Thanks [@camenduru](https://github.com/camenduru), you can also run our code on [Colab](https://colab.research.google.com/github/camenduru/MiniGPT-4-colab/blob/main/minigpt4_colab.ipynb)
 
 
 ### Training
