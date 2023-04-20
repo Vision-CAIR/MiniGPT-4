@@ -84,6 +84,8 @@ Try out our demo [demo.py](demo.py) on your local machine by running
 python demo.py --cfg-path eval_configs/minigpt4_eval.yaml  --gpu-id 0
 ```
 
+Thanks [@camenduru](https://github.com/camenduru), you can also run our code on [Colab](https://colab.research.google.com/github/camenduru/MiniGPT-4-colab/blob/main/minigpt4_colab.ipynb)
+
 Here, we load Vicuna as 8 bit by default to save some GPU memory usage. 
 Besides, the default beam search width is 1. 
 Under this setting, the demo cost about 23G GPU memory. 
