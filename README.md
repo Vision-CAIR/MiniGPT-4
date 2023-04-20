@@ -95,7 +95,7 @@ For more powerful GPUs, you can run the model
 in 16 bit by setting low_resource to False in the config file 
 [minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml) and use a larger beam search width.
 
-Thanks [@camenduru](https://github.com/camenduru), you can also run our code on [Colab](https://colab.research.google.com/github/camenduru/MiniGPT-4-colab/blob/main/minigpt4_colab.ipynb)
+Thanks [@WangRongsheng](https://github.com/WangRongsheng), you can also run our code on [Colab](https://colab.research.google.com/drive/1OK4kYsZphwt5DXchKkzMBjYF6jnkqh4R?usp=sharing)
 
 
 ### Training
