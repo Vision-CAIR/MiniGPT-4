@@ -36,8 +36,9 @@ class MiniGPT4(Blip2Base):
         prompt_path="",
         prompt_template="",
         max_txt_len=32,
-        low_resource=False,  # use 8 bit and put vit in cpu
         end_sym='\n',
+        low_resource=False,  # use 8 bit and put vit in cpu
+        device_8bit=0,  # the device of 8bit model should be set when loading and cannot be changed anymore.
     ):
         super().__init__()
 
@@ -90,7 +91,7 @@ class MiniGPT4(Blip2Base):
                 llama_model,
                 torch_dtype=torch.float16,
                 load_in_8bit=True,
-                device_map="auto"
+                device_map={'': device_8bit}
             )
         else:
             self.llama_model = LlamaForCausalLM.from_pretrained(
@@ -232,6 +233,7 @@ class MiniGPT4(Blip2Base):
         freeze_vit = cfg.get("freeze_vit", True)
         freeze_qformer = cfg.get("freeze_qformer", True)
         low_resource = cfg.get("low_resource", False)
+        device_8bit = cfg.get("device_8bit", 0)
 
         prompt_path = cfg.get("prompt_path", "")
         prompt_template = cfg.get("prompt_template", "")
@@ -252,8 +254,9 @@ class MiniGPT4(Blip2Base):
             prompt_path=prompt_path,
             prompt_template=prompt_template,
             max_txt_len=max_txt_len,
+            end_sym=end_sym,
             low_resource=low_resource,
-            end_sym=end_sym
+            device_8bit=device_8bit,
         )
 
         ckpt_path = cfg.get("ckpt", "")  # load weights of MiniGPT-4
