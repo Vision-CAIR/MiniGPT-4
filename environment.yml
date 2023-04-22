@@ -3,12 +3,11 @@ channels:
   - pytorch
   - defaults
   - anaconda
+  - conda-forge
 dependencies:
   - python=3.9
-  - cudatoolkit
   - pip
   - pytorch=1.12.1
-  - pytorch-mutex=1.0=cuda
   - torchaudio=0.12.1
   - torchvision=0.13.1
   - pip:
@@ -30,6 +29,7 @@ dependencies:
     - kiwisolver==1.4.4
     - matplotlib==3.7.0
     - multidict==6.0.4
+    - numpy
     - openai==0.27.0
     - packaging==23.0
     - psutil==5.9.4
@@ -51,7 +51,6 @@ dependencies:
     - omegaconf==2.3.0
     - opencv-python==4.7.0.72
     - iopath==0.1.10
-    - decord==0.6.0
     - tenacity==8.2.2
     - peft
     - pycocoevalcap
