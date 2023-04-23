@@ -1,4 +1,4 @@
-## How to Prepare Vicuna Weight
+## How to Prepare Vicuna Weight (Optional)
 Vicuna is an open-source LLAMA-based LLM that has a performance close to ChatGPT. 
 We currently use the v0 version of Vicuna-13B. 
 
@@ -33,3 +33,10 @@ python -m fastchat.model.apply_delta --base /path/to/llama-13bOR7b-hf/  --target
 
 Now you are good to go!
 
+## Use our prepared
+
+|Vicuna Weight 13B|Vicuna Weight 7B|
+|:-|:-|
+|[MiniGPT-4-LLaMA](https://huggingface.co/wangrongsheng/MiniGPT-4-LLaMA)|[https://huggingface.co/wangrongsheng/MiniGPT-4-LLaMA-7B](https://huggingface.co/wangrongsheng/MiniGPT-4-LLaMA-7B)|
+
+> You can find tutorials at [issues/81](https://github.com/Vision-CAIR/MiniGPT-4/issues/81) and [colab](https://colab.research.google.com/drive/1OK4kYsZphwt5DXchKkzMBjYF6jnkqh4R?usp=sharing) .
