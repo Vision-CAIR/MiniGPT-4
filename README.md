@@ -87,6 +87,8 @@ in [eval_configs/minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml#L10) at Lin
 
 ### Launching Demo Locally
 
+- MiniGPT4 Demo
+
 Try out our demo [demo.py](demo.py) on your local machine by running
 
 ```
@@ -100,6 +102,18 @@ in 16 bit by setting low_resource to False in the config file
 [minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml) and use a larger beam search width.
 
 Thanks [@WangRongsheng](https://github.com/WangRongsheng), you can also run our code on [Colab](https://colab.research.google.com/drive/1OK4kYsZphwt5DXchKkzMBjYF6jnkqh4R?usp=sharing)
+
+- VQA demo with [gptcache](https://github.com/zilliztech/GPTCache)
+
+Try out  image Q&A demo [vqa_demo.py](./vqa_demo.py), which will use MiniGPT-4 to generate answers, and then GPTCache to cache the answers.
+
+```
+python vqa_demo.py --cfg-path eval_configs/minigpt4_eval.yaml --gpu-id 0
+```
+
+The above command will use the exact match cache, i.e. map cache management method. When you ask the same image and question, it will hit the cache directly and return the answer quickly.
+
+If you want to use similar search cache, you can run `python vqa_demo.py --cfg-path eval_configs/minigpt4_eval.yaml  --gpu-id 0 --dir /path/to/workspace --no-map` to  disable map, which will use sqlite3 and faiss to manage the cache to search for similar images and questions in the cache.
 
 
 ### Training
