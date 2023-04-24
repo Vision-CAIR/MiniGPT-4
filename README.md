@@ -158,6 +158,7 @@ If you're using MiniGPT-4 in your research or applications, please cite using th
 @misc{zhu2022minigpt4,
       title={MiniGPT-4: Enhancing Vision-language Understanding with Advanced Large Language Models}, 
       author={Deyao Zhu and Jun Chen and Xiaoqian Shen and xiang Li and Mohamed Elhoseiny},
+      journal={arXiv preprint arXiv:2304.10592},
       year={2023},
 }
 ```
