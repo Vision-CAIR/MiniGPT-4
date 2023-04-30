@@ -19,6 +19,7 @@ from minigpt4.processors import *
 from minigpt4.runners import *
 from minigpt4.tasks import *
 
+CUDA = torch.cuda.is_available()
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Demo")
@@ -57,11 +58,13 @@ cfg = Config(args)
 model_config = cfg.model_cfg
 model_config.device_8bit = args.gpu_id
 model_cls = registry.get_model_class(model_config.arch)
-model = model_cls.from_config(model_config).to('cuda:{}'.format(args.gpu_id))
+GPU = 'cuda:{}'.format(args.gpu_id) if CUDA else None
+model = model_cls.from_config(model_config).to(GPU)
+model = torch.compile(model)
 
 vis_processor_cfg = cfg.datasets_cfg.cc_sbu_align.vis_processor.train
 vis_processor = registry.get_processor_class(vis_processor_cfg.name).from_config(vis_processor_cfg)
-chat = Chat(model, vis_processor, device='cuda:{}'.format(args.gpu_id))
+chat = Chat(model, vis_processor, device=GPU)
 print('Initialization Finished')
 
 # ========================================
@@ -118,7 +121,7 @@ with gr.Blocks() as demo:
             image = gr.Image(type="pil")
             upload_button = gr.Button(value="Upload & Start Chat", interactive=True, variant="primary")
             clear = gr.Button("Restart")
-            
+
             num_beams = gr.Slider(
                 minimum=1,
                 maximum=10,
@@ -127,7 +130,7 @@ with gr.Blocks() as demo:
                 interactive=True,
                 label="beam search numbers)",
             )
-            
+
             temperature = gr.Slider(
                 minimum=0.1,
                 maximum=2.0,
@@ -142,9 +145,9 @@ with gr.Blocks() as demo:
             img_list = gr.State()
             chatbot = gr.Chatbot(label='MiniGPT-4')
             text_input = gr.Textbox(label='User', placeholder='Please upload your image first', interactive=False)
-    
+
     upload_button.click(upload_img, [image, text_input, chat_state], [image, text_input, upload_button, chat_state, img_list])
-    
+
     text_input.submit(gradio_ask, [text_input, chatbot, chat_state], [text_input, chatbot, chat_state]).then(
         gradio_answer, [chatbot, chat_state, img_list, num_beams, temperature], [chatbot, chat_state, img_list]
     )

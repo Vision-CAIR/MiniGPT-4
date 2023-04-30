@@ -10,6 +10,7 @@ from minigpt4.models.blip2 import Blip2Base, disabled_train
 from minigpt4.models.modeling_llama import LlamaForCausalLM
 from transformers import LlamaTokenizer
 
+CUDA = torch.cuda.is_available()
 
 @registry.register_model("mini_gpt4")
 class MiniGPT4(Blip2Base):
@@ -86,17 +87,19 @@ class MiniGPT4(Blip2Base):
         self.llama_tokenizer = LlamaTokenizer.from_pretrained(llama_model, use_fast=False)
         self.llama_tokenizer.pad_token = self.llama_tokenizer.eos_token
 
+        torch_dtype = torch.float16 if CUDA else torch.float32
         if self.low_resource:
             self.llama_model = LlamaForCausalLM.from_pretrained(
                 llama_model,
-                torch_dtype=torch.float16,
-                load_in_8bit=True,
-                device_map={'': device_8bit}
+                torch_dtype=torch_dtype,
+                load_in_8bit=CUDA,
+                offload_folder="model/offload",
+                device_map={'': device_8bit} if CUDA else 'auto'
             )
         else:
             self.llama_model = LlamaForCausalLM.from_pretrained(
                 llama_model,
-                torch_dtype=torch.float16,
+                torch_dtype=torch_dtype,
             )
 
         for name, param in self.llama_model.named_parameters():

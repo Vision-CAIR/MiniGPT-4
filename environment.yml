@@ -4,13 +4,13 @@ channels:
   - defaults
   - anaconda
 dependencies:
-  - python=3.9
+  - python=3.10
   - cudatoolkit
   - pip
-  - pytorch=1.12.1
+  - pytorch=2.0.0
   - pytorch-mutex=1.0=cuda
   - torchaudio=0.12.1
-  - torchvision=0.13.1
+  - torchvision=0.15.1
   - pip:
     - accelerate==0.16.0
     - aiohttp==3.8.4
