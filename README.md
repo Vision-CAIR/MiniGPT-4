@@ -155,11 +155,11 @@ After the second stage alignment, MiniGPT-4 is able to talk about the image cohe
 
 If you're using MiniGPT-4 in your research or applications, please cite using this BibTeX:
 ```bibtex
-@misc{zhu2022minigpt4,
-      title={MiniGPT-4: Enhancing Vision-language Understanding with Advanced Large Language Models}, 
-      author={Deyao Zhu and Jun Chen and Xiaoqian Shen and Xiang Li and Mohamed Elhoseiny},
-      journal={arXiv preprint arXiv:2304.10592},
-      year={2023},
+@article{zhu2023minigpt,
+  title={MiniGPT-4: Enhancing Vision-Language Understanding with Advanced Large Language Models},
+  author={Zhu, Deyao and Chen, Jun and Shen, Xiaoqian and Li, Xiang and Elhoseiny, Mohamed},
+  journal={arXiv preprint arXiv:2304.10592},
+  year={2023}
 }
 ```
 
