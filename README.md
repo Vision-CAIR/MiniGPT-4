@@ -10,7 +10,6 @@
 We now provide a pretrained MiniGPT-4 aligned with Vicuna-7B! The demo GPU memory consumption now can be as low as 12GB.
 
 
-## Online Demo
 
 Click the image to chat with MiniGPT-4 around your images
 [![demo](figs/online_demo.png)](https://minigpt-4.github.io)
