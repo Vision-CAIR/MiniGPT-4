@@ -2,14 +2,14 @@
 Vicuna is an open-source LLAMA-based LLM that has a performance close to ChatGPT. 
 We currently use the v0 version of Vicuna-13B. 
 
-To prepare Vicuna’s weight, first download Vicuna’s **delta** weight from [https://huggingface.co/lmsys/vicuna-13b-delta-v0](https://huggingface.co/lmsys/vicuna-13b-delta-v0). 
+To prepare Vicuna’s weight, first download Vicuna’s **delta** weight from [https://huggingface.co/lmsys/vicuna-13b-delta-v1.1](https://huggingface.co/lmsys/vicuna-13b-delta-v1.1). 
 In case you have git-lfs installed (https://git-lfs.com), this can be done by
 
 ```
 git lfs install
-git clone https://huggingface.co/lmsys/vicuna-13b-delta-v0  # more powerful, need at least 24G gpu memory
+git clone https://huggingface.co/lmsys/vicuna-13b-delta-v1.1  # more powerful, need at least 24G gpu memory
 # or
-git clone https://huggingface.co/lmsys/vicuna-7b-delta-v0  # smaller, need 12G gpu memory
+git clone https://huggingface.co/lmsys/vicuna-7b-delta-v1.1  # smaller, need 12G gpu memory
 ```
 
 Note that this is not directly the working weight, but the difference between the working weight and the original weight of LLAMA-13B. (Due to LLAMA’s rules, we cannot distribute the weight of LLAMA.)
@@ -24,11 +24,14 @@ First, Install their library that is compatible with v0 Vicuna by
 ```
 pip install git+https://github.com/lm-sys/FastChat.git@v0.1.10
 ```
-
+or
+```
+pip3 install fschat
+```
 Then, run the following command to create the final working weight
 
 ```
-python -m fastchat.model.apply_delta --base /path/to/llama-13bOR7b-hf/  --target /path/to/save/working/vicuna/weight/  --delta /path/to/vicuna-13bOR7b-delta-v0/
+python -m fastchat.model.apply_delta --base /path/to/llama-13bOR7b-hf/  --target /path/to/save/working/vicuna/weight/  --delta /path/to/vicuna-13bOR7b-delta-v1.1/
 ```
 
 Now you are good to go!
