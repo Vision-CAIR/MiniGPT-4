@@ -1,0 +1,78 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyCompatibilityInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ourVersions">
+        <value>
+          <list size="4">
+            <item index="0" class="java.lang.String" itemvalue="3.6" />
+            <item index="1" class="java.lang.String" itemvalue="3.7" />
+            <item index="2" class="java.lang.String" itemvalue="3.8" />
+            <item index="3" class="java.lang.String" itemvalue="3.11" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="29">
+            <item index="0" class="java.lang.String" itemvalue="object_detection" />
+            <item index="1" class="java.lang.String" itemvalue="tensorflow_gpu" />
+            <item index="2" class="java.lang.String" itemvalue="keras_nightly" />
+            <item index="3" class="java.lang.String" itemvalue="torch" />
+            <item index="4" class="java.lang.String" itemvalue="torchvision" />
+            <item index="5" class="java.lang.String" itemvalue="opencv_python" />
+            <item index="6" class="java.lang.String" itemvalue="scipy" />
+            <item index="7" class="java.lang.String" itemvalue="thop" />
+            <item index="8" class="java.lang.String" itemvalue="opencv-python" />
+            <item index="9" class="java.lang.String" itemvalue="PyYAML" />
+            <item index="10" class="java.lang.String" itemvalue="ipython" />
+            <item index="11" class="java.lang.String" itemvalue="numpy" />
+            <item index="12" class="java.lang.String" itemvalue="requests" />
+            <item index="13" class="java.lang.String" itemvalue="psutil" />
+            <item index="14" class="java.lang.String" itemvalue="tqdm" />
+            <item index="15" class="java.lang.String" itemvalue="pandas" />
+            <item index="16" class="java.lang.String" itemvalue="tensorboard" />
+            <item index="17" class="java.lang.String" itemvalue="seaborn" />
+            <item index="18" class="java.lang.String" itemvalue="matplotlib" />
+            <item index="19" class="java.lang.String" itemvalue="Pillow" />
+            <item index="20" class="java.lang.String" itemvalue="shapely" />
+            <item index="21" class="java.lang.String" itemvalue="motmetrics" />
+            <item index="22" class="java.lang.String" itemvalue="sklearn" />
+            <item index="23" class="java.lang.String" itemvalue="setuptools" />
+            <item index="24" class="java.lang.String" itemvalue="lap" />
+            <item index="25" class="java.lang.String" itemvalue="Cython" />
+            <item index="26" class="java.lang.String" itemvalue="pycocotools" />
+            <item index="27" class="java.lang.String" itemvalue="terminaltables" />
+            <item index="28" class="java.lang.String" itemvalue="openpyxl" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N803" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyStubPackagesAdvertiser" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="PyQt5-stubs==5.15.6.0" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="torch.cuda.amp" />
+          <option value="torch.utils.tensorboard" />
+          <option value="请求网页.*" />
+          <option value="tools.export_model.*" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

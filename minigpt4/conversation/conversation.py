@@ -117,7 +117,6 @@ CONV_VISION = Conversation(
 )
 
 
-
 class Chat:
     def __init__(self, model, vis_processor, device='cuda:0'):
         self.device = device
@@ -131,6 +130,8 @@ class Chat:
         if len(conv.messages) > 0 and conv.messages[-1][0] == conv.roles[0] \
                 and conv.messages[-1][1][-6:] == '</Img>':  # last message is image.
             conv.messages[-1][1] = ' '.join([conv.messages[-1][1], text])
+        elif len(conv.messages) == 0:
+            conv.append_message(conv.roles[0], " <Img><ImageHere></Img> " + text)
         else:
             conv.append_message(conv.roles[0], text)
 
@@ -181,7 +182,7 @@ class Chat:
             if len(image.shape) == 3:
                 image = image.unsqueeze(0)
             image = image.to(self.device)
-
+        print(image.shape)
         image_emb, _ = self.model.encode_img(image)
         img_list.append(image_emb)
         conv.append_message(conv.roles[0], "<Img><ImageHere></Img>")
@@ -189,9 +190,16 @@ class Chat:
         # self.conv.append_message(self.conv.roles[1], msg)
         return msg
 
-    def get_context_emb(self, conv, img_list):
+    def get_context_emb(self, conv, img_list=None):
+        if img_list is None:
+            img = torch.zeros((1, 3, 224, 224)).to(self.device)
+            image_emb, _ = self.model.encode_img(img)
+            img_list = [image_emb]
+
         prompt = conv.get_prompt()
+        print(prompt)
         prompt_segs = prompt.split('<ImageHere>')
+
         assert len(prompt_segs) == len(img_list) + 1, "Unmatched numbers of image placeholders and images."
         seg_tokens = [
             self.model.llama_tokenizer(
@@ -200,6 +208,7 @@ class Chat:
             for i, seg in enumerate(prompt_segs)
         ]
         seg_embs = [self.model.llama_model.model.embed_tokens(seg_t) for seg_t in seg_tokens]
+
         mixed_embs = [emb for pair in zip(seg_embs[:-1], img_list) for emb in pair] + [seg_embs[-1]]
         mixed_embs = torch.cat(mixed_embs, dim=1)
         return mixed_embs
