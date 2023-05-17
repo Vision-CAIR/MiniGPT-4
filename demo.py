@@ -75,7 +75,8 @@ def gradio_reset(chat_state, img_list):
         img_list = []
     return None, gr.update(value=None, interactive=True), gr.update(placeholder='Please upload your image first', interactive=False),gr.update(value="Upload & Start Chat", interactive=True), chat_state, img_list
 
-def upload_img(gr_img, text_input, chat_state):
+
+def upload_img(gr_img, chat_state):
     if gr_img is None:
         return None, None, gr.update(interactive=True), chat_state, None
     chat_state = CONV_VISION.copy()
@@ -99,7 +100,8 @@ def gradio_answer(chatbot, chat_state, img_list, num_beams, temperature):
                               max_new_tokens=300,
                               max_length=2000)[0]
     chatbot[-1][1] = llm_message
-    return chatbot, chat_state, img_list
+    return chatbot, chat_state
+
 
 title = """<h1 align="center">Demo of MiniGPT-4</h1>"""
 description = """<h3>This is the demo of MiniGPT-4. Upload your images and start chatting!</h3>"""
@@ -142,12 +144,15 @@ with gr.Blocks() as demo:
             img_list = gr.State()
             chatbot = gr.Chatbot(label='MiniGPT-4')
             text_input = gr.Textbox(label='User', placeholder='Please upload your image first', interactive=False)
-    
-    upload_button.click(upload_img, [image, text_input, chat_state], [image, text_input, upload_button, chat_state, img_list])
-    
-    text_input.submit(gradio_ask, [text_input, chatbot, chat_state], [text_input, chatbot, chat_state]).then(
-        gradio_answer, [chatbot, chat_state, img_list, num_beams, temperature], [chatbot, chat_state, img_list]
-    )
-    clear.click(gradio_reset, [chat_state, img_list], [chatbot, image, text_input, upload_button, chat_state, img_list], queue=False)
+
+    upload_button.click(upload_img, [image, chat_state],
+                        [image, text_input, upload_button, chat_state, img_list])
+
+    text_input \
+        .submit(gradio_ask, [text_input, chatbot, chat_state], [text_input, chatbot, chat_state]) \
+        .then(gradio_answer, [chatbot, chat_state, img_list, num_beams, temperature], [chatbot, chat_state])
+
+    clear.click(gradio_reset, [chat_state, img_list], [chatbot, image, text_input, upload_button, chat_state, img_list],
+                queue=False)
 
 demo.launch(share=True, enable_queue=True)
