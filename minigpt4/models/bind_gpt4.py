@@ -90,7 +90,7 @@ class BindGPT4(BaseModel):
         attns_input = torch.ones(input_embeds.size()[:-1], dtype=torch.long).to(input_embeds.device)
         if prompt:
             batch_size = input_embeds.shape[0]
-            p_before, p_after = prompt.split('<{}Here>'.format(modality_name))
+            p_before, p_after = prompt.split('<{}Here>'.format(modality_name.title()))
             p_before_tokens = self.llama_tokenizer(
                 p_before, return_tensors="pt", add_special_tokens=False).to(input_embeds.device)
             p_after_tokens = self.llama_tokenizer(
@@ -110,7 +110,7 @@ class BindGPT4(BaseModel):
             Other modalities will conflict with the pre-defined prompt and wrapping strategy.
         """
         embeds = self.encode_inputs(inputs)
-        assert "Vision" in embeds
+        assert "vision" in embeds, "Only Vision Input Can Be Accepted Now."
         prompt = random.choice(self.prompt_list)
         img_embeds, atts_img = self.prompt_wrap(embeds, ModalityType.VISION, prompt)
 

@@ -6,19 +6,27 @@
 """
 
 from minigpt4.processors.base_processor import BaseProcessor
-from minigpt4.processors.blip_processors import (
-    Blip2ImageTrainProcessor,
-    Blip2ImageEvalProcessor,
-    BlipCaptionProcessor,
+# from minigpt4.processors.blip_processors import (
+#     Blip2ImageTrainProcessor,
+#     Blip2ImageEvalProcessor,
+#     BlipCaptionProcessor,
+# )
+from minigpt4.processors.imagebind_processor import (
+    ImageBindCaptionProcessor,
+    ImageBindVisionTrainProcessor,
+    ImageBindVisionEvalProcessor
 )
 
 from minigpt4.common.registry import registry
 
 __all__ = [
     "BaseProcessor",
-    "Blip2ImageTrainProcessor",
-    "Blip2ImageEvalProcessor",
-    "BlipCaptionProcessor",
+    # "Blip2ImageTrainProcessor",
+    # "Blip2ImageEvalProcessor",
+    # "BlipCaptionProcessor",
+    "ImageBindCaptionProcessor",
+    "ImageBindVisionTrainProcessor",
+    "ImageBindVisionEvalProcessor"
 ]
 
 

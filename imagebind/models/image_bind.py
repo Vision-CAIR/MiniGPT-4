@@ -38,12 +38,12 @@ from imagebind.models.multimodal_projectors import create_projectors, create_pre
 from imagebind.models.transformer import MultiheadAttention, SimpleTransformer
 
 ModalityType = SimpleNamespace(
-    VISION="Vision",
-    TEXT="Text",
-    AUDIO="Audio",
-    THERMAL="Thermal",
-    DEPTH="Depth",
-    IMU="Imu",
+    VISION="vision",
+    TEXT="text",
+    AUDIO="audio",
+    THERMAL="thermal",
+    DEPTH="depth",
+    IMU="imu",
 )
 
 
