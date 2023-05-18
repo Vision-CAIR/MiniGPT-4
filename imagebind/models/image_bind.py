@@ -96,7 +96,7 @@ class ImageBindJoiner(nn.Module):
     def forward(self, inputs: Dict[str, Tensor]) -> Dict[str, Tensor]:
         outputs = {}
         for modality_key, modality_value in inputs.items():
-            assert modality_key == ModalityType.VISION, "Only Vision is Currently Supported."
+            # assert modality_key == ModalityType.VISION, "Only Vision is Currently Supported."
             if modality_value is not None:
                 modality_value = self.modality_pre_projectors[modality_key](modality_value)
                 modality_value = self.modality_qformers[modality_key](modality_value)

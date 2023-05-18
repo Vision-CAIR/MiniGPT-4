@@ -110,7 +110,7 @@ class BindGPT4(BaseModel):
             Other modalities will conflict with the pre-defined prompt and wrapping strategy.
         """
         embeds = self.encode_inputs(inputs)
-        assert "vision" in embeds, "Only Vision Input Can Be Accepted Now."
+        # assert "vision" in embeds, "Only Vision Input Can Be Accepted Now."
         prompt = random.choice(self.prompt_list)
         img_embeds, atts_img = self.prompt_wrap(embeds, ModalityType.VISION, prompt)
 
