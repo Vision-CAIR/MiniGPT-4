@@ -1,0 +1,4 @@
+checkpoint/*
+*.pyc
+.DS_Store
+ModaFew.egg-info
