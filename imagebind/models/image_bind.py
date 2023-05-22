@@ -33,7 +33,7 @@ from imagebind.models.multimodal_preprocessors import (
     TextPreprocessor,
     ThermalPreprocessor,
 )
-from imagebind.models.multimodal_projectors import create_projectors, create_pre_projector
+from imagebind.models.multimodal_projectors import create_projectors
 
 from imagebind.models.transformer import MultiheadAttention, SimpleTransformer
 
@@ -78,6 +78,7 @@ class ImageBindJoiner(nn.Module):
                                   ):
         vision_qformer = SequenceGenericQFormer(num_query_token=vision_query_token_num,
                                                 freeze_qformer=vision_qformer_frozen,
+                                                encoder_width=1280,  # TODO: fix hard-coding
                                                 q_former_model=vision_qformer_model)
         modality_qformers = {
             ModalityType.VISION: vision_qformer

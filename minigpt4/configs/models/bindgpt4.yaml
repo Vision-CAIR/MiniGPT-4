@@ -5,11 +5,12 @@ model:
   freeze_imagebind: True
 
   # Q-Former
-  freeze_qformer: False
+  freeze_qformer: True
+  q_former_model: "/mnt/bn/bykang/chixma/data/pretrained_models/blip2_pretrained_flant5xxl.pth"
   num_query_token: 32
 
   # Vicuna
-  llama_model: "/path/to/vicuna/weights/"
+  llama_model: "/mnt/bn/bykang/chixma/data/pretrained_models/vicuna-7b-v0/"
 
   # generation configs
   prompt: ""

@@ -1,12 +1,12 @@
 model:
-  arch: mini_gpt4
+  arch: bind_gpt4
   model_type: pretrain_vicuna
   freeze_vit: True
-  freeze_qformer: True
+  freeze_qformer: False
 
 
 datasets:
-  laion:
+  cc12m:
     vis_processor:
       train:
         name: "blip2_image_train"
