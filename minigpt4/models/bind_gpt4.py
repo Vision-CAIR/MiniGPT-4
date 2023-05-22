@@ -2,6 +2,7 @@ import random
 from typing import Dict, Tuple
 
 import torch
+import torch.nn as nn
 from torch import Tensor
 from transformers import LlamaTokenizer
 
@@ -65,6 +66,9 @@ class BindGPT4(BaseModel):
             param.requires_grad = False
         print('Loading LLAMA Done')
 
+        # TODO: remove hard-coding
+        self.llama_proj = nn.Linear(768, self.llama_model.config.hidden_size)
+
         self.max_txt_len = max_txt_len
         self.end_sym = end_sym
 
@@ -82,6 +86,8 @@ class BindGPT4(BaseModel):
     def encode_inputs(self, inputs: Dict[str, Tensor]) -> Dict[str, Tensor]:
         imagebind_outputs = self.multimodal_encoder(inputs)
         llama_inputs = self.multimodal_joiner(imagebind_outputs)
+        # NOTE: only accept image here
+        llama_inputs[ModalityType.VISION] = self.llama_proj(llama_inputs[ModalityType.VISION])
         return llama_inputs
 
     def prompt_wrap(self, inputs: Dict[str, Tensor], modality_name: str, prompt: str) -> Tuple[Tensor, Tensor]:
@@ -109,9 +115,13 @@ class BindGPT4(BaseModel):
             Only accept image inputs here.
             Other modalities will conflict with the pre-defined prompt and wrapping strategy.
         """
-        embeds = self.encode_inputs(inputs)
+        bind_inputs = {ModalityType.VISION: inputs['image']}
+        embeds = self.encode_inputs(bind_inputs)
         # assert "vision" in embeds, "Only Vision Input Can Be Accepted Now."
-        prompt = random.choice(self.prompt_list)
+        if self.prompt_list:
+            prompt = random.choice(self.prompt_list)
+        else:
+            prompt = None
         img_embeds, atts_img = self.prompt_wrap(embeds, ModalityType.VISION, prompt)
 
         # NOTE: No modifications from the next line to the end. Except for the autocast part.

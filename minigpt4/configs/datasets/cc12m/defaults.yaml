@@ -1,0 +1,5 @@
+datasets:
+  cc12m:
+    data_type: images
+    build_info:
+      storage: /mnt/bn/zhicheng-dev-v6/dataset/cc12m_web/{000000..002221}.tar

@@ -28,7 +28,8 @@ from transformers import BertTokenizer
 class Blip2Base(BaseModel):
     @classmethod
     def init_tokenizer(cls):
-        tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+        # tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")  # NOTE: network issue
+        tokenizer = BertTokenizer.from_pretrained("/mnt/bn/bykang/chixma/data/pretrained_models/bert-base-uncased")
         tokenizer.add_special_tokens({"bos_token": "[DEC]"})
         return tokenizer
 
@@ -44,7 +45,8 @@ class Blip2Base(BaseModel):
 
     @classmethod
     def init_Qformer(cls, num_query_token, vision_width, cross_attention_freq=2):
-        encoder_config = BertConfig.from_pretrained("bert-base-uncased")
+        # encoder_config = BertConfig.from_pretrained("bert-base-uncased")  # NOTE: network issue
+        encoder_config = BertConfig.from_pretrained("/mnt/bn/bykang/chixma/data/pretrained_models/bert-base-uncased")
         encoder_config.encoder_width = vision_width
         # insert cross-attention layer every other block
         encoder_config.add_cross_attention = True
