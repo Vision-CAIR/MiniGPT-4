@@ -17,14 +17,12 @@ class Config:
     def __init__(self, args):
         self.config = {}
 
-        self.args = args
-
         # Register the config and configuration for setup
         registry.register("configuration", self)
 
-        user_config = self._build_opt_list(self.args.options)
-
-        config = OmegaConf.load(self.args.cfg_path)
+        # 此处做了一点修改 本项目不打算使用命令行进行运行
+        user_config = args.options
+        config = args
 
         runner_config = self.build_runner_config(config)
         model_config = self.build_model_config(config, **user_config)
