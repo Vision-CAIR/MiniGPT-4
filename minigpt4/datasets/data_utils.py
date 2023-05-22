@@ -5,32 +5,44 @@
  For full license text, see the LICENSE_Lavis file in the repo root or https://opensource.org/licenses/BSD-3-Clause
 """
 
-import gzip
 import logging
-import os
-import random as rnd
-import tarfile
-import zipfile
 import random
-from typing import List
-from tqdm import tqdm
+from typing import List, Iterable
 
 import decord
-from decord import VideoReader
 import webdataset as wds
-import numpy as np
 import torch
-from torch.utils.data.dataset import IterableDataset
+from torch.utils.data import IterableDataset, Dataset, ConcatDataset
 
 from minigpt4.common.registry import registry
-from minigpt4.datasets.datasets.base_dataset import ConcatDataset
-
 
 decord.bridge.set_bridge("torch")
 MAX_INT = registry.get("MAX_INT")
 
 
-class ChainDataset(wds.DataPipeline):
+class WrappedConcatDataset(ConcatDataset):
+    def __init__(self, datasets: Iterable[Dataset]) -> None:
+        super().__init__(datasets)
+
+    def collater(self, samples):
+        # TODO For now only supports datasets with same underlying collater implementations
+
+        all_keys = set()
+        for s in samples:
+            all_keys.update(s)
+
+        shared_keys = all_keys
+        for s in samples:
+            shared_keys = shared_keys & set(s.keys())
+
+        samples_shared_keys = []
+        for s in samples:
+            samples_shared_keys.append({k: s[k] for k in s.keys() if k in shared_keys})
+
+        return self.datasets[0].collater(samples_shared_keys)
+
+
+class WrappedChainDataset(wds.DataPipeline):
     r"""Dataset for chaining multiple :class:`DataPipeline` s.
 
     This class is useful to assemble different existing dataset streams. The
@@ -40,6 +52,7 @@ class ChainDataset(wds.DataPipeline):
     Args:
         datasets (iterable of IterableDataset): datasets to be chained together
     """
+
     def __init__(self, datasets: List[wds.DataPipeline]) -> None:
         super().__init__()
         self.datasets = datasets
@@ -149,7 +162,7 @@ def concat_datasets(datasets):
     for split_name in datasets:
         if split_name != "train":
             assert (
-                len(datasets[split_name]) == 1
+                    len(datasets[split_name]) == 1
             ), "Do not support multiple {} datasets.".format(split_name)
             datasets[split_name] = datasets[split_name][0]
         else:
@@ -173,7 +186,7 @@ def concat_datasets(datasets):
             # concatenate map-style datasets and iterable-style datasets separately
             if len(iterable_datasets) > 1:
                 chained_datasets = (
-                    ChainDataset(iterable_datasets)
+                    WrappedChainDataset(iterable_datasets)
                 )
             elif len(iterable_datasets) == 1:
                 chained_datasets = iterable_datasets[0]
@@ -181,7 +194,7 @@ def concat_datasets(datasets):
                 chained_datasets = None
 
             concat_datasets = (
-                ConcatDataset(map_datasets) if len(map_datasets) > 0 else None
+                WrappedConcatDataset(map_datasets) if len(map_datasets) > 0 else None
             )
 
             train_datasets = concat_datasets, chained_datasets
@@ -193,4 +206,3 @@ def concat_datasets(datasets):
             datasets[split_name] = train_datasets
 
     return datasets
-

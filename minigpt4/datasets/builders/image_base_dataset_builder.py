@@ -21,8 +21,7 @@ from minigpt4.common.registry import registry
 from minigpt4.processors.base_processor import BaseProcessor
 
 
-
-class BaseDatasetBuilder:
+class ImageBaseDatasetBuilder:
     train_dataset_cls, eval_dataset_cls = None, None
 
     def __init__(self, cfg=None):

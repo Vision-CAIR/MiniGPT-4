@@ -24,7 +24,7 @@ from minigpt4.common.dist_utils import (
 )
 from minigpt4.common.registry import registry
 from minigpt4.common.utils import is_url
-from minigpt4.datasets.data_utils import concat_datasets, reorg_datasets_by_split, ChainDataset
+from minigpt4.datasets.data_utils import concat_datasets, reorg_datasets_by_split, WrappedChainDataset
 from minigpt4.datasets.datasets.dataloader_utils import (
     IterLoader,
     MultiIterLoader,
@@ -219,7 +219,7 @@ class RunnerBase:
                     num_records = sum(
                         [
                             len(d)
-                            if not type(d) in [wds.DataPipeline, ChainDataset]
+                            if not type(d) in [wds.DataPipeline, WrappedChainDataset]
                             else 0
                             for d in self.datasets[split_name]
                         ]
@@ -503,7 +503,7 @@ class RunnerBase:
 
         def _create_loader(dataset, num_workers, bsz, is_train, collate_fn):
             # create a single dataloader for each split
-            if isinstance(dataset, ChainDataset) or isinstance(
+            if isinstance(dataset, WrappedChainDataset) or isinstance(
                 dataset, wds.DataPipeline
             ):
                 # wds.WebdDataset instance are chained together

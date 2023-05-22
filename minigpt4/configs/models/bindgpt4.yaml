@@ -5,7 +5,7 @@ model:
   freeze_imagebind: True
 
   # Q-Former
-  freeze_qformer: True
+  freeze_qformer: False
   num_query_token: 32
 
   # Vicuna

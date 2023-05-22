@@ -6,32 +6,20 @@
 """
 
 import os
-from collections import OrderedDict
 
 from minigpt4.datasets.datasets.base_dataset import BaseDataset
 from PIL import Image
 
-
-class __DisplMixin:
-    def displ_item(self, index):
-        sample, ann = self.__getitem__(index), self.annotation[index]
-
-        return OrderedDict(
-            {
-                "file": ann["image"],
-                "caption": ann["caption"],
-                "image": sample["image"],
-            }
-        )
+from minigpt4.datasets.datasets.mixins.mixins import __ImageDisplMixin
 
 
-class CaptionDataset(BaseDataset, __DisplMixin):
-    def __init__(self, vis_processor, text_processor, vis_root, ann_paths):
+class ImageCaptionDataset(BaseDataset, __ImageDisplMixin):
+    def __init__(self, vision_processor, text_processor, x_root, ann_paths):
         """
         vis_root (string): Root directory of images (e.g. coco/images/)
         ann_root (string): directory to store the annotation file
         """
-        super().__init__(vis_processor, text_processor, vis_root, ann_paths)
+        super().__init__(vision_processor, text_processor, x_root, ann_paths)
 
         self.img_ids = {}
         n = 0
@@ -47,10 +35,10 @@ class CaptionDataset(BaseDataset, __DisplMixin):
         ann = self.annotation[index]
 
         img_file = '{:0>12}.jpg'.format(ann["image_id"])
-        image_path = os.path.join(self.vis_root, img_file)
+        image_path = os.path.join(self.x_root, img_file)
         image = Image.open(image_path).convert("RGB")
 
-        image = self.vis_processor(image)
+        image = self.x_processor(image)
         caption = self.text_processor(ann["caption"])
 
         return {
@@ -60,23 +48,23 @@ class CaptionDataset(BaseDataset, __DisplMixin):
         }
 
 
-class CaptionEvalDataset(BaseDataset, __DisplMixin):
-    def __init__(self, vis_processor, text_processor, vis_root, ann_paths):
+class CaptionEvalDataset(BaseDataset, __ImageDisplMixin):
+    def __init__(self, vision_processor, text_processor, x_root, ann_paths):
         """
         vis_root (string): Root directory of images (e.g. coco/images/)
         ann_root (string): directory to store the annotation file
         split (string): val or test
         """
-        super().__init__(vis_processor, text_processor, vis_root, ann_paths)
+        super().__init__(vision_processor, text_processor, x_root, ann_paths)
 
     def __getitem__(self, index):
 
         ann = self.annotation[index]
 
-        image_path = os.path.join(self.vis_root, ann["image"])
+        image_path = os.path.join(self.x_root, ann["image"])
         image = Image.open(image_path).convert("RGB")
 
-        image = self.vis_processor(image)
+        image = self.x_processor(image)
 
         return {
             "image": image,

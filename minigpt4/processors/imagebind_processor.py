@@ -146,3 +146,4 @@ class ImageBindVisionEvalProcessor(ImageBindVisionBaseProcessor):
         std = cfg.get("std", None)
 
         return cls(image_size=image_size, mean=mean, std=std)
+

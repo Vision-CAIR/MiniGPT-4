@@ -32,10 +32,10 @@ class Registry:
         """
 
         def wrap(builder_cls):
-            from minigpt4.datasets.builders.base_dataset_builder import BaseDatasetBuilder
+            from minigpt4.datasets.builders.image_base_dataset_builder import ImageBaseDatasetBuilder
 
             assert issubclass(
-                builder_cls, BaseDatasetBuilder
+                builder_cls, ImageBaseDatasetBuilder
             ), "All builders must inherit BaseDatasetBuilder class, found {}".format(
                 builder_cls
             )

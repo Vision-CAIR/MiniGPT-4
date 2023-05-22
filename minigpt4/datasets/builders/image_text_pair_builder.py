@@ -3,13 +3,13 @@ import logging
 import warnings
 
 from minigpt4.common.registry import registry
-from minigpt4.datasets.builders.base_dataset_builder import BaseDatasetBuilder
-from minigpt4.datasets.datasets.laion_dataset import LaionDataset
-from minigpt4.datasets.datasets.cc_sbu_dataset import CCSBUDataset, CCSBUAlignDataset
+from minigpt4.datasets.builders.image_base_dataset_builder import ImageBaseDatasetBuilder
+from minigpt4.datasets.datasets.image_caption.laion_dataset import LaionDataset
+from minigpt4.datasets.datasets.image_caption.cc_sbu_dataset import CCSBUDataset, CCSBUAlignDatasetImageImageCaptionDataset
 
 
 @registry.register_builder("cc_sbu")
-class CCSBUBuilder(BaseDatasetBuilder):
+class CCSBUBuilderImage(ImageBaseDatasetBuilder):
     train_dataset_cls = CCSBUDataset
 
     DATASET_CONFIG_DICT = {"default": "configs/datasets/cc_sbu/defaults.yaml"}
@@ -41,7 +41,7 @@ class CCSBUBuilder(BaseDatasetBuilder):
 
 
 @registry.register_builder("laion")
-class LaionBuilder(BaseDatasetBuilder):
+class LaionBuilderImage(ImageBaseDatasetBuilder):
     train_dataset_cls = LaionDataset
 
     DATASET_CONFIG_DICT = {"default": "configs/datasets/laion/defaults.yaml"}
@@ -73,8 +73,8 @@ class LaionBuilder(BaseDatasetBuilder):
 
 
 @registry.register_builder("cc_sbu_align")
-class CCSBUAlignBuilder(BaseDatasetBuilder):
-    train_dataset_cls = CCSBUAlignDataset
+class CCSBUAlignBuilderImage(ImageBaseDatasetBuilder):
+    train_dataset_cls = CCSBUAlignDatasetImageImageCaptionDataset
 
     DATASET_CONFIG_DICT = {
         "default": "configs/datasets/cc_sbu/align.yaml",
