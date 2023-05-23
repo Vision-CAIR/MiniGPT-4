@@ -9,11 +9,11 @@ datasets:
   cc12m:
     vis_processor:
       train:
-        name: "blip2_image_train"
+        name: "imagebind_vision_train"
         image_size: 224
     text_processor:
       train:
-        name: "blip_caption"
+        name: "imagebind_caption"
     sample_ratio: 115
   # cc_sbu:
   #   vis_processor:

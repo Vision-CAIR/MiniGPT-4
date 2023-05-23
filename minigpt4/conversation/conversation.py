@@ -1,16 +1,12 @@
-import argparse
-import time
-from PIL import Image
-
-import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaTokenizer
-from transformers import StoppingCriteria, StoppingCriteriaList
-
 import dataclasses
 from enum import auto, Enum
-from typing import List, Tuple, Any
+from typing import List, Any
 
-from minigpt4.common.registry import registry
+import torch
+from PIL import Image
+from transformers import StoppingCriteria, StoppingCriteriaList
+
+from imagebind.models.image_bind import ModalityType
 
 
 class SeparatorStyle(Enum):
@@ -107,7 +103,7 @@ class StoppingCriteriaSub(StoppingCriteria):
 
 
 CONV_VISION = Conversation(
-    system="Give the following image: <Img>ImageContent</Img>. "
+    system="Give the following image: <Vision>ImageContent</Vision>. "
            "You will be able to see the image once I provide it to you. Please answer my questions.",
     roles=("Human", "Assistant"),
     messages=[],
@@ -116,6 +112,7 @@ CONV_VISION = Conversation(
     sep="###",
 )
 
+# TODO: If needed and possible, rewrite this file and re-organize the definition of components.
 
 
 class Chat:
@@ -128,14 +125,18 @@ class Chat:
         self.stopping_criteria = StoppingCriteriaList([StoppingCriteriaSub(stops=stop_words_ids)])
 
     def ask(self, text, conv):
+        # NOTE: the hard code for postfix is removed.
+        # TODO: Need to be compatible with more modalities.
+        end_token = '</Vision>'
         if len(conv.messages) > 0 and conv.messages[-1][0] == conv.roles[0] \
-                and conv.messages[-1][1][-6:] == '</Img>':  # last message is image.
+                and conv.messages[-1][1][-len(end_token):] == end_token:  # last message is image.
             conv.messages[-1][1] = ' '.join([conv.messages[-1][1], text])
         else:
             conv.append_message(conv.roles[0], text)
 
     def answer(self, conv, img_list, max_new_tokens=300, num_beams=1, min_length=1, top_p=0.9,
                repetition_penalty=1.0, length_penalty=1, temperature=1.0, max_length=2000):
+        # Generate an answer written by LLaMA
         conv.append_message(conv.roles[1], None)
         embs = self.get_context_emb(conv, img_list)
 
@@ -160,7 +161,7 @@ class Chat:
             temperature=temperature,
         )
         output_token = outputs[0]
-        if output_token[0] == 0:  # the model might output a unknow token <unk> at the beginning. remove it
+        if output_token[0] == 0:  # the model might output a unknown token <unk> at the beginning. remove it
             output_token = output_token[1:]
         if output_token[0] == 1:  # some users find that there is a start token <s> at the beginning. remove it
             output_token = output_token[1:]
@@ -171,6 +172,7 @@ class Chat:
         return output_text, output_token.cpu().numpy()
 
     def upload_img(self, image, conv, img_list):
+        # Upload Image, Encode Image and Create a new message from human.
         if isinstance(image, str):  # is a image path
             raw_image = Image.open(image).convert('RGB')
             image = self.vis_processor(raw_image).unsqueeze(0).to(self.device)
@@ -182,16 +184,18 @@ class Chat:
                 image = image.unsqueeze(0)
             image = image.to(self.device)
 
-        image_emb, _ = self.model.encode_img(image)
+        all_embeddings = self.model.encode_inputs({ModalityType.VISION: image})
+        image_emb = all_embeddings[ModalityType.VISION]
         img_list.append(image_emb)
-        conv.append_message(conv.roles[0], "<Img><ImageHere></Img>")
+        conv.append_message(conv.roles[0], "<Vision><VisionHere></Vision>")
         msg = "Received."
         # self.conv.append_message(self.conv.roles[1], msg)
         return msg
 
     def get_context_emb(self, conv, img_list):
+        # Insert the image embeddings into the prompts and queries. Note that the img_list: List[Tensor]
         prompt = conv.get_prompt()
-        prompt_segs = prompt.split('<ImageHere>')
+        prompt_segs = prompt.split('<VisionHere>')
         assert len(prompt_segs) == len(img_list) + 1, "Unmatched numbers of image placeholders and images."
         seg_tokens = [
             self.model.llama_tokenizer(

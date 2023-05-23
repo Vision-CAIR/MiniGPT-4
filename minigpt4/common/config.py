@@ -12,6 +12,8 @@ from typing import Dict
 from omegaconf import OmegaConf
 from minigpt4.common.registry import registry
 
+# logging.info = print
+
 
 class Config:
     def __init__(self, args):

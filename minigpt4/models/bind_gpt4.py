@@ -47,7 +47,8 @@ class BindGPT4(BaseModel):
 
         print('Loading Q-Former and Adapter/Projector')
         self.multimodal_joiner = ImageBindJoiner(vision_query_token_num=num_query_token,
-                                                 vision_qformer_frozen=freeze_qformer
+                                                 vision_qformer_frozen=freeze_qformer,
+                                                 vision_post_dims=[768, self.llama_model.config.hidden_size]
                                                  # vision_qformer_model=q_former_model,
                                                  # vision_pre_dims=(1280, 1408)
                                                  )
@@ -65,9 +66,6 @@ class BindGPT4(BaseModel):
         for name, param in self.llama_model.named_parameters():
             param.requires_grad = False
         print('Loading LLAMA Done')
-
-        # TODO: remove hard-coding
-        self.llama_proj = nn.Linear(768, self.llama_model.config.hidden_size)
 
         self.max_txt_len = max_txt_len
         self.end_sym = end_sym
@@ -87,7 +85,6 @@ class BindGPT4(BaseModel):
         imagebind_outputs = self.multimodal_encoder(inputs)
         llama_inputs = self.multimodal_joiner(imagebind_outputs)
         # NOTE: only accept image here
-        llama_inputs[ModalityType.VISION] = self.llama_proj(llama_inputs[ModalityType.VISION])
         return llama_inputs
 
     def prompt_wrap(self, inputs: Dict[str, Tensor], modality_name: str, prompt: str) -> Tuple[Tensor, Tensor]:
