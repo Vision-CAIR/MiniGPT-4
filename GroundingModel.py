@@ -35,7 +35,7 @@ class GroundingModule(nn.Module):
         groundingdino_config_file = "./groundingdino/config/GroundingDINO_SwinT_OGC.py"
 
         self.grounding_model = load_groundingdino_model(groundingdino_config_file, groundingdino_checkpoint).to(device)
-        self.sam_predictor = SamPredictor(build_sam(checkpoint=sam_checkpoint)).to(device)
+        self.sam_predictor = SamPredictor(build_sam(checkpoint=sam_checkpoint).to(device))
 
     def prompt2mask(self, original_image, prompt, box_threshold=0.25, text_threshold=0.25, num_boxes=10):
         def image_transform_grounding(init_image):
