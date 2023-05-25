@@ -82,12 +82,11 @@ def gradio_reset(chat_state, emb_list):
 
 
 def upload_img(gr_img, text_input, chat_state):
-    return None, None, gr.update(interactive=True), chat_state, None
     if gr_img is None:
         return None, None, gr.update(interactive=True), chat_state, None
     chat_state = CONV_VISION.copy()
     emb_list = []
-    chat.upload_img(gr_img, chat_state, emb_list)
+    # chat.upload_img(gr_img, chat_state, emb_list)
     return gr.update(interactive=False), \
            gr.update(interactive=True, placeholder='Type and press Enter'), \
            gr.update(value="Start Chatting", interactive=False), \
