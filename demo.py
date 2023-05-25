@@ -165,7 +165,7 @@ with gr.Blocks() as demo:
                         [image, text_input, upload_button, chat_state, emb_list])
 
     text_input.submit(gradio_ask, [text_input, chatbot, chat_state], [text_input, chatbot, chat_state]).then(
-        upload_img, gradio_answer, [image, chatbot, chat_state, emb_list, num_beams, temperature],
+        gradio_answer, [image, chatbot, chat_state, emb_list, num_beams, temperature],
         [image2, chatbot, chat_state, emb_list]
     )
     clear.click(gradio_reset, [chat_state, emb_list], [chatbot, image, text_input, upload_button, chat_state, emb_list],
