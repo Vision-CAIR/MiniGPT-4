@@ -114,7 +114,7 @@ def gradio_answer(image, chatbot, chat_state, emb_list, num_beams, temperature):
     #                           max_length=2000)[0]
     llm_message = "I don't know"
     chatbot[-1][1] = llm_message
-    ground_img = grounding.prompt2mask(image, 'dog')
+    ground_img = grounding.prompt2mask(image, chatbot[-1][0])
     return gr.update(value=ground_img, interactive=False), \
            chatbot, chat_state, emb_list
 
