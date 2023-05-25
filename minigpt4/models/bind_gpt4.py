@@ -45,7 +45,7 @@ class BindGPT4(BaseModel):
         self.multimodal_encoder = imagebind_huge(pretrained=True, freeze_imagebind=freeze_imagebind)
         print('Loading ImageBind Done')
 
-        print('Loading LLAMA')
+        print(f'Loading LLAMA from {llama_model}')
         self.llama_tokenizer = LlamaTokenizer.from_pretrained(llama_model, use_fast=False)
         self.llama_tokenizer.pad_token = self.llama_tokenizer.eos_token
 
