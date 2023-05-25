@@ -10,11 +10,11 @@ model:
   freeze_qformer: True
 
   # Q-Former
-  q_former_model: "/mnt/bn/bykang/chixma/data/pretrained_models/blip2_pretrained_flant5xxl.pth"
+  q_former_model: "checkpoints/blip2_pretrained_flant5xxl.pth"
   num_query_token: 32
 
   # Vicuna
-  llama_model: "/mnt/bn/bykang/chixma/data/pretrained_models/vicuna-13b-v0/"
+  llama_model: "checkpoints/blip2_pretrained_flant5xxl.pth"
 
   # generation configs
   prompt: ""
