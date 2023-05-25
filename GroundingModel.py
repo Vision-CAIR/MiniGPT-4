@@ -73,7 +73,7 @@ class GroundingModule(nn.Module):
             x0, y0, x1, y1 = box
             x0, y0, x1, y1 = int(x0), int(y0), int(x1), int(y1)
 
-            draw.rectangle([x0, y0, x1, y1], outline=color, width=6)
+            draw.rectangle([x0, y0, x1, y1], outline=color, width=10)
 
         if boxes.size(0) > 0:
             boxes = boxes * torch.Tensor([W, H, W, H])
@@ -115,5 +115,5 @@ class GroundingModule(nn.Module):
                 full_img[m != 0] = color_mask
             full_img = (full_img * 255).astype(np.uint8)
             full_img = PIL.Image.fromarray(full_img)
-            PIL.Image.blend(draw_img, full_img, 0.5)
+            draw_img = PIL.Image.blend(draw_img, full_img, 0.5)
         return draw_img
