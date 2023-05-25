@@ -6,6 +6,7 @@ import torch
 import torch.backends.cudnn as cudnn
 import gradio as gr
 
+from GroundingModel import GroundingModule
 from minigpt4.common.config import Config
 from minigpt4.common.dist_utils import get_rank
 from minigpt4.common.registry import registry
@@ -13,6 +14,7 @@ from eval_scripts.conversation import Chat, CONV_VISION
 # NOTE&TODO: put this before minigpt4 import will cause circular import 
 # possibly because `imagebind` imports `minigpt4` and `minigpt4` also imports `imagebind`
 from imagebind.models.image_bind import ModalityType
+
 
 # imports modules for registration
 
@@ -63,6 +65,7 @@ vis_processor_cfg = cfg.datasets_cfg.cc12m.vis_processor.train
 vis_processor = registry.get_processor_class(vis_processor_cfg.name).from_config(vis_processor_cfg)
 processors = {ModalityType.VISION: vis_processor}
 chat = Chat(model, processors, device='cuda:{}'.format(args.gpu_id))
+grounding = GroundingModule(device='cuda:{}'.format(args.gpu_id))
 print('Initialization Finished')
 
 
@@ -101,7 +104,7 @@ def gradio_ask(user_message, chatbot, chat_state):
     return '', chatbot, chat_state
 
 
-def gradio_answer(chatbot, chat_state, emb_list, num_beams, temperature):
+def gradio_answer(image, chatbot, chat_state, emb_list, num_beams, temperature):
     # llm_message = chat.answer(conversation=chat_state,
     #                           emb_list=emb_list,
     #                           num_beams=num_beams,
@@ -110,7 +113,8 @@ def gradio_answer(chatbot, chat_state, emb_list, num_beams, temperature):
     #                           max_length=2000)[0]
     llm_message = "I don't know"
     chatbot[-1][1] = llm_message
-    return chatbot, chat_state, emb_list
+    ground_img = grounding.prompt2mask(image, 'dog')
+    return ground_img, chatbot, chat_state, emb_list
 
 
 title = """<h1 align="center">Demo of BindGPT-4</h1>"""
@@ -127,7 +131,9 @@ with gr.Blocks() as demo:
 
     with gr.Row():
         with gr.Column(scale=0.5):
-            image = gr.Image(type="pil")
+            with gr.Row():
+                image = gr.Image(type="pil")
+                image2 = gr.Image(type="pil")
             upload_button = gr.Button(value="Upload & Start Chat", interactive=True, variant="primary")
             clear = gr.Button("Restart")
 
@@ -159,7 +165,7 @@ with gr.Blocks() as demo:
                         [image, text_input, upload_button, chat_state, emb_list])
 
     text_input.submit(gradio_ask, [text_input, chatbot, chat_state], [text_input, chatbot, chat_state]).then(
-        gradio_answer, [chatbot, chat_state, emb_list, num_beams, temperature], [chatbot, chat_state, emb_list]
+        image, upload_img, gradio_answer, [chatbot, chat_state, emb_list, num_beams, temperature], [image2, chatbot, chat_state, emb_list]
     )
     clear.click(gradio_reset, [chat_state, emb_list], [chatbot, image, text_input, upload_button, chat_state, emb_list],
                 queue=False)
