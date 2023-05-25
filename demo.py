@@ -80,6 +80,7 @@ def gradio_reset(chat_state, emb_list):
         emb_list = []
     return None, gr.update(value=None, interactive=True), \
            gr.update(placeholder='Please upload your image first', interactive=False), \
+           gr.update(placeholder=None, interactive=False), \
            gr.update(value="Upload & Start Chat", interactive=True), \
            chat_state, emb_list
 
@@ -114,7 +115,8 @@ def gradio_answer(image, chatbot, chat_state, emb_list, num_beams, temperature):
     llm_message = "I don't know"
     chatbot[-1][1] = llm_message
     ground_img = grounding.prompt2mask(image, 'dog')
-    return ground_img, chatbot, chat_state, emb_list
+    return gr.update(value=ground_img, interactive=False), \
+           chatbot, chat_state, emb_list
 
 
 title = """<h1 align="center">Demo of BindGPT-4</h1>"""
@@ -168,7 +170,7 @@ with gr.Blocks() as demo:
         gradio_answer, [image, chatbot, chat_state, emb_list, num_beams, temperature],
         [image2, chatbot, chat_state, emb_list]
     )
-    clear.click(gradio_reset, [chat_state, emb_list], [chatbot, image, text_input, upload_button, chat_state, emb_list],
+    clear.click(gradio_reset, [chat_state, emb_list], [chatbot, image, image2, text_input, upload_button, chat_state, emb_list],
                 queue=False)
 
 demo.launch(share=True, enable_queue=True)
