@@ -1,4 +1,4 @@
-<Vision><VisionHere></Vision> Describe this image in detail.
-<Vision><VisionHere></Vision> Take a look at this image and describe what you notice.
-<Vision><VisionHere></Vision> Please provide a detailed description of the picture.
-<Vision><VisionHere></Vision> Could you describe the contents of this image for me?
+<Vision><ModalityHere></Vision> Describe this image in detail.
+<Vision><ModalityHere></Vision> Take a look at this image and describe what you notice.
+<Vision><ModalityHere></Vision> Please provide a detailed description of the picture.
+<Vision><ModalityHere></Vision> Could you describe the contents of this image for me?

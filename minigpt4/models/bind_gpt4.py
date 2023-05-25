@@ -45,15 +45,6 @@ class BindGPT4(BaseModel):
         self.multimodal_encoder = imagebind_huge(pretrained=True, freeze_imagebind=freeze_imagebind)
         print('Loading ImageBind Done')
 
-        print('Loading Q-Former and Adapter/Projector')
-        self.multimodal_joiner = ImageBindJoiner(vision_query_token_num=num_query_token,
-                                                 vision_qformer_frozen=freeze_qformer,
-                                                 vision_post_dims=[768, self.llama_model.config.hidden_size]
-                                                 # vision_qformer_model=q_former_model,
-                                                 # vision_pre_dims=(1280, 1408)
-                                                 )
-        print('Loading Q-Former and Adapter/Projector Done')
-
         print('Loading LLAMA')
         self.llama_tokenizer = LlamaTokenizer.from_pretrained(llama_model, use_fast=False)
         self.llama_tokenizer.pad_token = self.llama_tokenizer.eos_token
@@ -66,6 +57,15 @@ class BindGPT4(BaseModel):
         for name, param in self.llama_model.named_parameters():
             param.requires_grad = False
         print('Loading LLAMA Done')
+
+        print('Loading Q-Former and Adapter/Projector')
+        self.multimodal_joiner = ImageBindJoiner(vision_query_token_num=num_query_token,
+                                                 vision_qformer_frozen=freeze_qformer,
+                                                 vision_post_dims=[768, self.llama_model.config.hidden_size]
+                                                 # vision_qformer_model=q_former_model,
+                                                 # vision_pre_dims=(1280, 1408)
+                                                 )
+        print('Loading Q-Former and Adapter/Projector Done')
 
         self.max_txt_len = max_txt_len
         self.end_sym = end_sym
@@ -93,7 +93,7 @@ class BindGPT4(BaseModel):
         attns_input = torch.ones(input_embeds.size()[:-1], dtype=torch.long).to(input_embeds.device)
         if prompt:
             batch_size = input_embeds.shape[0]
-            p_before, p_after = prompt.split('<{}Here>'.format(modality_name.title()))
+            p_before, p_after = prompt.split('<ModalityHere>')
             p_before_tokens = self.llama_tokenizer(
                 p_before, return_tensors="pt", add_special_tokens=False).to(input_embeds.device)
             p_after_tokens = self.llama_tokenizer(

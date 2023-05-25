@@ -87,7 +87,7 @@ in [eval_configs/minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml#L10) at Lin
 
 ### Launching Demo Locally
 
-Try out our demo [demo.py](demo.py) on your local machine by running
+Try out our demo [demo.py](eval_scripts/qualitative_eval.py) on your local machine by running
 
 ```
 python demo.py --cfg-path eval_configs/minigpt4_eval.yaml  --gpu-id 0

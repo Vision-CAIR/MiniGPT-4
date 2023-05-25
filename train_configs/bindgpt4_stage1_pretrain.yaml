@@ -1,7 +1,7 @@
 model:
   arch: bind_gpt4
   model_type: pretrain_vicuna
-  freeze_vit: True
+  freeze_imagebind: True
   freeze_qformer: False
 
 
