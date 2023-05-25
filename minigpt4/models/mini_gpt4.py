@@ -260,6 +260,7 @@ class MiniGPT4(Blip2Base):
         )
 
         ckpt_path = cfg.get("ckpt", "")  # load weights of MiniGPT-4
+        ckpt_path = None
         if ckpt_path:
             print("Load BLIP2-LLM Checkpoint: {}".format(ckpt_path))
             ckpt = torch.load(ckpt_path, map_location="cpu")
