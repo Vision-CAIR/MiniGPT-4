@@ -1,0 +1,5 @@
+datasets:
+  bbc:
+    data_type: audio
+    build_info:
+      storage: /mnt/bn/zilongdata-hl/dataset/wavcaps/web_datasets/BBC_Sound_Effects/BBC_Sound_Effects{000000..000062}.tar

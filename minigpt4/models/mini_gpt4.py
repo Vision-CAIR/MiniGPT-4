@@ -164,7 +164,7 @@ class MiniGPT4(Blip2Base):
             return img_embeds, atts_img
 
     def forward(self, samples):
-        image = samples["image"]
+        image = samples["vision"]
         img_embeds, atts_img = self.encode_img(image)
         if hasattr(samples, 'question_split'):  # VQA dataset
             print('VQA Batch')

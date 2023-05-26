@@ -42,7 +42,7 @@ class ImageCaptionDataset(BaseDataset, __ImageDisplMixin):
         caption = self.text_processor(ann["caption"])
 
         return {
-            "image": image,
+            "vision": image,
             "text_input": caption,
             "image_id": self.img_ids[ann["image_id"]],
         }
@@ -67,7 +67,7 @@ class CaptionEvalDataset(BaseDataset, __ImageDisplMixin):
         image = self.x_processor(image)
 
         return {
-            "image": image,
+            "vision": image,
             "image_id": ann["image_id"],
             "instance_id": ann["instance_id"],
         }

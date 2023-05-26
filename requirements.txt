@@ -53,7 +53,6 @@ ipdb
 tensorflow-cpu
 tensorboardX
 # mmcv==2.0.0 -f https://download.openmmlab.com/mmcv/dist/cu117/torch1.13/index.html
-
 bs4==0.0.1              # Needed for text cleaning
 bson==0.5.10
 byted-dataloader==0.3.6
@@ -66,3 +65,4 @@ tensorboard==2.11.2
 tensorflow==2.11.0      # Needed for tensorboard hdfs support
 tensorflow-io==0.30.0   # Needed for tensorboard hdfs support
 tqdm==4.64.1
+pytorchvideo==0.1.5

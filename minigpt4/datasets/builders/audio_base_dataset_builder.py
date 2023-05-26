@@ -31,6 +31,51 @@ class AudioBaseDatasetBuilder:
 
         self.data_type = self.config.data_type
 
+        self.audio_processors = {"train": BaseProcessor(), "eval": BaseProcessor()}
+        self.text_processors = {"train": BaseProcessor(), "eval": BaseProcessor()}
+
+    def build_datasets(self):
+        # download, split, etc...
+        # only called on 1 GPU/TPU in distributed
+
+        if is_main_process():
+            self._download_data()
+
+        if is_dist_avail_and_initialized():
+            dist.barrier()
+
+        # at this point, all the annotations and image/videos should be all downloaded to the specified locations.
+        logging.info("Building datasets...")
+        datasets = self.build()  # dataset['train'/'val'/'test']
+
+        return datasets
+
+    def build_processors(self):
+        aud_proc_cfg = self.config.get("audio_processor")
+        txt_proc_cfg = self.config.get("text_processor")
+
+        if aud_proc_cfg is not None:
+            aud_train_cfg = aud_proc_cfg.get("train")
+            aud_eval_cfg = aud_proc_cfg.get("eval")
+
+            self.audio_processors["train"] = self._build_proc_from_cfg(aud_train_cfg)
+            self.audio_processors["eval"] = self._build_proc_from_cfg(aud_eval_cfg)
+
+        if txt_proc_cfg is not None:
+            txt_train_cfg = txt_proc_cfg.get("train")
+            txt_eval_cfg = txt_proc_cfg.get("eval")
+
+            self.text_processors["train"] = self._build_proc_from_cfg(txt_train_cfg)
+            self.text_processors["eval"] = self._build_proc_from_cfg(txt_eval_cfg)
+
+    @staticmethod
+    def _build_proc_from_cfg(cfg):
+        return (
+            registry.get_processor_class(cfg.name).from_config(cfg)
+            if cfg is not None
+            else None
+        )
+
     @classmethod
     def default_config_path(cls, type="default"):
         return utils.get_abs_path(cls.DATASET_CONFIG_DICT[type])
@@ -95,5 +140,3 @@ class AudioBaseDatasetBuilder:
                         filename = os.path.basename(storage_path)
 
                     download_url(url=url_or_filename, root=dirname, filename=filename)
-
-

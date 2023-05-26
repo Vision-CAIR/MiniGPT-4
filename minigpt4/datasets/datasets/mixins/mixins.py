@@ -9,7 +9,7 @@ class __ImageDisplMixin:
             {
                 "file": ann["image"],
                 "caption": ann["caption"],
-                "image": sample["image"],
+                "vision": sample["vision"],
             }
         )
 

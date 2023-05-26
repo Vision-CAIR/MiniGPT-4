@@ -50,46 +50,59 @@ ModalityType = SimpleNamespace(
 class ImageBindJoiner(nn.Module):
     def __init__(self,
                  vision_query_token_num: int,
+                 audio_query_token_num: int,
                  vision_qformer_frozen: bool = False,
                  vision_qformer_model: str = "",  # The url or path of pre-trained vision Q-Former model
                  vision_pre_dims: List[int] = (),  # Projection before Q-Former
-                 vision_post_dims: List[int] = (768, 768)  # Projection after Q-Former
+                 vision_post_dims: List[int] = (1280, 768),  # Projection after Q-Former
+                 audio_pre_dims: List[int] = (),
+                 audio_post_dims: List[int] = (768, 768)
                  ):
         super().__init__()
         assert not (vision_qformer_frozen and vision_qformer_model == "")
-        self.modality_pre_projectors = self._create_modality_pre_projectors(vision_pre_dims)
+        self.modality_pre_projectors = self._create_modality_pre_projectors(vision_pre_dims, audio_pre_dims)
         self.modality_qformers = self._create_modality_qformers(vision_query_token_num,
                                                                 vision_qformer_frozen,
-                                                                vision_qformer_model)
-        self.modality_post_projectors = self._create_modality_post_projectors(vision_post_dims)
+                                                                vision_qformer_model,
+                                                                audio_query_token_num)
+        self.modality_post_projectors = self._create_modality_post_projectors(vision_post_dims, audio_post_dims)
 
     def _create_modality_pre_projectors(self,
-                                        vision_pre_dims
+                                        vision_pre_dims,
+                                        audio_pre_dims
                                         ):
         modality_pre_projectors = {
-            ModalityType.VISION: create_projectors(vision_pre_dims)
+            ModalityType.VISION: create_projectors(vision_pre_dims),
+            ModalityType.AUDIO: create_projectors(audio_pre_dims)
         }
         return modality_pre_projectors
 
     def _create_modality_qformers(self,
                                   vision_query_token_num,
                                   vision_qformer_frozen,
-                                  vision_qformer_model
+                                  vision_qformer_model,
+                                  audio_query_token_num
                                   ):
         vision_qformer = SequenceGenericQFormer(num_query_token=vision_query_token_num,
                                                 freeze_qformer=vision_qformer_frozen,
                                                 encoder_width=1280,  # TODO: fix hard-coding
                                                 q_former_model=vision_qformer_model)
+        audio_qformer = SequenceGenericQFormer(num_query_token=audio_query_token_num,
+                                               freeze_qformer=False,
+                                               encoder_width=768)
         modality_qformers = {
-            ModalityType.VISION: vision_qformer
+            ModalityType.VISION: vision_qformer,
+            ModalityType.AUDIO: audio_qformer
         }
 
         return nn.ModuleDict(modality_qformers)
 
-    def _create_modality_post_projectors(self, vision_post_dims):
+    def _create_modality_post_projectors(self, vision_post_dims, audio_post_dims):
         vision_projector = create_projectors(vision_post_dims)
+        audio_projector = create_projectors(audio_post_dims)
         modality_projectors = {
-            ModalityType.VISION: vision_projector
+            ModalityType.VISION: vision_projector,
+            ModalityType.AUDIO: audio_projector
         }
 
         return nn.ModuleDict(modality_projectors)
@@ -97,7 +110,6 @@ class ImageBindJoiner(nn.Module):
     def forward(self, inputs: Dict[str, Tensor]) -> Dict[str, Tensor]:
         outputs = {}
         for modality_key, modality_value in inputs.items():
-            # assert modality_key == ModalityType.VISION, "Only Vision is Currently Supported."
             if modality_value is not None:
                 modality_value = self.modality_pre_projectors[modality_key](modality_value)
                 modality_value = self.modality_qformers[modality_key](modality_value)
@@ -544,7 +556,7 @@ class ImageBindModel(nn.Module):
 
                 # NOTE: The reduction operation has been modified.
                 if reduce_list:
-                    modality_value = modality_value.reshape(B, S, *modality_value[2:])
+                    modality_value = modality_value.reshape(B, S, *modality_value.shape[1:])
                     modality_value = modality_value.mean(dim=1)
 
                 outputs[modality_key] = modality_value

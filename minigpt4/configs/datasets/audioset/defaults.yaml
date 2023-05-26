@@ -1,0 +1,5 @@
+datasets:
+  audioset:
+    data_type: audio
+    build_info:
+      storage: /mnt/bn/zilongdata-hl/dataset/wavcaps/web_datasets/AudioSet_SL/AudioSet_SL{00..54}.tar
