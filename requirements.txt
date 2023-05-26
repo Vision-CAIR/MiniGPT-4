@@ -66,3 +66,6 @@ tensorboard==2.11.2
 tensorflow==2.11.0      # Needed for tensorboard hdfs support
 tensorflow-io==0.30.0   # Needed for tensorboard hdfs support
 tqdm==4.64.1
+
+git+https://github.com/facebookresearch/segment-anything.git
+git+https://github.com/IDEA-Research/GroundingDINO.git
