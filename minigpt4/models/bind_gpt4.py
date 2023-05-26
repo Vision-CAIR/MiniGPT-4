@@ -1,8 +1,9 @@
 import random
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 
 import torch
 import torch.nn as nn
+import re
 from torch import Tensor
 from transformers import LlamaTokenizer
 
@@ -10,6 +11,36 @@ from imagebind.models.image_bind import imagebind_huge, ImageBindJoiner, Modalit
 from minigpt4.common.registry import registry
 from minigpt4.models.blip2 import BaseModel
 from minigpt4.models.modeling_llama import LlamaForCausalLM
+
+
+def filter_prompt(input_embeds: Dict[str, Tensor], prompt_list: List[str]) -> List[str]:
+    if not prompt_list:
+        return prompt_list
+    input_modal_set = set([k.title() for k in input_embeds if input_embeds[k] is not None])
+    prompt_modal_sets = [set(re.findall("<([^<>]+)><ModalityHere></\\1>", prompt)) for prompt in prompt_list]
+    results = [prompt_list[i] for i, prompt_modal_set in enumerate(prompt_modal_sets) if
+               prompt_modal_set == input_modal_set]
+    return results
+
+
+def arrange_modalities(input_embeds: Dict[str, Tensor], prompt: str) -> List[Tensor]:
+    prompt_modalities = re.findall("<([^<>]+)><ModalityHere></\\1>", prompt)
+    return [input_embeds[modality.lower()] for modality in prompt_modalities]
+
+
+def concat_all_embeddings(input_embeds: Dict[str, Tensor], dim: int) -> Tensor:
+    embeds = [input_embeds[key] for key in input_embeds if input_embeds[key] is not None]
+    return torch.cat(embeds, dim=dim)
+
+
+def filter_modalities(inputs):
+    filtered_inputs = {}
+
+    for k in ModalityType.__dict__.values():
+        if k in inputs:
+            filtered_inputs[k] = inputs[k]
+
+    return filtered_inputs
 
 
 @registry.register_model("bind_gpt4")
@@ -61,7 +92,9 @@ class BindGPT4(BaseModel):
         print('Loading Q-Former and Adapter/Projector')
         self.multimodal_joiner = ImageBindJoiner(vision_query_token_num=num_query_token,
                                                  vision_qformer_frozen=freeze_qformer,
-                                                 vision_post_dims=[768, self.llama_model.config.hidden_size]
+                                                 vision_post_dims=[768, self.llama_model.config.hidden_size],
+                                                 audio_query_token_num=num_query_token,
+                                                 audio_post_dims=[768, self.llama_model.config.hidden_size]
                                                  # vision_qformer_model=q_former_model,
                                                  # vision_pre_dims=(1280, 1408)
                                                  )
@@ -84,42 +117,37 @@ class BindGPT4(BaseModel):
     def encode_inputs(self, inputs: Dict[str, Tensor]) -> Dict[str, Tensor]:
         imagebind_outputs = self.multimodal_encoder(inputs)
         llama_inputs = self.multimodal_joiner(imagebind_outputs)
-        # NOTE: only accept image here
         return llama_inputs
 
-    def prompt_wrap(self, inputs: Dict[str, Tensor], modality_name: str, prompt: str) -> Tuple[Tensor, Tensor]:
-        # TODO: Accept More Modalities.
-        input_embeds = inputs[modality_name]
-        attns_input = torch.ones(input_embeds.size()[:-1], dtype=torch.long).to(input_embeds.device)
-        if prompt:
-            batch_size = input_embeds.shape[0]
-            p_before, p_after = prompt.split('<ModalityHere>')
-            p_before_tokens = self.llama_tokenizer(
-                p_before, return_tensors="pt", add_special_tokens=False).to(input_embeds.device)
-            p_after_tokens = self.llama_tokenizer(
-                p_after, return_tensors="pt", add_special_tokens=False).to(input_embeds.device)
-            p_before_embeds = self.llama_model.model.embed_tokens(p_before_tokens.input_ids).expand(batch_size, -1, -1)
-            p_after_embeds = self.llama_model.model.embed_tokens(p_after_tokens.input_ids).expand(batch_size, -1, -1)
-            wrapped_input_embeds = torch.cat([p_before_embeds, inputs, p_after_embeds], dim=1)
-            wrapped_atts_input = attns_input[:, :1].expand(-1, wrapped_input_embeds.shape[1])
-            return wrapped_input_embeds, wrapped_atts_input
-        else:
+    def prompt_wrap(self, inputs: Dict[str, Tensor], prompt: str) -> Tuple[Tensor, Tensor]:
+        if not prompt:
+            input_embeds = concat_all_embeddings(inputs, dim=1)
+            attns_input = torch.ones(input_embeds.size()[:-1], dtype=torch.long).to(input_embeds.device)
             return input_embeds, attns_input
+        input_embeds_list = arrange_modalities(inputs, prompt)
+        batch_size = input_embeds_list[0].shape[0]
+        prompt_slices = prompt.split('<ModalityHere>')
+        prompt_tokens = [self.llama_tokenizer(prompt_slice, return_tensors="pt", add_special_tokens=False)
+                             .to(input_embeds_list[0].device) for prompt_slice in prompt_slices]
+        prompt_embeds = [self.llama_model.model.embed_tokens(prompt_token.input_ids).expand(batch_size, -1, -1)
+                         for prompt_token in prompt_tokens]
+        result_embeds = [emb for pair in zip(prompt_embeds[:-1], input_embeds_list)
+                         for emb in pair] + [prompt_embeds[-1]]
+        wrapped_input_embeds = torch.cat(result_embeds, dim=1)
+        wrapped_atts_input = torch.ones(wrapped_input_embeds.size()[:-1],
+                                        dtype=torch.long).to(wrapped_input_embeds.device)
+        return wrapped_input_embeds, wrapped_atts_input
 
     def forward(self, inputs: Dict[str, Tensor]) -> Dict[str, Tensor]:
-        """
-            TODO: More Modalities.
-            Only accept image inputs here.
-            Other modalities will conflict with the pre-defined prompt and wrapping strategy.
-        """
-        bind_inputs = {ModalityType.VISION: inputs['image']}
-        embeds = self.encode_inputs(bind_inputs)
-        # assert "vision" in embeds, "Only Vision Input Can Be Accepted Now."
-        if self.prompt_list:
-            prompt = random.choice(self.prompt_list)
+        # filter `inputs` as it may contain informatioins other than modalities
+        modality_inputs = filter_modalities(inputs)
+        embeds = self.encode_inputs(modality_inputs)
+        filtered_prompts = filter_prompt(embeds, self.prompt_list)
+        if filtered_prompts:
+            prompt = random.choice(filtered_prompts)
         else:
             prompt = None
-        img_embeds, atts_img = self.prompt_wrap(embeds, ModalityType.VISION, prompt)
+        input_embs, input_atts = self.prompt_wrap(embeds, prompt)
 
         # NOTE: No modifications from the next line to the end. Except for the autocast part.
 
@@ -134,28 +162,28 @@ class BindGPT4(BaseModel):
             truncation=True,
             max_length=self.max_txt_len,
             add_special_tokens=False
-        ).to(img_embeds.device)
+        ).to(input_embs.device)
 
         targets = to_regress_tokens.input_ids.masked_fill(
             to_regress_tokens.input_ids == self.llama_tokenizer.pad_token_id, -100
         )
 
         empty_targets = (
-            torch.ones([atts_img.shape[0], atts_img.shape[1] + 1],
-                       dtype=torch.long).to(img_embeds.device).fill_(-100)  # plus one for bos
+            torch.ones([input_atts.shape[0], input_atts.shape[1] + 1],
+                       dtype=torch.long).to(input_embs.device).fill_(-100)  # plus one for bos
         )
         targets = torch.cat([empty_targets, targets], dim=1)
 
-        batch_size = img_embeds.shape[0]
+        batch_size = input_embs.shape[0]
         bos = torch.ones([batch_size, 1],
                          dtype=to_regress_tokens.input_ids.dtype,
                          device=to_regress_tokens.input_ids.device) * self.llama_tokenizer.bos_token_id
         bos_embeds = self.llama_model.model.embed_tokens(bos)
-        atts_bos = atts_img[:, :1]
+        atts_bos = input_atts[:, :1]
 
         to_regress_embeds = self.llama_model.model.embed_tokens(to_regress_tokens.input_ids)
-        inputs_embeds = torch.cat([bos_embeds, img_embeds, to_regress_embeds], dim=1)
-        attention_mask = torch.cat([atts_bos, atts_img, to_regress_tokens.attention_mask], dim=1)
+        inputs_embeds = torch.cat([bos_embeds, input_embs, to_regress_embeds], dim=1)
+        attention_mask = torch.cat([atts_bos, input_atts, to_regress_tokens.attention_mask], dim=1)
 
         outputs = self.llama_model(
             inputs_embeds=inputs_embeds,

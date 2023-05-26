@@ -125,6 +125,7 @@ with gr.Blocks() as demo:
     with gr.Row():
         with gr.Column(scale=0.5):
             image = gr.Image(type="pil")
+            # audio = gr.Audio()
             upload_button = gr.Button(value="Upload & Start Chat", interactive=True, variant="primary")
             clear = gr.Button("Restart")
 
@@ -150,7 +151,7 @@ with gr.Blocks() as demo:
             chat_state = gr.State()
             emb_list = gr.State()
             chatbot = gr.Chatbot(label='BindGPT-4')
-            text_input = gr.Textbox(label='User', placeholder='Please upload your image first', interactive=False)
+            text_input = gr.Textbox(label='User', placeholder='Please upload your image/audio first', interactive=False)
 
     upload_button.click(upload_img, [image, text_input, chat_state],
                         [image, text_input, upload_button, chat_state, emb_list])

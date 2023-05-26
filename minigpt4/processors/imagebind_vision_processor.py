@@ -9,7 +9,7 @@ import re
 
 from minigpt4.common.registry import registry
 from minigpt4.processors.base_processor import BaseProcessor
-from minigpt4.processors.randaugment import RandomAugment
+from minigpt4.processors.vision_augment import RandomAugment
 from omegaconf import OmegaConf
 from torchvision import transforms
 from torchvision.transforms.functional import InterpolationMode
@@ -146,4 +146,6 @@ class ImageBindVisionEvalProcessor(ImageBindVisionBaseProcessor):
         std = cfg.get("std", None)
 
         return cls(image_size=image_size, mean=mean, std=std)
+
+
 

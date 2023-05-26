@@ -15,7 +15,7 @@ import logging
 from imagebind.models.multimodal_preprocessors import SimpleTokenizer
 from PIL import Image
 from pytorchvideo import transforms as pv_transforms
-from pytorchvideo.data.clip_sampling import ConstantClipsPerVideoSampler
+from pytorchvideo.data.clip_sampling import ConstantClipsPerVideoSampler, RandomMultiClipSampler
 from pytorchvideo.data.encoded_video import EncodedVideo
 
 from torchvision import transforms
@@ -59,21 +59,9 @@ def waveform2melspec(waveform, sample_rate, num_mel_bins, target_length):
         fbank = torch.nn.functional.pad(fbank, (0, p), mode="constant", value=0)
     elif p < 0:
         fbank = fbank[:, 0:target_length]
-    # Convert to [1, mel_bins, num_frames] shape, essentially like a 1
-    # channel image
+    # Convert to [1, mel_bins, num_frames] shape, essentially like a 1 channel image
     fbank = fbank.unsqueeze(0)
     return fbank
-
-
-def get_clip_timepoints(clip_sampler, duration):
-    # Read out all clips in this video
-    all_clips_timepoints = []
-    is_last_clip = False
-    end = 0.0
-    while not is_last_clip:
-        start, end, _, _, is_last_clip = clip_sampler(end, duration, annotation=None)
-        all_clips_timepoints.append((start, end))
-    return all_clips_timepoints
 
 
 def load_and_transform_vision_data(image_paths, device):
@@ -137,14 +125,14 @@ def load_and_transform_audio_data(
             waveform = torchaudio.functional.resample(
                 waveform, orig_freq=sr, new_freq=sample_rate
             )
-        all_clips_timepoints = get_clip_timepoints(
+        all_clips_timepoints = get_constant_clip_timepoints(
             clip_sampler, waveform.size(1) / sample_rate
         )
         all_clips = []
         for clip_timepoints in all_clips_timepoints:
             waveform_clip = waveform[
                 :,
-                int(clip_timepoints[0] * sample_rate) : int(
+                int(clip_timepoints[0] * sample_rate): int(
                     clip_timepoints[1] * sample_rate
                 ),
             ]
@@ -162,7 +150,8 @@ def load_and_transform_audio_data(
     return torch.stack(audio_outputs, dim=0)
 
 
-def get_clip_timepoints(clip_sampler, duration):
+def get_constant_clip_timepoints(clip_sampler, duration):
+    assert isinstance(clip_sampler, ConstantClipsPerVideoSampler), "Incompatible Type of Sampler!"
     # Read out all clips in this video
     all_clips_timepoints = []
     is_last_clip = False
@@ -170,6 +159,13 @@ def get_clip_timepoints(clip_sampler, duration):
     while not is_last_clip:
         start, end, _, _, is_last_clip = clip_sampler(end, duration, annotation=None)
         all_clips_timepoints.append((start, end))
+    return all_clips_timepoints
+
+
+def get_random_clip_timepoints(clip_sampler, duration):
+    assert isinstance(clip_sampler, RandomMultiClipSampler), "Incompatible Type of Sampler!"
+    starts, ends, _, _, _ = clip_sampler(0.0, duration, annotation=None)
+    all_clips_timepoints = sorted(list(zip(starts, ends)), key=lambda x: x[0])
     return all_clips_timepoints
 
 
@@ -244,7 +240,7 @@ def uniform_crop(images, size, spatial_idx, boxes=None, scale_size=None):
             x_offset = 0
         elif spatial_idx == 2:
             x_offset = width - size
-    cropped = images[:, :, y_offset : y_offset + size, x_offset : x_offset + size]
+    cropped = images[:, :, y_offset: y_offset + size, x_offset: x_offset + size]
     cropped_boxes = crop_boxes(boxes, x_offset, y_offset) if boxes is not None else None
     if ndim == 3:
         cropped = cropped.squeeze(0)
@@ -328,7 +324,7 @@ def load_and_transform_video_data(
             **{"sample_rate": sample_rate},
         )
 
-        all_clips_timepoints = get_clip_timepoints(clip_sampler, video.duration)
+        all_clips_timepoints = get_constant_clip_timepoints(clip_sampler, video.duration)
 
         all_video = []
         for clip_timepoints in all_clips_timepoints:

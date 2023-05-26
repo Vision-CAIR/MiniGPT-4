@@ -11,12 +11,23 @@ from minigpt4.datasets.builders.image_text_pair_builder import (
     LaionBuilderImage,
     CCSBUAlignBuilderImage
 )
+from minigpt4.datasets.builders.audio_text_pair_builder import (
+    BBCBuilder,
+    AudioSetBuilder,
+    SoundBibleBuilder,
+    FreeSoundBuilder
+)
 from minigpt4.common.registry import registry
 
 __all__ = [
     "CCSBUBuilderImage",
     "LaionBuilderImage",
-    "CCSBUAlignBuilderImage"
+    "CCSBUAlignBuilderImage",
+    # Audio builders
+    "BBCBuilder",
+    "AudioSetBuilder",
+    "SoundBibleBuilder",
+    "FreeSoundBuilder",
 ]
 
 

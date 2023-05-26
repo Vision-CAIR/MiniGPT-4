@@ -32,10 +32,12 @@ class Registry:
         """
 
         def wrap(builder_cls):
+            # TODO: merge them or split builders by modality
             from minigpt4.datasets.builders.image_base_dataset_builder import ImageBaseDatasetBuilder
+            from minigpt4.datasets.builders.audio_base_dataset_builder import AudioBaseDatasetBuilder
 
             assert issubclass(
-                builder_cls, ImageBaseDatasetBuilder
+                builder_cls, (ImageBaseDatasetBuilder, AudioBaseDatasetBuilder)
             ), "All builders must inherit BaseDatasetBuilder class, found {}".format(
                 builder_cls
             )

@@ -144,7 +144,7 @@ def compute_sim_matrix(model, data_loader, **kwargs):
     vit_feats = []
     image_embeds = []
     for samples in data_loader:
-        image = samples["image"]
+        image = samples["vision"]
 
         image = image.to(model.device)
         image_feat, vit_feat = model.forward_image(image)

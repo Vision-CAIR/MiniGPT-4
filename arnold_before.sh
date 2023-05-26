@@ -6,7 +6,9 @@
 pip3 install --upgrade pip
 pip3 install -r requirements.txt
 pip3 install byted-dataloader -i "https://bytedpypi.byted.org/simple"
-mmengine-0.7.3
+pip3 install mmmengine==0.7.3
+pip3 install mmcv==2.0.0 -f https://download.openmmlab.com/mmcv/dist/cu117/torch1.13/index.html
+
 # unset http_proxy && unset https_proxy && unset no_proxy
 
 # # ----------------------------------------------------------------------------------------
