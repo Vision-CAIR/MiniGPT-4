@@ -27,7 +27,7 @@ docker pull bewithmeallmylife/mini-gpt4-runtime-cuda-10.2:1.0.0
 ```
 构建容器, 暴露对应端口，以便启动前端ui在本地使用
 ```commandline
-nvidia-docker run -v /data:/projects -v /data2:/data2 -p 1118:7778 --shm-size 8G --name minigpt4 -d bewithmeallmylife/mini-gpt4-runtime-cuda-10.2:1.0.0 tail -f /dev/null
+docker run -v /data:/projects -v /data2:/data2 -p 1118:7778 --shm-size 8G --name minigpt4 -d bewithmeallmylife/mini-gpt4-runtime-cuda-10.2:1.0.0 tail -f /dev/null
 ```
 进入容器
 ```commandline
