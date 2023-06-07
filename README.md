@@ -28,7 +28,7 @@ docker pull bewithmeallmylife/mini-gpt4-runtime-cuda-10.2:1.0.0
 ```
 Build the container, expose the corresponding port to enable launching the frontend UI for local use.
 ```commandline
-nvidia-docker run -v /data:/projects -v /data2:/data2 -p 1118:7778 --shm-size 8G --name minigpt4 -d bewithmeallmylife/mini-gpt4-runtime-cuda-10.2:1.0.0 tail -f /dev/null
+docker run -v /data:/projects -v /data2:/data2 -p 1118:7778 --shm-size 8G --name minigpt4 -d bewithmeallmylife/mini-gpt4-runtime-cuda-10.2:1.0.0 tail -f /dev/null
 ```
 Get into docker
 ```commandline
