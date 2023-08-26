@@ -16,7 +16,6 @@ class MiniGPT4(Blip2Base):
     """
     BLIP2 GPT-LLAMA model.
     """
-
     PRETRAINED_MODEL_CONFIG_DICT = {
         "pretrain_vicuna": "configs/models/minigpt4.yaml",
     }
@@ -162,22 +161,58 @@ class MiniGPT4(Blip2Base):
             return wrapped_img_embeds, wrapped_atts_img
         else:
             return img_embeds, atts_img
+    
+    def prompt_wrap_image(self, img_embeds, atts_img, prompt):
+        p_before, p_after = [], []
+        
+        for prompt_item in prompt:
+            before, after = prompt_item.split('<ImageHere>')
+            p_before.append(before)
+            p_after.append(after)
+        
+        p_before_tokens = self.llama_tokenizer(
+            p_before, return_tensors="pt", add_special_tokens=False).to(img_embeds.device)
+        p_after_tokens = self.llama_tokenizer(
+            p_after, return_tensors="pt", padding=True, truncation=True, add_special_tokens=False).to(img_embeds.device)
+        p_before_embeds = self.llama_model.model.embed_tokens(p_before_tokens.input_ids)
+        p_after_embeds = self.llama_model.model.embed_tokens(p_after_tokens.input_ids)
+        wrapped_img_embeds = torch.cat([p_before_embeds, img_embeds, p_after_embeds], dim=1)
+        wrapped_atts_img = atts_img[:, :1].expand(-1, wrapped_img_embeds.shape[1])
+        return wrapped_img_embeds, wrapped_atts_img
+        
+
+    def prompt_wrap_no_image(self, prompt, device_gpu):
+        p_tokens = self.llama_tokenizer(
+            prompt, return_tensors="pt", padding=True, truncation=True, add_special_tokens=False).to(device_gpu)
+        p_embeds = self.llama_model.model.embed_tokens(p_tokens.input_ids)
+        p_atts = torch.ones(p_embeds.size()[:-1], dtype=torch.long)
+        wrapped_p_atts = p_atts[:, :1].expand(-1, p_embeds.shape[1])
+        return p_embeds, wrapped_p_atts
 
     def forward(self, samples):
-        image = samples["image"]
-        img_embeds, atts_img = self.encode_img(image)
-        if hasattr(samples, 'question_split'):  # VQA dataset
-            print('VQA Batch')
-            vqa_prompt = '###Human: <Img><ImageHere></Img> '
-            img_embeds, atts_img = self.prompt_wrap(img_embeds, atts_img, vqa_prompt)
-        elif self.prompt_list:
+        while True:
+            if "image" in samples:
+                device_gpu = samples["image"].device
+                break
+        if "image" in samples:
+            image = samples["image"]
+            img_embeds, atts_img = self.encode_img(image)
+            if "input_prompt" in samples:
+                prefix = '###Human: <Img><ImageHere></Img> '
+                science_prompt = [prefix + item for item in samples["input_prompt"]]
+                img_embeds, atts_img = self.prompt_wrap_image(img_embeds, atts_img, science_prompt)
+        else:
+            science_prompt = samples["input_prompt"]
+            img_embeds, atts_img = self.prompt_wrap_no_image(science_prompt, device_gpu)
+        
+        if len(self.prompt_list) > 0:
             prompt = random.choice(self.prompt_list)
             img_embeds, atts_img = self.prompt_wrap(img_embeds, atts_img, prompt)
-
+        
         self.llama_tokenizer.padding_side = "right"
-
+        
         text = [t + self.end_sym for t in samples["text_input"]]
-
+        
         to_regress_tokens = self.llama_tokenizer(
             text,
             return_tensors="pt",
@@ -185,18 +220,18 @@ class MiniGPT4(Blip2Base):
             truncation=True,
             max_length=self.max_txt_len,
             add_special_tokens=False
-        ).to(image.device)
-
+        ).to(img_embeds.device)
+        
         targets = to_regress_tokens.input_ids.masked_fill(
             to_regress_tokens.input_ids == self.llama_tokenizer.pad_token_id, -100
         )
 
         empty_targets = (
             torch.ones([atts_img.shape[0], atts_img.shape[1]+1],
-                       dtype=torch.long).to(image.device).fill_(-100)  # plus one for bos
+                       dtype=torch.long).to(img_embeds.device).fill_(-100)  # plus one for bos
         )
         targets = torch.cat([empty_targets, targets], dim=1)
-
+        
         batch_size = img_embeds.shape[0]
         bos = torch.ones([batch_size, 1],
                          dtype=to_regress_tokens.input_ids.dtype,

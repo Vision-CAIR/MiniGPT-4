@@ -36,28 +36,58 @@ class CaptionDataset(BaseDataset, __DisplMixin):
         self.img_ids = {}
         n = 0
         for ann in self.annotation:
-            img_id = ann["image_id"]
-            if img_id not in self.img_ids.keys():
-                self.img_ids[img_id] = n
-                n += 1
+            if "image_id" in ann:
+                img_id = ann["image_id"]
+                if "/" in img_id:
+                    image_id = img_id.split("/")[0]
+                    if image_id not in self.img_ids.keys():
+                        self.img_ids[image_id] = n
+                        n += 1
+                else:
+                    if img_id not in self.img_ids.keys():
+                        self.img_ids[img_id] = n
+                        n += 1
 
     def __getitem__(self, index):
 
         # TODO this assumes image input, not general enough
         ann = self.annotation[index]
-
-        img_file = '{:0>12}.jpg'.format(ann["image_id"])
-        image_path = os.path.join(self.vis_root, img_file)
-        image = Image.open(image_path).convert("RGB")
-
-        image = self.vis_processor(image)
-        caption = self.text_processor(ann["caption"])
-
-        return {
-            "image": image,
-            "text_input": caption,
-            "image_id": self.img_ids[ann["image_id"]],
-        }
+        if "image_id" in ann:
+            if "id" in ann:
+                img_file = ann["image_id"]
+                input_prompt = self.text_processor(ann["input"])
+                image_path = os.path.join(self.vis_root, img_file)
+                # print(image_path)
+                image = Image.open(image_path).convert("RGB")
+                image = self.vis_processor(image)
+                # print(image.shape)
+                caption = self.text_processor(ann["caption"])
+                return {
+                    "image": image,
+                    "input_prompt": input_prompt,
+                    "text_input": caption,
+                    "image_id": self.img_ids[ann["image_id"].split("/")[0]],
+                }
+            else:
+                img_file = '{:0>12}.jpg'.format(ann["image_id"])
+                image_path = os.path.join(self.vis_root, img_file)
+                image = Image.open(image_path).convert("RGB")
+                image = self.vis_processor(image)
+                caption = self.text_processor(ann["caption"])
+                return {
+                    "image": image,
+                    "text_input": caption,
+                    "image_id": self.img_ids[ann["image_id"]],
+                }
+        else:
+            input_prompt = self.text_processor(ann["input"])
+            caption = self.text_processor(ann["caption"])
+            return {
+                "image": torch.zeros(3, 224, 224),
+                "input_prompt": input_prompt,
+                "text_input": caption,
+                "image_id": -100,
+            }
 
 
 class CaptionEvalDataset(BaseDataset, __DisplMixin):
