@@ -10,7 +10,7 @@ import gradio as gr
 from minigpt4.common.config import Config
 from minigpt4.common.dist_utils import get_rank
 from minigpt4.common.registry import registry
-from minigpt4.conversation.conversation import Chat, CONV_VISION
+from minigpt4.conversation.conversation import Chat, CONV_VISION_Vicuna0, CONV_VISION_LLama2
 
 # imports modules for registration
 from minigpt4.datasets.builders import *
@@ -50,6 +50,9 @@ def setup_seeds(config):
 #             Model Initialization
 # ========================================
 
+conv_dict = {'pretrain_vicuna0': CONV_VISION_Vicuna0,
+             'pretrain_llama2': CONV_VISION_LLama2}
+
 print('Initializing Chat')
 args = parse_args()
 cfg = Config(args)
@@ -59,14 +62,18 @@ model_config.device_8bit = args.gpu_id
 model_cls = registry.get_model_class(model_config.arch)
 model = model_cls.from_config(model_config).to('cuda:{}'.format(args.gpu_id))
 
+CONV_VISION = conv_dict[model_config.model_type]
+
 vis_processor_cfg = cfg.datasets_cfg.cc_sbu_align.vis_processor.train
 vis_processor = registry.get_processor_class(vis_processor_cfg.name).from_config(vis_processor_cfg)
 chat = Chat(model, vis_processor, device='cuda:{}'.format(args.gpu_id))
 print('Initialization Finished')
 
+
 # ========================================
 #             Gradio Setting
 # ========================================
+
 
 def gradio_reset(chat_state, img_list):
     if chat_state is not None:
@@ -75,6 +82,7 @@ def gradio_reset(chat_state, img_list):
         img_list = []
     return None, gr.update(value=None, interactive=True), gr.update(placeholder='Please upload your image first', interactive=False),gr.update(value="Upload & Start Chat", interactive=True), chat_state, img_list
 
+
 def upload_img(gr_img, text_input, chat_state):
     if gr_img is None:
         return None, None, gr.update(interactive=True), chat_state, None
@@ -82,6 +90,7 @@ def upload_img(gr_img, text_input, chat_state):
     img_list = []
     llm_message = chat.upload_img(gr_img, chat_state, img_list)
     return gr.update(interactive=False), gr.update(interactive=True, placeholder='Type and press Enter'), gr.update(value="Start Chatting", interactive=False), chat_state, img_list
+
 
 def gradio_ask(user_message, chatbot, chat_state):
     if len(user_message) == 0:
@@ -100,6 +109,7 @@ def gradio_answer(chatbot, chat_state, img_list, num_beams, temperature):
                               max_length=2000)[0]
     chatbot[-1][1] = llm_message
     return chatbot, chat_state, img_list
+
 
 title = """<h1 align="center">Demo of MiniGPT-4</h1>"""
 description = """<h3>This is the demo of MiniGPT-4. Upload your images and start chatting!</h3>"""

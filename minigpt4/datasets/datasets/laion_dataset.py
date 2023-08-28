@@ -26,6 +26,6 @@ class LaionDataset(BaseDataset):
     def to_dict(self, sample):
         return {
             "image": sample[0],
-            "text_input": self.text_processor(sample[1]["caption"]),
+            "answer": self.text_processor(sample[1]["caption"]),
         }
 
