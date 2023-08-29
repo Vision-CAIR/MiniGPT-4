@@ -5,7 +5,7 @@ model:
   end_sym: "</s>"
   low_resource: True
   prompt_template: '[INST] {} [/INST] '
-  ckpt: '/home/zhud/c2090/zhud/project/MiniGPT-4/minigpt4/output/minigpt4_stage2_finetune/20230826182/checkpoint_4.pth'
+  ckpt: '/path/to/checkpoint/'
 
 
 datasets:
