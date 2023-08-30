@@ -5,7 +5,7 @@ model:
   image_size: 512
   drop_path_rate: 0
   use_grad_checkpoint: False
-  vit_precision: "fp32"
+  vit_precision: "fp16"
   freeze_vit: True
   has_qformer: False
 
