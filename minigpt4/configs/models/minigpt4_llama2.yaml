@@ -12,7 +12,7 @@ model:
   # generation configs
   prompt: ""
 
-  llama_model: "Llama-2-7b-chat"
+  llama_model: "Llama-2-7b-chat-hf"
 
 preprocess:
     vis_processor:
