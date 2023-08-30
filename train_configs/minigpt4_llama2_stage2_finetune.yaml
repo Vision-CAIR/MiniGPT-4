@@ -28,7 +28,7 @@ run:
   warmup_lr: 1e-6
 
   weight_decay: 0.05
-  max_epoch: 5
+  max_epoch: 100
   iters_per_epoch: 200
   batch_size_train: 12
   batch_size_eval: 12
