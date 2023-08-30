@@ -5,7 +5,7 @@ model:
   end_sym: "</s>"
   low_resource: True
   prompt_template: '[INST] {} [/INST] '
-  ckpt: 'checkpoint_33.pth'
+  ckpt: '20230830222.checkpoint.pth'
 
 
 datasets:
