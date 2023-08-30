@@ -6,7 +6,7 @@ model:
   end_sym: "</s>"
   prompt_path: "prompts/alignment.txt"
   prompt_template: '[INST] {} [/INST] '
-  ckpt: '/path/to/stage1/checkpoint/'
+  ckpt: 'pretrained_minigpt4_llama2_7b.pth'
 
 
 datasets:
@@ -14,7 +14,7 @@ datasets:
     vis_processor:
       train:
         name: "blip2_image_train"
-        image_size: 224
+        image_size: 512
     text_processor:
       train:
         name: "blip_caption"
