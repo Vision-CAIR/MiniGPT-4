@@ -61,7 +61,7 @@ Download the corresponding LLM weights from the following huggingface space via 
 
 |                                          Vicuna V0 13B                                           |                                          Vicuna V0 7B                                          |                            Llama 2 Chat 7B                             |
 :------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------:
- [Downlad](https://huggingface.co/Vision-CAIR/vicuna/tree/main) | [Download](https://huggingface.co/Vision-CAIR/vicuna-7b/tree/main) | [Download](https://huggingface.co/meta-llama/Llama-2-7b-chat/tree/main)
+ [Downlad](https://huggingface.co/Vision-CAIR/vicuna/tree/main) | [Download](https://huggingface.co/Vision-CAIR/vicuna-7b/tree/main) | [Download](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf/tree/main)
 
 
 Then, set the path to the vicuna weight in the model config file 
