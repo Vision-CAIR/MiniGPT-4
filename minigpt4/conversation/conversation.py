@@ -39,18 +39,18 @@ class Conversation:
             ret = self.system + self.sep
             for role, message in self.messages:
                 if message:
-                    ret += role + ": " + message + self.sep
+                    ret += role + message + self.sep
                 else:
-                    ret += role + ":"
+                    ret += role
             return ret
         elif self.sep_style == SeparatorStyle.TWO:
             seps = [self.sep, self.sep2]
             ret = self.system + seps[0]
             for i, (role, message) in enumerate(self.messages):
                 if message:
-                    ret += role + ": " + message + seps[i % 2]
+                    ret += role + message + seps[i % 2]
                 else:
-                    ret += role + ":"
+                    ret += role
             return ret
         else:
             raise ValueError(f"Invalid style: {self.sep_style}")
@@ -106,14 +106,24 @@ class StoppingCriteriaSub(StoppingCriteria):
         return False
 
 
-CONV_VISION = Conversation(
+CONV_VISION_Vicuna0 = Conversation(
     system="Give the following image: <Img>ImageContent</Img>. "
            "You will be able to see the image once I provide it to you. Please answer my questions.",
-    roles=("Human", "Assistant"),
+    roles=("Human: ", "Assistant: "),
     messages=[],
     offset=2,
     sep_style=SeparatorStyle.SINGLE,
     sep="###",
+)
+
+CONV_VISION_LLama2 = Conversation(
+    system="Give the following image: <Img>ImageContent</Img>. "
+           "You will be able to see the image once I provide it to you. Please answer my questions.",
+    roles=("<s>[INST] ", " [/INST] "),
+    messages=[],
+    offset=2,
+    sep_style=SeparatorStyle.SINGLE,
+    sep="",
 )
 
 

@@ -24,7 +24,7 @@ class BaseModel(nn.Module):
 
     @property
     def device(self):
-        return list(self.parameters())[0].device
+        return list(self.parameters())[-1].device
 
     def load_checkpoint(self, url_or_filename):
         """

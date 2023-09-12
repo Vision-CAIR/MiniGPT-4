@@ -22,7 +22,7 @@ class CCSBUDataset(BaseDataset):
     def to_dict(self, sample):
         return {
             "image": sample[0],
-            "text_input": self.text_processor(sample[1]["caption"]),
+            "answer": self.text_processor(sample[1]["caption"]),
         }
 
 
@@ -42,6 +42,6 @@ class CCSBUAlignDataset(CaptionDataset):
 
         return {
             "image": image,
-            "text_input": caption,
+            "answer": caption,
             "image_id": self.img_ids[ann["image_id"]],
         }

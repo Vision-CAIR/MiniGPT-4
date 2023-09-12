@@ -7,8 +7,16 @@ import torch.nn as nn
 
 from minigpt4.common.registry import registry
 from minigpt4.models.blip2 import Blip2Base, disabled_train
-from minigpt4.models.modeling_llama import LlamaForCausalLM
+from transformers.models.llama.modeling_llama import LlamaForCausalLM
 from transformers import LlamaTokenizer
+
+from peft import (
+    LoraConfig,
+    get_peft_model,
+    get_peft_model_state_dict,
+    prepare_model_for_int8_training,
+    set_peft_model_state_dict,
+)
 
 
 @registry.register_model("mini_gpt4")
@@ -18,7 +26,8 @@ class MiniGPT4(Blip2Base):
     """
 
     PRETRAINED_MODEL_CONFIG_DICT = {
-        "pretrain_vicuna": "configs/models/minigpt4.yaml",
+        "pretrain_vicuna0": "configs/models/minigpt4_vicuna0.yaml",
+        "pretrain_llama2": "configs/models/minigpt4_llama2.yaml",
     }
 
     def __init__(
@@ -30,6 +39,7 @@ class MiniGPT4(Blip2Base):
         use_grad_checkpoint=False,
         vit_precision="fp16",
         freeze_vit=True,
+        has_qformer=True,
         freeze_qformer=True,
         num_query_token=32,
         llama_model="",
@@ -39,6 +49,10 @@ class MiniGPT4(Blip2Base):
         end_sym='\n',
         low_resource=False,  # use 8 bit and put vit in cpu
         device_8bit=0,  # the device of 8bit model should be set when loading and cannot be changed anymore.
+        lora_r=0,
+        lora_target_modules=["q_proj", "v_proj"],
+        lora_alpha=16,
+        lora_dropout=0.05,
     ):
         super().__init__()
 
@@ -61,30 +75,37 @@ class MiniGPT4(Blip2Base):
             logging.info("freeze vision encoder")
         print('Loading VIT Done')
 
-        print('Loading Q-Former')
-        self.Qformer, self.query_tokens = self.init_Qformer(
-            num_query_token, self.visual_encoder.num_features
-        )
-        self.Qformer.cls = None
-        self.Qformer.bert.embeddings.word_embeddings = None
-        self.Qformer.bert.embeddings.position_embeddings = None
-        for layer in self.Qformer.bert.encoder.layer:
-            layer.output = None
-            layer.intermediate = None
-        self.load_from_pretrained(url_or_filename=q_former_model)
+        self.has_qformer = has_qformer
+        if self.has_qformer:
+            print('Loading Q-Former')
+            self.Qformer, self.query_tokens = self.init_Qformer(
+                num_query_token, self.visual_encoder.num_features
+            )
+            self.Qformer.cls = None
+            self.Qformer.bert.embeddings.word_embeddings = None
+            self.Qformer.bert.embeddings.position_embeddings = None
+            for layer in self.Qformer.bert.encoder.layer:
+                layer.output = None
+                layer.intermediate = None
+            self.load_from_pretrained(url_or_filename=q_former_model)
 
-        if freeze_qformer:
-            for name, param in self.Qformer.named_parameters():
-                param.requires_grad = False
-            self.Qformer = self.Qformer.eval()
-            self.Qformer.train = disabled_train
-            self.query_tokens.requires_grad = False
-            logging.info("freeze Qformer")
-        print('Loading Q-Former Done')
+            if freeze_qformer:
+                for name, param in self.Qformer.named_parameters():
+                    param.requires_grad = False
+                self.Qformer = self.Qformer.eval()
+                self.Qformer.train = disabled_train
+                self.query_tokens.requires_grad = False
+                logging.info("freeze Qformer")
+
+            img_f_dim = self.Qformer.config.hidden_size
+            print('Loading Q-Former Done')
+        else:
+            img_f_dim = self.visual_encoder.num_features * 4
+            print('Do not use Q-Former here.')
 
         print('Loading LLAMA')
         self.llama_tokenizer = LlamaTokenizer.from_pretrained(llama_model, use_fast=False)
-        self.llama_tokenizer.pad_token = self.llama_tokenizer.eos_token
+        self.llama_tokenizer.pad_token = "$$"
 
         if self.low_resource:
             self.llama_model = LlamaForCausalLM.from_pretrained(
@@ -99,12 +120,31 @@ class MiniGPT4(Blip2Base):
                 torch_dtype=torch.float16,
             )
 
-        for name, param in self.llama_model.named_parameters():
-            param.requires_grad = False
+        if lora_r > 0:
+            self.llama_model = prepare_model_for_int8_training(self.llama_model)
+            loraconfig = LoraConfig(
+                r=lora_r,
+                lora_alpha=lora_alpha,
+                target_modules=lora_target_modules,
+                lora_dropout=lora_dropout,
+                bias="none",
+                task_type="CAUSAL_LM"
+            )
+            self.llama_model = get_peft_model(self.llama_model, loraconfig)
+
+            # if ckpt_path:
+            #     print('load the llm under lora')
+            #     ckpt = torch.load(ckpt_path)
+            #     set_peft_model_state_dict(self.llama_model,ckpt)
+            self.llama_model.print_trainable_parameters()
+
+        else:
+            for name, param in self.llama_model.named_parameters():
+                param.requires_grad = False
         print('Loading LLAMA Done')
 
         self.llama_proj = nn.Linear(
-            self.Qformer.config.hidden_size, self.llama_model.config.hidden_size
+            img_f_dim, self.llama_model.config.hidden_size
         )
         self.max_txt_len = max_txt_len
         self.end_sym = end_sym
@@ -133,50 +173,109 @@ class MiniGPT4(Blip2Base):
 
         with self.maybe_autocast():
             image_embeds = self.ln_vision(self.visual_encoder(image)).to(device)
-            image_atts = torch.ones(image_embeds.size()[:-1], dtype=torch.long).to(device)
+            if self.has_qformer:
+                image_atts = torch.ones(image_embeds.size()[:-1], dtype=torch.long).to(device)
 
-            query_tokens = self.query_tokens.expand(image_embeds.shape[0], -1, -1)
-            query_output = self.Qformer.bert(
-                query_embeds=query_tokens,
-                encoder_hidden_states=image_embeds,
-                encoder_attention_mask=image_atts,
-                return_dict=True,
-            )
+                query_tokens = self.query_tokens.expand(image_embeds.shape[0], -1, -1)
+                query_output = self.Qformer.bert(
+                    query_embeds=query_tokens,
+                    encoder_hidden_states=image_embeds,
+                    encoder_attention_mask=image_atts,
+                    return_dict=True,
+                )
 
-            inputs_llama = self.llama_proj(query_output.last_hidden_state)
+                inputs_llama = self.llama_proj(query_output.last_hidden_state)
+            else:
+                image_embeds = image_embeds[:, 1:, :]
+                bs, pn, hs = image_embeds.shape
+                image_embeds = image_embeds.view(bs, int(pn / 4), int(hs * 4))
+
+                inputs_llama = self.llama_proj(image_embeds)
             atts_llama = torch.ones(inputs_llama.size()[:-1], dtype=torch.long).to(image.device)
         return inputs_llama, atts_llama
 
-    def prompt_wrap(self, img_embeds, atts_img, prompt):
-        if prompt:
-            batch_size = img_embeds.shape[0]
-            p_before, p_after = prompt.split('<ImageHere>')
-            p_before_tokens = self.llama_tokenizer(
-                p_before, return_tensors="pt", add_special_tokens=False).to(img_embeds.device)
-            p_after_tokens = self.llama_tokenizer(
-                p_after, return_tensors="pt", add_special_tokens=False).to(img_embeds.device)
-            p_before_embeds = self.llama_model.model.embed_tokens(p_before_tokens.input_ids).expand(batch_size, -1, -1)
-            p_after_embeds = self.llama_model.model.embed_tokens(p_after_tokens.input_ids).expand(batch_size, -1, -1)
-            wrapped_img_embeds = torch.cat([p_before_embeds, img_embeds, p_after_embeds], dim=1)
-            wrapped_atts_img = atts_img[:, :1].expand(-1, wrapped_img_embeds.shape[1])
-            return wrapped_img_embeds, wrapped_atts_img
+    def get_context_emb(self, prompt, img_list):
+        device = img_list[0].device
+        prompt_segs = prompt.split('<ImageHere>')
+        assert len(prompt_segs) == len(img_list) + 1, "Unmatched numbers of image placeholders and images."
+        seg_tokens = [
+            self.llama_tokenizer(
+                seg, return_tensors="pt", add_special_tokens=i == 0).to(device).input_ids
+            # only add bos to the first seg
+            for i, seg in enumerate(prompt_segs)
+        ]
+        seg_embs = [self.embed_tokens(seg_t) for seg_t in seg_tokens]
+
+        mixed_embs = [emb for pair in zip(seg_embs[:-1], img_list) for emb in pair] + [seg_embs[-1]]
+        mixed_embs = torch.cat(mixed_embs, dim=1)
+        return mixed_embs
+
+    def prompt_wrap(self, img_embeds, atts_img, prompts):
+        if prompts:
+            emb_lists = []
+            if isinstance(prompts, str):
+                prompts = [prompts] * len(img_embeds)
+
+            for each_img_embed, each_prompt in zip(img_embeds, prompts):
+                p_before, p_after = each_prompt.split('<ImageHere>')
+
+                p_before_tokens = self.llama_tokenizer(
+                    p_before, return_tensors="pt", add_special_tokens=False).to(img_embeds.device)
+                p_after_tokens = self.llama_tokenizer(
+                    p_after, return_tensors="pt", add_special_tokens=False).to(img_embeds.device)
+                p_before_embed = self.embed_tokens(p_before_tokens.input_ids)
+                p_after_embed = self.embed_tokens(p_after_tokens.input_ids)
+                wrapped_emb = torch.cat([p_before_embed, each_img_embed[None], p_after_embed], dim=1)
+                emb_lists.append(wrapped_emb)
+            emb_lens = [emb.shape[1] for emb in emb_lists]
+            pad_emb = self.embed_tokens(torch.tensor(self.llama_tokenizer.pad_token_id, device=img_embeds.device))
+            wrapped_embs = pad_emb.expand(len(emb_lens), max(emb_lens), -1).clone()
+            wrapped_atts = torch.zeros([len(emb_lens), max(emb_lens)], dtype=torch.int, device=img_embeds.device)
+            for i, emb in enumerate(emb_lists):
+                wrapped_embs[i, :emb_lens[i]] = emb
+                wrapped_atts[i, :emb_lens[i]] = 1
+            return wrapped_embs, wrapped_atts
         else:
             return img_embeds, atts_img
+
+    def concat_emb_input_output(self, input_embs, input_atts, output_embs, output_atts):
+        input_lens = []
+        cat_embs = []
+        cat_atts = []
+        for i in range(input_embs.size(0)):
+            input_len = input_atts[i].sum()
+            input_lens.append(input_len)
+            cat_embs.append(
+                torch.cat([
+                    input_embs[i][:input_len],
+                    output_embs[i],
+                    input_embs[i][input_len:]
+                ])
+            )
+            cat_atts.append(
+                torch.cat([
+                    input_atts[i][:input_len],
+                    output_atts[i],
+                    input_atts[i][input_len:]
+                ])
+            )
+        cat_embs = torch.stack(cat_embs)
+        cat_atts = torch.stack(cat_atts)
+        return cat_embs, cat_atts, input_lens
 
     def forward(self, samples):
         image = samples["image"]
         img_embeds, atts_img = self.encode_img(image)
-        if hasattr(samples, 'question_split'):  # VQA dataset
-            print('VQA Batch')
-            vqa_prompt = '###Human: <Img><ImageHere></Img> '
-            img_embeds, atts_img = self.prompt_wrap(img_embeds, atts_img, vqa_prompt)
-        elif self.prompt_list:
-            prompt = random.choice(self.prompt_list)
-            img_embeds, atts_img = self.prompt_wrap(img_embeds, atts_img, prompt)
+
+        if self.prompt_list:
+            instruction = random.choice(self.prompt_list)
+        else:
+            instruction = samples["instruction_input"] if "instruction_input" in samples else None
+
+        img_embeds, atts_img = self.prompt_wrap(img_embeds, atts_img, instruction)
 
         self.llama_tokenizer.padding_side = "right"
-
-        text = [t + self.end_sym for t in samples["text_input"]]
+        text = [t + self.end_sym for t in samples["answer"]]
 
         to_regress_tokens = self.llama_tokenizer(
             text,
@@ -187,26 +286,29 @@ class MiniGPT4(Blip2Base):
             add_special_tokens=False
         ).to(image.device)
 
-        targets = to_regress_tokens.input_ids.masked_fill(
-            to_regress_tokens.input_ids == self.llama_tokenizer.pad_token_id, -100
-        )
-
-        empty_targets = (
-            torch.ones([atts_img.shape[0], atts_img.shape[1]+1],
-                       dtype=torch.long).to(image.device).fill_(-100)  # plus one for bos
-        )
-        targets = torch.cat([empty_targets, targets], dim=1)
-
         batch_size = img_embeds.shape[0]
         bos = torch.ones([batch_size, 1],
                          dtype=to_regress_tokens.input_ids.dtype,
                          device=to_regress_tokens.input_ids.device) * self.llama_tokenizer.bos_token_id
-        bos_embeds = self.llama_model.model.embed_tokens(bos)
+        bos_embeds = self.embed_tokens(bos)
         atts_bos = atts_img[:, :1]
 
-        to_regress_embeds = self.llama_model.model.embed_tokens(to_regress_tokens.input_ids)
-        inputs_embeds = torch.cat([bos_embeds, img_embeds, to_regress_embeds], dim=1)
-        attention_mask = torch.cat([atts_bos, atts_img, to_regress_tokens.attention_mask], dim=1)
+        to_regress_embeds = self.embed_tokens(to_regress_tokens.input_ids)
+        inputs_embeds, attention_mask, input_lens = \
+            self.concat_emb_input_output(img_embeds, atts_img, to_regress_embeds, to_regress_tokens.attention_mask)
+        inputs_embeds = torch.cat([bos_embeds, inputs_embeds], dim=1)
+        attention_mask = torch.cat([atts_bos, attention_mask], dim=1)
+
+        part_targets = to_regress_tokens.input_ids.masked_fill(
+            to_regress_tokens.input_ids == self.llama_tokenizer.pad_token_id, -100
+        )
+        targets = (
+            torch.ones([inputs_embeds.shape[0], inputs_embeds.shape[1]],
+                       dtype=torch.long).to(image.device).fill_(-100)
+        )
+
+        for i, target in enumerate(part_targets):
+            targets[i, input_lens[i] + 1:input_lens[i] + len(target) + 1] = target  # plus 1 for bos
 
         with self.maybe_autocast():
             outputs = self.llama_model(
@@ -218,6 +320,13 @@ class MiniGPT4(Blip2Base):
         loss = outputs.loss
 
         return {"loss": loss}
+
+    def embed_tokens(self, token_ids):
+        if hasattr(self.llama_model.base_model, 'model'): ## lora wrapped model
+            embeds = self.llama_model.base_model.model.model.embed_tokens(token_ids)
+        else:
+            embeds = self.llama_model.base_model.embed_tokens(token_ids)
+        return embeds
 
     @classmethod
     def from_config(cls, cfg):
@@ -231,6 +340,7 @@ class MiniGPT4(Blip2Base):
         use_grad_checkpoint = cfg.get("use_grad_checkpoint", False)
         vit_precision = cfg.get("vit_precision", "fp16")
         freeze_vit = cfg.get("freeze_vit", True)
+        has_qformer = cfg.get("has_qformer", True)
         freeze_qformer = cfg.get("freeze_qformer", True)
         low_resource = cfg.get("low_resource", False)
         device_8bit = cfg.get("device_8bit", 0)
@@ -240,6 +350,9 @@ class MiniGPT4(Blip2Base):
         max_txt_len = cfg.get("max_txt_len", 32)
         end_sym = cfg.get("end_sym", '\n')
 
+        lora_r = cfg.get("lora_r", 0)
+        lora_alpha = cfg.get("lora_alpha", 32)
+
         model = cls(
             vit_model=vit_model,
             q_former_model=q_former_model,
@@ -248,6 +361,7 @@ class MiniGPT4(Blip2Base):
             use_grad_checkpoint=use_grad_checkpoint,
             vit_precision=vit_precision,
             freeze_vit=freeze_vit,
+            has_qformer=has_qformer,
             freeze_qformer=freeze_qformer,
             num_query_token=num_query_token,
             llama_model=llama_model,
@@ -257,6 +371,8 @@ class MiniGPT4(Blip2Base):
             end_sym=end_sym,
             low_resource=low_resource,
             device_8bit=device_8bit,
+            lora_r=lora_r,
+            lora_alpha=lora_alpha,
         )
 
         ckpt_path = cfg.get("ckpt", "")  # load weights of MiniGPT-4

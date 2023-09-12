@@ -1,10 +1,10 @@
 model:
   arch: mini_gpt4
-  model_type: pretrain_vicuna0
+  model_type: pretrain_llama2
   max_txt_len: 160
-  end_sym: "###"
+  end_sym: "</s>"
   low_resource: True
-  prompt_template: '###Human: {} ###Assistant: '
+  prompt_template: '[INST] {} [/INST] '
   ckpt: '/path/to/checkpoint/'
 
 
