@@ -101,8 +101,8 @@ python demo.py --cfg-path eval_configs/minigpt4_llama2_eval.yaml  --gpu-id 0
 To save GPU memory, LLMs loads as 8 bit by default, with a beam search width of 1. 
 This configuration requires about 23G GPU memory for 13B LLM and 11.5G GPU memory for 7B LLM. 
 For more powerful GPUs, you can run the model
-in 16 bit by setting low_resource to False in the config file 
-[minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml) and use a larger beam search width.
+in 16 bit by setting `low_resource` to `False` in the relevant config file 
+(line 6 of either [minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml#6) if using Vicuna or [minigpt4_llama2_eval.yaml](eval_configs/minigpt4_llama2_eval.yaml#6) if using Llama 2) and use a larger beam search width.
 
 Thanks [@WangRongsheng](https://github.com/WangRongsheng), you can also run our code on [Colab](https://colab.research.google.com/drive/1OK4kYsZphwt5DXchKkzMBjYF6jnkqh4R?usp=sharing)
 
