@@ -64,9 +64,9 @@ Download the corresponding LLM weights from the following huggingface space via 
  [Downlad](https://huggingface.co/Vision-CAIR/vicuna/tree/main) | [Download](https://huggingface.co/Vision-CAIR/vicuna-7b/tree/main) | [Download](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf/tree/main)
 
 
-Then, set the path to the vicuna weight in the model config file 
+Then, set the absolute path to the vicuna weight in the model config file 
 [here](minigpt4/configs/models/minigpt4_vicuna0.yaml#L18) at Line 18
-and/or the path to the llama2 weight in the model config file 
+and/or the absolute path to the llama2 weight in the model config file 
 [here](minigpt4/configs/models/minigpt4_llama2.yaml#L15) at Line 15.
 
 **3. Prepare the pretrained MiniGPT-4 checkpoint**
@@ -78,7 +78,7 @@ Download the pretrained checkpoints according to the Vicuna model you prepare.
  [Downlad](https://drive.google.com/file/d/1a4zLvaiDBr-36pasffmgpvH5P7CKmpze/view?usp=share_link) | [Download](https://drive.google.com/file/d/1RY9jV0dyqLX-o38LrumkKRh6Jtaop58R/view?usp=sharing)  | [Download](https://drive.google.com/file/d/11nAPjEok8eAGGEG1N2vXo3kBLCg0WgUk/view?usp=sharing) 
 
 
-Then, set the path to the pretrained checkpoint in the evaluation config file 
+Then, set the absolute path to the pretrained checkpoint in the evaluation config file 
 in [eval_configs/minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml#L10) at Line 8 for Vicuna version or [eval_configs/minigpt4_llama2_eval.yaml](eval_configs/minigpt4_llama2_eval.yaml#L10) for LLama2 version.   
 
 
@@ -118,7 +118,7 @@ our [first stage dataset preparation instruction](dataset/README_1_STAGE.md).
 After the first stage, the visual features are mapped and can be understood by the language
 model.
 To launch the first stage training, run the following command. In our experiments, we use 4 A100. 
-You can change the save path in the config file 
+You can change the relative save path in the config file 
 [train_configs/minigpt4_stage1_pretrain.yaml](train_configs/minigpt4_stage1_pretrain.yaml)
 
 ```bash
@@ -137,9 +137,9 @@ and convert it to a conversation format to further align MiniGPT-4.
 To download and prepare our second stage dataset, please check our 
 [second stage dataset preparation instruction](dataset/README_2_STAGE.md).
 To launch the second stage alignment, 
-first specify the path to the checkpoint file trained in stage 1 in 
+first specify the absolute path to the checkpoint file trained in stage 1 in 
 [train_configs/minigpt4_stage1_pretrain.yaml](train_configs/minigpt4_stage2_finetune.yaml).
-You can also specify the output path there. 
+You can also specify the relative output path there. 
 Then, run the following command. In our experiments, we use 1 A100.
 
 ```bash

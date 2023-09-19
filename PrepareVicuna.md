@@ -28,7 +28,7 @@ pip install git+https://github.com/lm-sys/FastChat.git@v0.1.10
 Then, run the following command to create the final working weight
 
 ```
-python -m fastchat.model.apply_delta --base /path/to/llama-13bOR7b-hf/  --target /path/to/save/working/vicuna/weight/  --delta /path/to/vicuna-13bOR7b-delta-v0/
+python -m fastchat.model.apply_delta --base /absolute/path/to/llama-13bOR7b-hf/  --target /absolute/path/to/save/working/vicuna/weight/  --delta /absolute/path/to/vicuna-13bOR7b-delta-v0/
 ```
 
 Now you are good to go!

@@ -21,7 +21,7 @@ laion_synthetic_filtered_large.json
 
 ### setup the dataset folder and move the annotation file to the data storage folder
 ```
-export MINIGPT4_DATASET=/YOUR/PATH/FOR/LARGE/DATASET/
+export MINIGPT4_DATASET=/YOUR/ABSOLUTE/PATH/FOR/LARGE/DATASET/
 mkdir ${MINIGPT4_DATASET}/cc_sbu
 mkdir ${MINIGPT4_DATASET}/laion
 mv ccs_synthetic_filtered_large.json ${MINIGPT4_DATASET}/cc_sbu
@@ -84,11 +84,11 @@ The final dataset structure
 
 ## Set up the dataset configuration files
 
-Then, set up the LAION dataset loading path in 
+Then, set up the absolute LAION dataset loading path in 
 [here](../minigpt4/configs/datasets/laion/defaults.yaml#L5) at Line 5 as 
 ${MINIGPT4_DATASET}/laion/laion_dataset/{00000..10488}.tar
 
-and the Conceptual Captoin and SBU datasets loading path in 
+and the absolute Conceptual Captoin and SBU datasets loading path in 
 [here](../minigpt4/configs/datasets/cc_sbu/defaults.yaml#L5) at Line 5 as 
 ${MINIGPT4_DATASET}/cc_sbu/cc_sbu_dataset/{00000..01255}.tar
 
