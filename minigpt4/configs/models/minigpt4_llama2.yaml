@@ -12,7 +12,7 @@ model:
   # generation configs
   prompt: ""
 
-  llama_model: "/path/to/llama2/weight"
+  llama_model: "/absolute/path/to/llama2/weight"
 
 preprocess:
     vis_processor:

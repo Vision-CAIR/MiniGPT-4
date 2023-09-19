@@ -6,7 +6,7 @@ model:
   end_sym: "###"
   prompt_path: "prompts/alignment.txt"
   prompt_template: '###Human: {} ###Assistant: '
-  ckpt: '/path/to/stage1/checkpoint/'
+  ckpt: '/absolute/path/to/stage1/checkpoint/'
 
 
 datasets:

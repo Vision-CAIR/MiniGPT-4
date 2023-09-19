@@ -6,7 +6,7 @@ model:
   end_sym: "</s>"
   prompt_path: "prompts/alignment.txt"
   prompt_template: '[INST] {} [/INST] '
-  ckpt: '/path/to/stage1/checkpoint/'
+  ckpt: '/absolute/path/to/stage1/checkpoint/'
 
 
 datasets:

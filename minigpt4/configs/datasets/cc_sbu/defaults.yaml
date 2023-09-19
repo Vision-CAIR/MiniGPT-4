@@ -2,4 +2,4 @@ datasets:
   cc_sbu:
     data_type: images
     build_info:
-      storage: /path/to/cc_sbu_dataset/{00000..01255}.tar
+      storage: /absolute/path/to/cc_sbu_dataset/{00000..01255}.tar

@@ -5,7 +5,7 @@ model:
   end_sym: "</s>"
   low_resource: True
   prompt_template: '[INST] {} [/INST] '
-  ckpt: '/path/to/checkpoint/'
+  ckpt: '/absolute/path/to/checkpoint/'
 
 
 datasets:

@@ -21,7 +21,7 @@ laion_synthetic_filtered_large.json
 
 ### setup the dataset folder and move the annotation file to the data storage folder
 ```
-export MINIGPT4_DATASET=/YOUR/PATH/FOR/LARGE/DATASET/
+export MINIGPT4_DATASET=/YOUR/ABSOLUTE/PATH/FOR/LARGE/DATASET/
 mkdir ${MINIGPT4_DATASET}/cc_sbu
 mkdir ${MINIGPT4_DATASET}/laion
 mv ccs_synthetic_filtered_large.json ${MINIGPT4_DATASET}/cc_sbu
