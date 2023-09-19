@@ -118,7 +118,7 @@ our [first stage dataset preparation instruction](dataset/README_1_STAGE.md).
 After the first stage, the visual features are mapped and can be understood by the language
 model.
 To launch the first stage training, run the following command. In our experiments, we use 4 A100. 
-You can change the save path in the config file 
+You can change the relative save path in the config file 
 [train_configs/minigpt4_stage1_pretrain.yaml](train_configs/minigpt4_stage1_pretrain.yaml)
 
 ```bash
@@ -139,7 +139,7 @@ To download and prepare our second stage dataset, please check our
 To launch the second stage alignment, 
 first specify the absolute path to the checkpoint file trained in stage 1 in 
 [train_configs/minigpt4_stage1_pretrain.yaml](train_configs/minigpt4_stage2_finetune.yaml).
-You can also specify the output path there. 
+You can also specify the relative output path there. 
 Then, run the following command. In our experiments, we use 1 A100.
 
 ```bash
