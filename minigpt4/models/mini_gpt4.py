@@ -118,6 +118,7 @@ class MiniGPT4(Blip2Base):
             self.llama_model = LlamaForCausalLM.from_pretrained(
                 llama_model,
                 torch_dtype=torch.float16,
+                low_cpu_mem_usage=True,
             )
 
         if lora_r > 0:
