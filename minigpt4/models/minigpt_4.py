@@ -6,19 +6,10 @@ from torch.cuda.amp import autocast as autocast
 import torch.nn as nn
 
 from minigpt4.common.registry import registry
-from minigpt4.models.base_model import BaseModel, disabled_train
+from minigpt4.models.base_model import disabled_train
 from minigpt4.models.minigpt_base import MiniGPTBase
 from minigpt4.models.Qformer import BertConfig, BertLMHeadModel
-from transformers.models.llama.modeling_llama import LlamaForCausalLM
-from transformers import LlamaTokenizer
 
-from peft import (
-    LoraConfig,
-    get_peft_model,
-    get_peft_model_state_dict,
-    prepare_model_for_int8_training,
-    set_peft_model_state_dict,
-)
 
 
 @registry.register_model("mini_gpt4")
