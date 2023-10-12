@@ -5,7 +5,8 @@ model:
   end_sym: "###"
   low_resource: True
   prompt_template: '###Human: {} ###Assistant: '
-  ckpt: '/path/to/checkpoint/'
+  ckpt: '/home/zhud/weights/minigpt4/prerained_minigpt4_7b.pth'
+  llama_model: "/home/zhud/weights/vicuna-7b"
 
 
 datasets:

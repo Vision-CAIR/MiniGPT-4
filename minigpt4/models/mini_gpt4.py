@@ -6,7 +6,7 @@ from torch.cuda.amp import autocast as autocast
 import torch.nn as nn
 
 from minigpt4.common.registry import registry
-from minigpt4.models.blip2 import Blip2Base, disabled_train
+from minigpt4.models.base_model import BaseModel, disabled_train
 from transformers.models.llama.modeling_llama import LlamaForCausalLM
 from transformers import LlamaTokenizer
 
@@ -20,9 +20,9 @@ from peft import (
 
 
 @registry.register_model("mini_gpt4")
-class MiniGPT4(Blip2Base):
+class MiniGPT4(BaseModel):
     """
-    BLIP2 GPT-LLAMA model.
+    MiniGPT-4 model
     """
 
     PRETRAINED_MODEL_CONFIG_DICT = {
