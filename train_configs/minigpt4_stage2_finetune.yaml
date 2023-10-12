@@ -1,5 +1,5 @@
 model:
-  arch: mini_gpt4
+  arch: minigpt4
   model_type: pretrain_vicuna0
 
   max_txt_len: 160

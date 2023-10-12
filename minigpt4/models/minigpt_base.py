@@ -25,10 +25,12 @@ class MiniGPTBase(BaseModel):
         freeze_vit=True,
         llama_model="",
         max_txt_len=32,
+        max_context_len=3800,
+        prompt_template="",
         end_sym='\n',
         low_resource=False,  # use 8 bit and put vit in cpu
         device_8bit=0,  # the device of 8bit model should be set when loading and cannot be changed anymore.
-        lora_r=0,  # lora_r  means lora is not used
+        lora_r=0,  # lora_r means lora is not used
         lora_target_modules=["q_proj", "v_proj"],
         lora_alpha=16,
         lora_dropout=0.05,
@@ -50,8 +52,10 @@ class MiniGPTBase(BaseModel):
         )
 
         self.max_txt_len = max_txt_len
+        self.max_context_len = max_context_len
         self.end_sym = end_sym
 
+        self.prompt_template = prompt_template
         self.prompt_list = []
 
     def vit_to_cpu(self):
@@ -128,7 +132,6 @@ class MiniGPTBase(BaseModel):
                 wrapped_embs[i, :length] = emb[:, :length]
                 wrapped_atts[i, :length] = 1
             return wrapped_embs, wrapped_atts
-
 
     def concat_emb_input_output(self, input_embs, input_atts, output_embs, output_atts):
         """
@@ -219,7 +222,7 @@ class MiniGPTBase(BaseModel):
             conv_q = [q.split(connect_sym)for q in conv_q]
             conv_a = [a.split(connect_sym) for a in conv_a]
 
-            conv_q = [["[INST] " + item + "[/INST]" for item in items] for items in conv_q]
+            conv_q = [[self.prompt_template.format(item) for item in items] for items in conv_q]
 
             cond_embeds, cond_atts = self.prompt_wrap(img_embeds, img_atts, [q[0] for q in conv_q])
             regress_token_ids, regress_atts, part_targets = self.tokenize_conversation(conv_q, conv_a)
@@ -233,7 +236,7 @@ class MiniGPTBase(BaseModel):
                 instruction = None
 
             if self.chat_template:
-                instruction = ["[INST] " + instruct + "[/INST]" for instruct in instruction]
+                instruction = [self.prompt_template.format(instruct) for instruct in instruction]
 
             if 'length' in samples:
                 # the input is a image train (like videos)

@@ -11,8 +11,7 @@ from minigpt4.models.minigpt_base import MiniGPTBase
 from minigpt4.models.Qformer import BertConfig, BertLMHeadModel
 
 
-
-@registry.register_model("mini_gpt4")
+@registry.register_model("minigpt4")
 class MiniGPT4(MiniGPTBase):
     """
     MiniGPT-4 model
