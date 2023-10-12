@@ -8,6 +8,7 @@ import torch.nn as nn
 from minigpt4.common.registry import registry
 from minigpt4.models.base_model import BaseModel, disabled_train
 from minigpt4.models.minigpt_base import MiniGPTBase
+from minigpt4.models.Qformer import BertConfig, BertLMHeadModel
 from transformers.models.llama.modeling_llama import LlamaForCausalLM
 from transformers import LlamaTokenizer
 
@@ -30,6 +31,99 @@ class MiniGPT4(MiniGPTBase):
         "pretrain_vicuna0": "configs/models/minigpt4_vicuna0.yaml",
         "pretrain_llama2": "configs/models/minigpt4_llama2.yaml",
     }
+
+    def __init__(
+            self,
+            vit_model="eva_clip_g",
+            q_former_model="https://storage.googleapis.com/sfr-vision-language-research/LAVIS/models/BLIP2/blip2_pretrained_flant5xxl.pth",
+            img_size=224,
+            drop_path_rate=0,
+            use_grad_checkpoint=False,
+            vit_precision="fp16",
+            freeze_vit=True,
+            has_qformer=True,
+            freeze_qformer=True,
+            num_query_token=32,
+            llama_model="",
+            prompt_path="",
+            prompt_template="",
+            max_txt_len=32,
+            end_sym='\n',
+            low_resource=False,  # use 8 bit and put vit in cpu
+            device_8bit=0,  # the device of 8bit model should be set when loading and cannot be changed anymore.
+    ):
+        super().__init__(
+            vit_model=vit_model,
+            img_size=img_size,
+            drop_path_rate=drop_path_rate,
+            use_grad_checkpoint=use_grad_checkpoint,
+            vit_precision=vit_precision,
+            freeze_vit=freeze_vit,
+            llama_model=llama_model,
+            max_txt_len=max_txt_len,
+            end_sym=end_sym,
+            low_resource=low_resource,
+            device_8bit=device_8bit,
+        )
+
+        self.has_qformer = has_qformer
+        if self.has_qformer:
+            print('Loading Q-Former')
+            self.Qformer, self.query_tokens = self.init_Qformer(
+                num_query_token, self.visual_encoder.num_features, freeze_qformer
+            )
+            self.load_from_pretrained(url_or_filename=q_former_model)  # load q-former weights here
+
+            img_f_dim = self.Qformer.config.hidden_size
+            print('Loading Q-Former Done')
+        else:
+            img_f_dim = self.visual_encoder.num_features * 4
+            print('Do not use Q-Former here.')
+
+        self.llama_proj = nn.Linear(
+            img_f_dim, self.llama_model.config.hidden_size
+        )
+
+        if prompt_path:
+            with open(prompt_path, 'r') as f:
+                raw_prompts = f.read().splitlines()
+            filted_prompts = [raw_prompt for raw_prompt in raw_prompts if "<ImageHere>" in raw_prompt]
+            self.prompt_list = [prompt_template.format(p) for p in filted_prompts]
+            print('Load {} training prompts'.format(len(self.prompt_list)))
+            print('Prompt Example \n{}'.format(random.choice(self.prompt_list)))
+        else:
+            self.prompt_list = []
+
+    @classmethod
+    def init_Qformer(cls, num_query_token, vision_width, freeze):
+        encoder_config = BertConfig.from_pretrained("bert-base-uncased")
+        encoder_config.encoder_width = vision_width
+        # insert cross-attention layer every other block
+        encoder_config.add_cross_attention = True
+        encoder_config.cross_attention_freq = 2
+        encoder_config.query_length = num_query_token
+        Qformer = BertLMHeadModel(config=encoder_config)
+        query_tokens = nn.Parameter(
+            torch.zeros(1, num_query_token, encoder_config.hidden_size)
+        )
+        query_tokens.data.normal_(mean=0.0, std=encoder_config.initializer_range)
+
+        Qformer.cls = None
+        Qformer.bert.embeddings.word_embeddings = None
+        Qformer.bert.embeddings.position_embeddings = None
+        for layer in Qformer.bert.encoder.layer:
+            layer.output = None
+            layer.intermediate = None
+
+        if freeze:
+            for name, param in Qformer.named_parameters():
+                param.requires_grad = False
+            Qformer = Qformer.eval()
+            Qformer.train = disabled_train
+            query_tokens.requires_grad = False
+            logging.info("freeze Qformer")
+
+        return Qformer, query_tokens
 
     def encode_img(self, image):
         device = image.device
@@ -82,9 +176,6 @@ class MiniGPT4(MiniGPTBase):
         max_txt_len = cfg.get("max_txt_len", 32)
         end_sym = cfg.get("end_sym", '\n')
 
-        lora_r = cfg.get("lora_r", 0)
-        lora_alpha = cfg.get("lora_alpha", 32)
-
         model = cls(
             vit_model=vit_model,
             q_former_model=q_former_model,
@@ -103,8 +194,6 @@ class MiniGPT4(MiniGPTBase):
             end_sym=end_sym,
             low_resource=low_resource,
             device_8bit=device_8bit,
-            lora_r=lora_r,
-            lora_alpha=lora_alpha,
         )
 
         ckpt_path = cfg.get("ckpt", "")  # load weights of MiniGPT-4
