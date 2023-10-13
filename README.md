@@ -15,6 +15,8 @@ We now provide a llama 2 version of MiniGPT-4
 
 ## Online Demo
 
+Click the image to chat with MiniGPT-v2 around your images
+[![demo](figs/minigpt2_demo.png)](https://minigpt-v2.github.io/)
 
 Click the image to chat with MiniGPT-4 around your images
 [![demo](figs/online_demo.png)](https://minigpt-4.github.io)
