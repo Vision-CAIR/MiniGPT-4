@@ -9,9 +9,9 @@
 
 
 ## News
-Breaking! We release the first major update with our MiniGPT-v2
+[Oct.13 2023] Breaking! We release the first major update with our MiniGPT-v2
 
-We now provide a llama 2 version of MiniGPT-4
+[Aug.28 2023] We now provide a llama 2 version of MiniGPT-4
 
 ## Online Demo
 
@@ -22,13 +22,13 @@ Click the image to chat with MiniGPT-4 around your images
 [![demo](figs/online_demo.png)](https://minigpt-4.github.io)
 
 
-## Examples
+## MiniGPT-v2 Examples
 
 ![MiniGPT-v2 demos](figs/demo.png)
 
 
 
-
+## MiniGPT-4 Examples
   |   |   |
 :-------------------------:|:-------------------------:
 ![find wild](figs/examples/wop_2.png) |  ![write story](figs/examples/ad_2.png)
@@ -36,17 +36,6 @@ Click the image to chat with MiniGPT-4 around your images
 
 More examples can be found in the [project page](https://minigpt-4.github.io).
 
-
-
-<!-- ## Introduction
-- MiniGPT-4 aligns a frozen visual encoder from BLIP-2 with a frozen LLM, Vicuna, using just one projection layer. 
-- We train MiniGPT-4 with two stages. The first traditional pretraining stage is trained using roughly 5 million aligned image-text pairs in 10 hours using 4 A100s. After the first stage, Vicuna is able to understand the image. But the generation ability of Vicuna is heavily impacted.
-- To address this issue and improve usability, we propose a novel way to create high-quality image-text pairs by the model itself and ChatGPT together. Based on this, we then create a small (3500 pairs in total) yet high-quality dataset.
-- The second finetuning stage is trained on this dataset in a conversation template to significantly improve its generation reliability and overall usability. To our surprise, this stage is computationally efficient and takes only around 7 minutes with a single A100.
-- MiniGPT-4 yields many emerging vision-language capabilities similar to those demonstrated in GPT-4.  -->
-
-
-<!-- ![overview](figs/overview.png) -->
 
 
 ## Getting Started
@@ -66,12 +55,12 @@ conda activate minigpt4
 
 **2. Prepare the pretrained LLM weights**
 
-Currently, we provide both Vicuna V0 and Llama 2 version of MiniGPT-4.
+**MiniGPT-v2** is based on Llama2 Chat 7B. For **MiniGPT-4**, we have both Vicuna V0 and Llama 2 version.
 Download the corresponding LLM weights from the following huggingface space via clone the repository using git-lfs.
 
-|                                          Vicuna V0 13B                                           |                                          Vicuna V0 7B                                          |                            Llama 2 Chat 7B                             | 
+|                            Llama 2 Chat 7B                             |                                           Vicuna V0 13B                                           |                                          Vicuna V0 7B                                          |
 :------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------:
- [Downlad](https://huggingface.co/Vision-CAIR/vicuna/tree/main) | [Download](https://huggingface.co/Vision-CAIR/vicuna-7b/tree/main) | [Download](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf/tree/main)
+[Download](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf/tree/main) | [Downlad](https://huggingface.co/Vision-CAIR/vicuna/tree/main) | [Download](https://huggingface.co/Vision-CAIR/vicuna-7b/tree/main) 
 
 
 Then, set the path to the vicuna weight in the model config file 
@@ -79,60 +68,60 @@ Then, set the path to the vicuna weight in the model config file
 and/or the path to the llama2 weight in the model config file 
 [here](minigpt4/configs/models/minigpt4_llama2.yaml#L15) at Line 15.
 
-**3. Prepare the pretrained MiniGPT-4 checkpoint**
+**3. Prepare the pretrained model checkpoints**
 
-Download the pretrained checkpoints according to the Vicuna model you prepare.
-<!-- 
-|      Checkpoint with Vicuna 13B     |        Checkpoint with Vicuna 7B      |    Checkpoint with LLaMA-2 Chat 7B      | MiniGPT-v2 with LLaMA-2 chat    | 
-:--------------------------------------------------:|:----------------------------------------------------------------:|
-:-----------------------------------------------------------------:|
-:------------------------------------------------------------------:
- [Download](https://drive.google.com/file/d/1a4zLvaiDBr-36pasffmgpvH5P7CKmpze/view?usp=share_link) | [Download](https://drive.google.com/file/d/1RY9jV0dyqLX-o38LrumkKRh6Jtaop58R/view?usp=sharing)  | [Download](https://drive.google.com/file/d/11nAPjEok8eAGGEG1N2vXo3kBLCg0WgUk/view?usp=sharing)  | [Download](https://drive.google.com/file/d/1aVbfW7nkCSYx99_vCRyP1sOlQiWVSnAl/view?usp=sharing) -->
+Download the pretrained checkpoints
 
-| Checkpoint with Vicuna 13B | Checkpoint with Vicuna 7B | Checkpoint with LLaMA-2 Chat 7B | MiniGPT-v2 with LLaMA-2 chat |
-|----------------------------|---------------------------|---------------------------------|------------------------------|
-| [Download](https://drive.google.com/file/d/1a4zLvaiDBr-36pasffmgpvH5P7CKmpze/view?usp=share_link) | [Download](https://drive.google.com/file/d/1RY9jV0dyqLX-o38LrumkKRh6Jtaop58R/view?usp=sharing) | [Download](https://drive.google.com/file/d/11nAPjEok8eAGGEG1N2vXo3kBLCg0WgUk/view?usp=sharing) | [Download](https://drive.google.com/file/d/1aVbfW7nkCSYx99_vCRyP1sOlQiWVSnAl/view?usp=sharing) |
+
+| MiniGPT-v2 (LLaMA-2 Chat 7B) |
+|------------------------------|
+| [Download](https://drive.google.com/file/d/1aVbfW7nkCSYx99_vCRyP1sOlQiWVSnAl/view?usp=sharing) |
+
+For **MiniGPT-v2**, set the path to the pretrained checkpoint in the evaluation config file 
+in [eval_configs/minigptv2_eval.yaml](eval_configs/minigptv2_eval.yaml#L10) at Line 8.
 
 
 
-Then, set the path to the pretrained checkpoint in the evaluation config file 
+| MiniGPT-4 (Vicuna 13B) | MiniGPT-4 (Vicuna 7B) | MiniGPT-4 (LLaMA-2 Chat 7B) |
+|----------------------------|---------------------------|---------------------------------|
+| [Download](https://drive.google.com/file/d/1a4zLvaiDBr-36pasffmgpvH5P7CKmpze/view?usp=share_link) | [Download](https://drive.google.com/file/d/1RY9jV0dyqLX-o38LrumkKRh6Jtaop58R/view?usp=sharing) | [Download](https://drive.google.com/file/d/11nAPjEok8eAGGEG1N2vXo3kBLCg0WgUk/view?usp=sharing) |
+
+For **MiniGPT-4**, set the path to the pretrained checkpoint in the evaluation config file 
 in [eval_configs/minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml#L10) at Line 8 for Vicuna version or [eval_configs/minigpt4_llama2_eval.yaml](eval_configs/minigpt4_llama2_eval.yaml#L10) for LLama2 version.   
 
 
 
 ### Launching Demo Locally
 
-Try out our demo [demo.py](demo.py) for the vicuna version on your local machine by running
+For MiniGPT-v2, run
+```
+python demo_v2.py --cfg-path eval_configs/minigpt4v2_eval.yaml  --gpu-id 0
+```
+
+For MiniGPT-4 (Vicuna version), run
 
 ```
 python demo.py --cfg-path eval_configs/minigpt4_eval.yaml  --gpu-id 0
 ```
 
-or for Llama 2 version by 
+For MiniGPT-4 (Llama2 version), run
 
 ```
 python demo.py --cfg-path eval_configs/minigpt4_llama2_eval.yaml  --gpu-id 0
 ```
-
-or for MiniGPT-v2 version by
-
-```
-python demo_v2.py --cfg-path eval_configs/minigpt4v2_eval.yaml  --gpu-id 0
-```
-
-
 
 
 To save GPU memory, LLMs loads as 8 bit by default, with a beam search width of 1. 
 This configuration requires about 23G GPU memory for 13B LLM and 11.5G GPU memory for 7B LLM. 
 For more powerful GPUs, you can run the model
 in 16 bit by setting `low_resource` to `False` in the relevant config file 
-(line 6 of either [minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml#6) if using Vicuna or [minigpt4_llama2_eval.yaml](eval_configs/minigpt4_llama2_eval.yaml#6) if using Llama 2) and use a larger beam search width.
+(**MiniGPT-v2**: [minigptv2_eval.yaml](eval_configs/minigptv2_eval.yaml#6); **MiniGPT-4 (Llama2)**: [minigpt4_llama2_eval.yaml](eval_configs/minigpt4_llama2_eval.yaml#6); **MiniGPT-4 (Vicuna)**: [minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml#6))
 
-Thanks [@WangRongsheng](https://github.com/WangRongsheng), you can also run our code on [Colab](https://colab.research.google.com/drive/1OK4kYsZphwt5DXchKkzMBjYF6jnkqh4R?usp=sharing)
+Thanks [@WangRongsheng](https://github.com/WangRongsheng), you can also run MiniGPT-4 on [Colab](https://colab.research.google.com/drive/1OK4kYsZphwt5DXchKkzMBjYF6jnkqh4R?usp=sharing)
 
 
 ### Training
+For training details of MiniGPT-4, check [here]().
 The training of MiniGPT-4 contains two alignment stages.
 
 **1. First pretraining stage**
@@ -189,7 +178,7 @@ If you're using MiniGPT-4 in your research or applications, please cite using th
 
 @article{Chen2023minigpt,
   title={MiniGPT-v2: Large Language Model as a Unified Interface for Vision-Language Multi-task Learning},
-  author={Chen, jun and Deyao, Zhu and Shen, Xiaoqian and Li, Xiang, Liu Zechu, Zhang Pengchuan, Krishnamoorthi Raghuraman,  Chandra Vikas, Xiong Yunyang and Elhoseiny, Mohamed},
+  author={Chen, Jun and Zhu, Deyao and Shen, Xiaoqian and Li, Xiang and Liu, Zechu and Zhang, Pengchuan and Krishnamoorthi, Raghuraman and Chandra, Vikas and Xiong, Yunyang and Elhoseiny, Mohamed},
   journal={github},
   year={2023}
 }
