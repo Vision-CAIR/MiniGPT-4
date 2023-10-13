@@ -83,15 +83,21 @@ and/or the path to the llama2 weight in the model config file
 
 Download the pretrained checkpoints according to the Vicuna model you prepare.
 
-|                                Checkpoint Aligned with Vicuna 13B                                |                                Checkpoint Aligned with Vicuna 7B                                |                            Checkpoint Aligned with Llama 2 Chat 7B                             |
+|                                Checkpoint Aligned with Vicuna 13B                                |                                Checkpoint Aligned with Vicuna 7B                                |                            Checkpoint Aligned with Llama 2 Chat 7B                             | 
 :------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------:
- [Downlad](https://drive.google.com/file/d/1a4zLvaiDBr-36pasffmgpvH5P7CKmpze/view?usp=share_link) | [Download](https://drive.google.com/file/d/1RY9jV0dyqLX-o38LrumkKRh6Jtaop58R/view?usp=sharing)  | [Download](https://drive.google.com/file/d/11nAPjEok8eAGGEG1N2vXo3kBLCg0WgUk/view?usp=sharing) 
+ [Download](https://drive.google.com/file/d/1a4zLvaiDBr-36pasffmgpvH5P7CKmpze/view?usp=share_link) | [Download](https://drive.google.com/file/d/1RY9jV0dyqLX-o38LrumkKRh6Jtaop58R/view?usp=sharing)  | [Download](https://drive.google.com/file/d/11nAPjEok8eAGGEG1N2vXo3kBLCg0WgUk/view?usp=sharing) 
+
 
 
 Then, set the path to the pretrained checkpoint in the evaluation config file 
 in [eval_configs/minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml#L10) at Line 8 for Vicuna version or [eval_configs/minigpt4_llama2_eval.yaml](eval_configs/minigpt4_llama2_eval.yaml#L10) for LLama2 version.   
 
 
+
+MiniGPT-v2 checkpoints
+
+MiniGPT-v2 Checkpoint  (online demo version)    | 
+[Download](https://drive.google.com/file/d/1aVbfW7nkCSYx99_vCRyP1sOlQiWVSnAl/view?usp=sharing)
 
 ### Launching Demo Locally
 
