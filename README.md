@@ -174,10 +174,19 @@ After the second stage alignment, MiniGPT-4 is able to talk about the image cohe
 + [BLIP2](https://huggingface.co/docs/transformers/main/model_doc/blip-2) The model architecture of MiniGPT-4 follows BLIP-2. Don't forget to check this great open-source work if you don't know it before!
 + [Lavis](https://github.com/salesforce/LAVIS) This repository is built upon Lavis!
 + [Vicuna](https://github.com/lm-sys/FastChat) The fantastic language ability of Vicuna with only 13B parameters is just amazing. And it is open-source!
++ [LLaMA](https://github.com/facebookresearch/llama) The strong open-sourced LLaMA 2 language model.
 
 
 If you're using MiniGPT-4 in your research or applications, please cite using this BibTeX:
 ```bibtex
+
+@article{Chen2023minigpt,
+  title={MiniGPT-v2: Large Language Model as a Unified Interface for Vision-Language Multi-task Learning},
+  author={Chen, jun and Deyao, Zhu and Shen, Xiaoqian and Li, Xiang, Liu Zechu, Zhang Pengchuan, Krishnamoorthi Raghuraman,  Chandra Vikas, Xiong Yunyang and Elhoseiny, Mohamed},
+  journal={github},
+  year={2023}
+}
+
 @article{zhu2023minigpt,
   title={MiniGPT-4: Enhancing Vision-Language Understanding with Advanced Large Language Models},
   author={Zhu, Deyao and Chen, Jun and Shen, Xiaoqian and Li, Xiang and Elhoseiny, Mohamed},
