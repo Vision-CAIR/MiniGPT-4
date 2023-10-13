@@ -23,6 +23,11 @@ Click the image to chat with MiniGPT-4 around your images
 
 
 ## Examples
+  |   | 
+:-------------------------:|
+![MiniGPT-v2 demos](figs/demo.png)|
+
+
   |   |   |
 :-------------------------:|:-------------------------:
 ![find wild](figs/examples/wop_2.png) |  ![write story](figs/examples/ad_2.png)
