@@ -1,10 +1,11 @@
 import argparse
 import time
+from threading import Thread
 from PIL import Image
 
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaTokenizer
-from transformers import StoppingCriteria, StoppingCriteriaList
+from transformers import StoppingCriteria, StoppingCriteriaList, TextIteratorStreamer
 
 import dataclasses
 from enum import auto, Enum
@@ -129,13 +130,16 @@ CONV_VISION_LLama2 = Conversation(
 
 
 class Chat:
-    def __init__(self, model, vis_processor, device='cuda:0'):
+    def __init__(self, model, vis_processor, device='cuda:0', stopping_criteria=None):
         self.device = device
         self.model = model
         self.vis_processor = vis_processor
-        stop_words_ids = [torch.tensor([835]).to(self.device),
-                          torch.tensor([2277, 29937]).to(self.device)]  # '###' can be encoded in two different ways.
-        self.stopping_criteria = StoppingCriteriaList([StoppingCriteriaSub(stops=stop_words_ids)])
+
+        if stopping_criteria is not None:
+            self.stopping_criteria = stopping_criteria
+        else:
+            stop_words_ids = [torch.tensor([2]).to(self.device)]
+            self.stopping_criteria = StoppingCriteriaList([StoppingCriteriaSub(stops=stop_words_ids)])
 
     def ask(self, text, conv):
         if len(conv.messages) > 0 and conv.messages[-1][0] == conv.roles[0] \
@@ -144,8 +148,8 @@ class Chat:
         else:
             conv.append_message(conv.roles[0], text)
 
-    def answer(self, conv, img_list, max_new_tokens=300, num_beams=1, min_length=1, top_p=0.9,
-               repetition_penalty=1.0, length_penalty=1, temperature=1.0, max_length=2000):
+    def answer_prepare(self, conv, img_list, max_new_tokens=300, num_beams=1, min_length=1, top_p=0.9,
+                       repetition_penalty=1.05, length_penalty=1, temperature=1.0, max_length=2000):
         conv.append_message(conv.roles[1], None)
         embs = self.get_context_emb(conv, img_list)
 
@@ -154,10 +158,9 @@ class Chat:
             print('Warning: The number of tokens in current conversation exceeds the max length. '
                   'The model will not see the contexts outside the range.')
         begin_idx = max(0, current_max_len - max_length)
-
         embs = embs[:, begin_idx:]
 
-        outputs = self.model.llama_model.generate(
+        generation_kwargs = dict(
             inputs_embeds=embs,
             max_new_tokens=max_new_tokens,
             stopping_criteria=self.stopping_criteria,
@@ -169,18 +172,31 @@ class Chat:
             length_penalty=length_penalty,
             temperature=temperature,
         )
-        output_token = outputs[0]
-        if output_token[0] == 0:  # the model might output a unknow token <unk> at the beginning. remove it
-            output_token = output_token[1:]
-        if output_token[0] == 1:  # some users find that there is a start token <s> at the beginning. remove it
-            output_token = output_token[1:]
-        output_text = self.model.llama_tokenizer.decode(output_token, add_special_tokens=False)
+        return generation_kwargs
+
+    def answer(self, conv, img_list, **kargs):
+        generation_dict = self.answer_prepare(conv, img_list, **kargs)
+
+        output_token = self.model.llama_model.generate(**generation_dict)[0]
+        output_text = self.model.llama_tokenizer.decode(output_token, skip_special_tokens=True)
+
         output_text = output_text.split('###')[0]  # remove the stop sign '###'
         output_text = output_text.split('Assistant:')[-1].strip()
+
         conv.messages[-1][1] = output_text
         return output_text, output_token.cpu().numpy()
 
-    def upload_img(self, image, conv, img_list):
+    def stream_answer(self, conv, img_list, **kargs):
+        generation_kwargs = self.answer_prepare(conv, img_list, **kargs)
+        streamer = TextIteratorStreamer(self.model.llama_tokenizer, skip_special_tokens=True)
+        generation_kwargs['streamer'] = streamer
+        thread = Thread(target=self.model.llama_model.generate, kwargs=generation_kwargs)
+        thread.start()
+        return streamer
+
+    def encode_img(self, img_list):
+        image = img_list[0]
+        img_list.pop(0)
         if isinstance(image, str):  # is a image path
             raw_image = Image.open(image).convert('RGB')
             image = self.vis_processor(raw_image).unsqueeze(0).to(self.device)
@@ -194,9 +210,12 @@ class Chat:
 
         image_emb, _ = self.model.encode_img(image)
         img_list.append(image_emb)
+
+    def upload_img(self, image, conv, img_list):
         conv.append_message(conv.roles[0], "<Img><ImageHere></Img>")
+        img_list.append(image)
         msg = "Received."
-        # self.conv.append_message(self.conv.roles[1], msg)
+
         return msg
 
     def get_context_emb(self, conv, img_list):
@@ -209,7 +228,9 @@ class Chat:
             # only add bos to the first seg
             for i, seg in enumerate(prompt_segs)
         ]
-        seg_embs = [self.model.llama_model.model.embed_tokens(seg_t) for seg_t in seg_tokens]
+        print('debug device: ', self.device)
+        print('debug model device: ', self.model.device)
+        seg_embs = [self.model.embed_tokens(seg_t) for seg_t in seg_tokens]
         mixed_embs = [emb for pair in zip(seg_embs[:-1], img_list) for emb in pair] + [seg_embs[-1]]
         mixed_embs = torch.cat(mixed_embs, dim=1)
         return mixed_embs

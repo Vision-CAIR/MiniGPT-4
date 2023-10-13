@@ -7,10 +7,12 @@ import torch
 import torch.backends.cudnn as cudnn
 import gradio as gr
 
+from transformers import StoppingCriteriaList
+
 from minigpt4.common.config import Config
 from minigpt4.common.dist_utils import get_rank
 from minigpt4.common.registry import registry
-from minigpt4.conversation.conversation import Chat, CONV_VISION_Vicuna0, CONV_VISION_LLama2
+from minigpt4.conversation.conversation import Chat, CONV_VISION_Vicuna0, CONV_VISION_LLama2, StoppingCriteriaSub
 
 # imports modules for registration
 from minigpt4.datasets.builders import *
@@ -66,7 +68,12 @@ CONV_VISION = conv_dict[model_config.model_type]
 
 vis_processor_cfg = cfg.datasets_cfg.cc_sbu_align.vis_processor.train
 vis_processor = registry.get_processor_class(vis_processor_cfg.name).from_config(vis_processor_cfg)
-chat = Chat(model, vis_processor, device='cuda:{}'.format(args.gpu_id))
+
+stop_words_ids = [[835], [2277, 29937]]
+stop_words_ids = [torch.tensor(ids).to(device='cuda:{}'.format(args.gpu_id)) for ids in stop_words_ids]
+stopping_criteria = StoppingCriteriaList([StoppingCriteriaSub(stops=stop_words_ids)])
+
+chat = Chat(model, vis_processor, device='cuda:{}'.format(args.gpu_id), stopping_criteria=stopping_criteria)
 print('Initialization Finished')
 
 
@@ -89,6 +96,7 @@ def upload_img(gr_img, text_input, chat_state):
     chat_state = CONV_VISION.copy()
     img_list = []
     llm_message = chat.upload_img(gr_img, chat_state, img_list)
+    chat.encode_img(img_list)
     return gr.update(interactive=False), gr.update(interactive=True, placeholder='Type and press Enter'), gr.update(value="Start Chatting", interactive=False), chat_state, img_list
 
 
@@ -124,7 +132,7 @@ with gr.Blocks() as demo:
     gr.Markdown(article)
 
     with gr.Row():
-        with gr.Column(scale=0.5):
+        with gr.Column(scale=1):
             image = gr.Image(type="pil")
             upload_button = gr.Button(value="Upload & Start Chat", interactive=True, variant="primary")
             clear = gr.Button("Restart")
@@ -147,7 +155,7 @@ with gr.Blocks() as demo:
                 label="Temperature",
             )
 
-        with gr.Column():
+        with gr.Column(scale=2):
             chat_state = gr.State()
             img_list = gr.State()
             chatbot = gr.Chatbot(label='MiniGPT-4')

@@ -1,37 +1,23 @@
 import argparse
 import os
 import random
-import requests
-from io import BytesIO
-from threading import Thread
 from collections import defaultdict
 
 import cv2
-from termcolor import colored
-from textwrap import wrap
-from torchvision.transforms import functional as F
 import re
 
 import numpy as np
 from PIL import Image
 import torch
-import torch.backends.cudnn as cudnn
 import html
 import gradio as gr
-from transformers import TextIteratorStreamer
 
+import torch.backends.cudnn as cudnn
 
-import minigpt4.tasks as tasks
 from minigpt4.common.config import Config
-from minigpt4.common.dist_utils import get_rank, init_distributed_mode
-from minigpt4.common.logger import setup_logger
-from minigpt4.common.optims import (
-    LinearWarmupCosineLRScheduler,
-    LinearWarmupStepLRScheduler,
-)
+
 from minigpt4.common.registry import registry
-from minigpt4.common.utils import now
-from minigpt4.conversation.conversation import Conversation, SeparatorStyle, StoppingCriteriaList, StoppingCriteriaSub
+from minigpt4.conversation.conversation import Conversation, SeparatorStyle, Chat
 
 # imports modules for registration
 from minigpt4.datasets.builders import *
@@ -40,17 +26,22 @@ from minigpt4.processors import *
 from minigpt4.runners import *
 from minigpt4.tasks import *
 
-parser = argparse.ArgumentParser(description="Demo")
-parser.add_argument("--cfg-path", required=True, help="path to configuration file.")
-parser.add_argument(
-    "--options",
-    nargs="+",
-    help="override some settings in the used config, the key-value pair "
-         "in xxx=yyy format will be merged into config file (deprecate), "
-         "change to --cfg-options instead.",
-)
 
-import torch.backends.cudnn as cudnn
+def parse_args():
+    parser = argparse.ArgumentParser(description="Demo")
+    parser.add_argument("--cfg-path", default='eval_configs/minigptv2_eval.yaml',
+                        help="path to configuration file.")
+    parser.add_argument("--gpu-id", type=int, default=0, help="specify the gpu to load the model.")
+    parser.add_argument(
+        "--options",
+        nargs="+",
+        help="override some settings in the used config, the key-value pair "
+             "in xxx=yyy format will be merged into config file (deprecate), "
+             "change to --cfg-options instead.",
+    )
+    args = parser.parse_args()
+    return args
+
 
 random.seed(42)
 np.random.seed(42)
@@ -60,19 +51,18 @@ cudnn.benchmark = False
 cudnn.deterministic = True
 
 print('Initializing Chat')
-cfg = Config(parser.parse_args(['--cfg-path', 'eval_configs/minigpt4_object_detection_448x448_llama2.yaml']))
-cfg.model_cfg.ckpt = "/home/zhud/c2090/minigpt4_ckpt/448_conversation_correct_best_v7_ablation1_v5_v6/20231007035/checkpoint_35.pth"
-cfg.model_cfg.lora_r = 64
-cfg.model_cfg.lora_alpha = 16
+args = parse_args()
+cfg = Config(args)
 
-device = 'cuda'
+device = 'cuda:{}'.format(args.gpu_id)
 
 model_config = cfg.model_cfg
+model_config.device_8bit = args.gpu_id
 model_cls = registry.get_model_class(model_config.arch)
 model = model_cls.from_config(model_config).to(device)
 bounding_box_size = 100
 
-vis_processor_cfg = cfg.datasets_cfg.coco.vis_processor.train
+vis_processor_cfg = cfg.datasets_cfg.cc_sbu_align.vis_processor.train
 vis_processor = registry.get_processor_class(vis_processor_cfg.name).from_config(vis_processor_cfg)
 
 model = model.eval()
@@ -484,6 +474,7 @@ def gradio_answer(chatbot, chat_state, img_list, temperature):
 
 
 def gradio_stream_answer(chatbot, chat_state, img_list, temperature):
+    print('chat state', chat_state)
     if not isinstance(img_list[0], torch.Tensor):
         chat.encode_img(img_list)
     streamer = chat.stream_answer(conv=chat_state,
@@ -498,7 +489,7 @@ def gradio_stream_answer(chatbot, chat_state, img_list, temperature):
         chatbot[-1][1] = output
         yield chatbot, chat_state
     #     print('message: ', chat_state.messages)
-    chat_state.messages[-1][1] = reverse_escape(output) + '</s>'
+    chat_state.messages[-1][1] = '</s>'
     return chatbot, chat_state
 
 
@@ -537,102 +528,6 @@ def gradio_taskselect(idx):
     ]
     return prompt_list[idx], instruct_list[idx]
 
-
-class Chat:
-    def __init__(self, model, vis_processor, device='cuda:0'):
-        self.device = device
-        self.model = model
-        self.vis_processor = vis_processor
-        stop_words_ids = [torch.tensor([2]).to(self.device)]
-        self.stopping_criteria = StoppingCriteriaList([StoppingCriteriaSub(stops=stop_words_ids)])
-
-    def ask(self, text, conv):
-        if len(conv.messages) > 0 and conv.messages[-1][0] == conv.roles[0] \
-                and conv.messages[-1][1][-6:] == '</Img>':  # last message is image.
-            conv.messages[-1][1] = ' '.join([conv.messages[-1][1], text])
-        else:
-            conv.append_message(conv.roles[0], text)
-
-    def answer_prepare(self, conv, img_list, max_new_tokens=300, num_beams=1, min_length=1, top_p=0.9,
-                       repetition_penalty=1.05, length_penalty=1, temperature=1.0, max_length=2000):
-        conv.append_message(conv.roles[1], None)
-        embs = self.get_context_emb(conv, img_list)
-
-        current_max_len = embs.shape[1] + max_new_tokens
-        if current_max_len - max_length > 0:
-            print('Warning: The number of tokens in current conversation exceeds the max length. '
-                  'The model will not see the contexts outside the range.')
-        begin_idx = max(0, current_max_len - max_length)
-        embs = embs[:, begin_idx:]
-
-        generation_kwargs = dict(
-            inputs_embeds=embs,
-            max_new_tokens=max_new_tokens,
-            stopping_criteria=self.stopping_criteria,
-            num_beams=num_beams,
-            do_sample=True,
-            min_length=min_length,
-            top_p=top_p,
-            repetition_penalty=repetition_penalty,
-            length_penalty=length_penalty,
-            temperature=temperature,
-        )
-        return generation_kwargs
-
-    def answer(self, conv, img_list, **kargs):
-        generation_kwargs = self.answer_prepare(conv, img_list, **kargs)
-
-        output_token = self.model.llama_model.generate(**generation_dict)[0]
-        output_text = self.model.llama_tokenizer.decode(output_token, skip_special_tokens=True)
-        conv.messages[-1][1] = output_text
-        return output_text, output_token.cpu().numpy()
-
-    def stream_answer(self, conv, img_list, **kargs):
-        generation_kwargs = self.answer_prepare(conv, img_list, **kargs)
-        streamer = TextIteratorStreamer(self.model.llama_tokenizer, skip_special_tokens=True)
-        generation_kwargs['streamer'] = streamer
-        thread = Thread(target=self.model.llama_model.generate, kwargs=generation_kwargs)
-        thread.start()
-        return streamer
-
-    def encode_img(self, img_list):
-        image = img_list[0]
-        img_list.pop(0)
-        if isinstance(image, str):  # is a image path
-            raw_image = Image.open(image).convert('RGB')
-            image = self.vis_processor(raw_image).unsqueeze(0).to(self.device)
-        elif isinstance(image, Image.Image):
-            raw_image = image
-            image = self.vis_processor(raw_image).unsqueeze(0).to(self.device)
-        elif isinstance(image, torch.Tensor):
-            if len(image.shape) == 3:
-                image = image.unsqueeze(0)
-            image = image.to(self.device)
-
-        image_emb, _ = self.model.encode_img(image)
-        img_list.append(image_emb)
-
-    def upload_img(self, image, conv, img_list):
-        conv.append_message(conv.roles[0], "<Img><ImageHere></Img>")
-        img_list.append(image)
-        msg = "Received."
-
-        return msg
-
-    def get_context_emb(self, conv, img_list):
-        prompt = conv.get_prompt()
-        prompt_segs = prompt.split('<ImageHere>')
-        assert len(prompt_segs) == len(img_list) + 1, "Unmatched numbers of image placeholders and images."
-        seg_tokens = [
-            self.model.llama_tokenizer(
-                seg, return_tensors="pt", add_special_tokens=i == 0).to(self.device).input_ids
-            # only add bos to the first seg
-            for i, seg in enumerate(prompt_segs)
-        ]
-        seg_embs = [self.model.embed_tokens(seg_t) for seg_t in seg_tokens]
-        mixed_embs = [emb for pair in zip(seg_embs[:-1], img_list) for emb in pair] + [seg_embs[-1]]
-        mixed_embs = torch.cat(mixed_embs, dim=1)
-        return mixed_embs
 
 
 

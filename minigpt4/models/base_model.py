@@ -169,7 +169,7 @@ class BaseModel(nn.Module):
         return visual_encoder, ln_vision
 
     def init_llm(cls, llama_model_path, low_resource=False, low_res_device=0, lora_r=0,
-                 **lora_kargs):
+                 lora_target_modules=["q_proj","v_proj"], **lora_kargs):
         logging.info('Loading LLAMA')
         llama_tokenizer = LlamaTokenizer.from_pretrained(llama_model_path, use_fast=False)
         llama_tokenizer.pad_token = "$$"
@@ -193,6 +193,7 @@ class BaseModel(nn.Module):
                 r=lora_r,
                 bias="none",
                 task_type="CAUSAL_LM",
+                target_modules=lora_target_modules,
                 **lora_kargs
             )
             llama_model = get_peft_model(llama_model, loraconfig)
