@@ -534,9 +534,9 @@ def gradio_taskselect(idx):
 
 chat = Chat(model, vis_processor, device=device)
 
-title = '**MiniGPT-v2 Demo**'
+title = """<h1 align="center">MiniGPT-v2 Demo</h1>"""
 description = 'Welcome to Our MiniGPT-v2 Chatbot Demo!'
-article = 'demo'
+article = """<p><a href='https://minigpt-v2.github.io'><img src='https://img.shields.io/badge/Project-Page-Green'></a></p><p><a href='https://github.com/Vision-CAIR/MiniGPT-4/blob/main/MiniGPTv2.pdf'><img src='https://img.shields.io/badge/Paper-PDF-red'></a></p><p><a href='https://github.com/Vision-CAIR/MiniGPT-4'><img src='https://img.shields.io/badge/GitHub-Repo-blue'></a></p><p><a href='https://www.youtube.com/watch?v=atFCwV2hSY4'><img src='https://img.shields.io/badge/YouTube-Video-red'></a></p>"""
 
 introduction = '''
 For Abilities Involving Visual Grounding:
@@ -554,7 +554,7 @@ text_input = gr.Textbox(placeholder='Upload your image and chat', interactive=Tr
                         scale=8)
 with gr.Blocks() as demo:
     gr.Markdown(title)
-    gr.Markdown(description)
+    # gr.Markdown(description)
     gr.Markdown(article)
 
     with gr.Row():
