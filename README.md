@@ -107,6 +107,14 @@ or for Llama 2 version by
 python demo.py --cfg-path eval_configs/minigpt4_llama2_eval.yaml  --gpu-id 0
 ```
 
+or for MiniGPT-v2 version by
+
+```
+python demo_v2.py --cfg-path eval_configs/minigpt4v2_eval.yaml  --gpu-id 0
+```
+
+
+
 
 To save GPU memory, LLMs loads as 8 bit by default, with a beam search width of 1. 
 This configuration requires about 23G GPU memory for 13B LLM and 11.5G GPU memory for 7B LLM. 
