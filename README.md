@@ -1,6 +1,6 @@
 # MiniGPT-V
 
-**MiniGPT-v2: Large Language Model as a Unified Interface for Vision-Language Multi-task Learning**
+**MiniGPT-V2: Large Language Model as a Unified Interface for Vision-Language Multi-task Learning**
 
 <a href='https://minigpt-v2.github.io'><img src='https://img.shields.io/badge/Project-Page-Green'></a>   [![YouTube](https://badges.aleen42.com/src/youtube.svg)](https://www.youtube.com/watch?v=atFCwV2hSY4)
 
