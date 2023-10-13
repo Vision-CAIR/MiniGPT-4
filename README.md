@@ -83,7 +83,8 @@ and/or the path to the llama2 weight in the model config file
 
 Download the pretrained checkpoints according to the Vicuna model you prepare.
 
-|                                Checkpoint Aligned with Vicuna 13B                                |                                Checkpoint Aligned with Vicuna 7B                                |                            Checkpoint Aligned with Llama 2 Chat 7B                             | MiniGPT-v2 Checkpoint  (online demo version)    | 
+|                                Checkpoint Aligned with Vicuna 13B                                |                                Checkpoint Aligned with Vicuna 7B                                |                            Checkpoint Aligned with Llama 2 Chat 7B                             | MiniGPT-v2 Checkpoint  
+(online demo version)    | 
 :------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
 :-----------------------------------------------------------------------------------------------:|
 :----------------------------------------------------------------------------------------------:
