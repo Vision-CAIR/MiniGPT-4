@@ -82,12 +82,16 @@ and/or the path to the llama2 weight in the model config file
 **3. Prepare the pretrained MiniGPT-4 checkpoint**
 
 Download the pretrained checkpoints according to the Vicuna model you prepare.
-
+<!-- 
 |      Checkpoint with Vicuna 13B     |        Checkpoint with Vicuna 7B      |    Checkpoint with LLaMA-2 Chat 7B      | MiniGPT-v2 with LLaMA-2 chat    | 
 :--------------------------------------------------:|:----------------------------------------------------------------:|
 :-----------------------------------------------------------------:|
 :------------------------------------------------------------------:
- [Download](https://drive.google.com/file/d/1a4zLvaiDBr-36pasffmgpvH5P7CKmpze/view?usp=share_link) | [Download](https://drive.google.com/file/d/1RY9jV0dyqLX-o38LrumkKRh6Jtaop58R/view?usp=sharing)  | [Download](https://drive.google.com/file/d/11nAPjEok8eAGGEG1N2vXo3kBLCg0WgUk/view?usp=sharing)  | [Download](https://drive.google.com/file/d/1aVbfW7nkCSYx99_vCRyP1sOlQiWVSnAl/view?usp=sharing)
+ [Download](https://drive.google.com/file/d/1a4zLvaiDBr-36pasffmgpvH5P7CKmpze/view?usp=share_link) | [Download](https://drive.google.com/file/d/1RY9jV0dyqLX-o38LrumkKRh6Jtaop58R/view?usp=sharing)  | [Download](https://drive.google.com/file/d/11nAPjEok8eAGGEG1N2vXo3kBLCg0WgUk/view?usp=sharing)  | [Download](https://drive.google.com/file/d/1aVbfW7nkCSYx99_vCRyP1sOlQiWVSnAl/view?usp=sharing) -->
+
+| Checkpoint with Vicuna 13B | Checkpoint with Vicuna 7B | Checkpoint with LLaMA-2 Chat 7B | MiniGPT-v2 with LLaMA-2 chat |
+|----------------------------|---------------------------|---------------------------------|------------------------------|
+| [Download](https://drive.google.com/file/d/1a4zLvaiDBr-36pasffmgpvH5P7CKmpze/view?usp=share_link) | [Download](https://drive.google.com/file/d/1RY9jV0dyqLX-o38LrumkKRh6Jtaop58R/view?usp=sharing) | [Download](https://drive.google.com/file/d/11nAPjEok8eAGGEG1N2vXo3kBLCg0WgUk/view?usp=sharing) | [Download](https://drive.google.com/file/d/1aVbfW7nkCSYx99_vCRyP1sOlQiWVSnAl/view?usp=sharing) |
 
 
 
