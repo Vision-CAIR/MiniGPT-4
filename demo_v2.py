@@ -12,6 +12,7 @@ import torch
 import html
 import gradio as gr
 
+import torchvision.transforms as T
 import torch.backends.cudnn as cudnn
 
 from minigpt4.common.config import Config
@@ -73,7 +74,7 @@ CONV_VISION = Conversation(
     messages=[],
     offset=2,
     sep_style=SeparatorStyle.SINGLE,
-    sep="</s>",
+    sep="",
 )
 
 
@@ -474,7 +475,7 @@ def gradio_answer(chatbot, chat_state, img_list, temperature):
 
 
 def gradio_stream_answer(chatbot, chat_state, img_list, temperature):
-    print('chat state', chat_state)
+    print('chat state', chat_state.get_prompt())
     if not isinstance(img_list[0], torch.Tensor):
         chat.encode_img(img_list)
     streamer = chat.stream_answer(conv=chat_state,
