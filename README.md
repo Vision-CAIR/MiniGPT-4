@@ -23,9 +23,8 @@ Click the image to chat with MiniGPT-4 around your images
 
 
 ## Examples
-  |  
-:-------------------------:|
-![MiniGPT-v2 demos](figs/demo.png)|
+
+![MiniGPT-v2 demos](figs/demo.png)
 
 
   |   |   |
