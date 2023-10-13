@@ -536,7 +536,8 @@ chat = Chat(model, vis_processor, device=device)
 
 title = """<h1 align="center">MiniGPT-v2 Demo</h1>"""
 description = 'Welcome to Our MiniGPT-v2 Chatbot Demo!'
-article = """<p><a href='https://minigpt-v2.github.io'><img src='https://img.shields.io/badge/Project-Page-Green'></a></p><p><a href='https://github.com/Vision-CAIR/MiniGPT-4/blob/main/MiniGPTv2.pdf'><img src='https://img.shields.io/badge/Paper-PDF-red'></a></p><p><a href='https://github.com/Vision-CAIR/MiniGPT-4'><img src='https://img.shields.io/badge/GitHub-Repo-blue'></a></p><p><a href='https://www.youtube.com/watch?v=atFCwV2hSY4'><img src='https://img.shields.io/badge/YouTube-Video-red'></a></p>"""
+# article = """<p><a href='https://minigpt-v2.github.io'><img src='https://img.shields.io/badge/Project-Page-Green'></a></p><p><a href='https://github.com/Vision-CAIR/MiniGPT-4/blob/main/MiniGPTv2.pdf'><img src='https://img.shields.io/badge/Paper-PDF-red'></a></p><p><a href='https://github.com/Vision-CAIR/MiniGPT-4'><img src='https://img.shields.io/badge/GitHub-Repo-blue'></a></p><p><a href='https://www.youtube.com/watch?v=atFCwV2hSY4'><img src='https://img.shields.io/badge/YouTube-Video-red'></a></p>"""
+article = """<p><a href='https://minigpt-v2.github.io'><img src='https://img.shields.io/badge/Project-Page-Green'></a></p>"""
 
 introduction = '''
 For Abilities Involving Visual Grounding:
@@ -599,7 +600,7 @@ with gr.Blocks() as demo:
             gr.Examples(examples=[
                 ["examples_v2/office.jpg", "[grounding] describe this image in detail", upload_flag, replace_flag,
                  img_list],
-                ["examples_v2/sofa.jpg", "[detection] sofa", upload_flag, replace_flag, img_list],
+                ["examples_v2/sofa.jpg", "[detection] sofas", upload_flag, replace_flag, img_list],
                 ["examples_v2/2000x1372_wmkn_0012149409555.jpg", "[refer] the world cup", upload_flag, replace_flag,
                  img_list],
                 ["examples_v2/KFC-20-for-20-Nuggets.jpg", "[identify] what is this {<4><50><30><65>}", upload_flag,
