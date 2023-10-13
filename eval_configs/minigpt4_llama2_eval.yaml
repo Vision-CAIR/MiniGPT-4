@@ -5,8 +5,7 @@ model:
   end_sym: "</s>"
   low_resource: True
   prompt_template: '[INST] {} [/INST] '
-  ckpt: '/home/zhud/weights/minigpt4/pretrained_minigpt4_llama2_7b.pth'
-  llama_model: "/ibex/project/c2133/llama_v2/llama-2-7b-chat-pytorch_update"
+  ckpt: 'please set this value to the path of pretrained checkpoint'
 
 
 datasets:

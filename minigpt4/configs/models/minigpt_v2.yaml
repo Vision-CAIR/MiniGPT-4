@@ -11,7 +11,7 @@ model:
   # generation configs
   prompt: ""
 
-  llama_model: "/path/to/llama2/weight"
+  llama_model: "please set this value to the path of llama2-chat-7b"
   lora_r: 64
   lora_alpha: 16
 

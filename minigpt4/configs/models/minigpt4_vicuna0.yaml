@@ -15,7 +15,7 @@ model:
   # generation configs
   prompt: ""
 
-  llama_model: "/path/to/vicuna/weight"
+  llama_model: "please set this value to the path of vicuna model"
 
 preprocess:
     vis_processor:
