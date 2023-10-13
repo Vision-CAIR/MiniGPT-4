@@ -38,15 +38,15 @@ More examples can be found in the [project page](https://minigpt-4.github.io).
 
 
 
-## Introduction
+<!-- ## Introduction
 - MiniGPT-4 aligns a frozen visual encoder from BLIP-2 with a frozen LLM, Vicuna, using just one projection layer. 
 - We train MiniGPT-4 with two stages. The first traditional pretraining stage is trained using roughly 5 million aligned image-text pairs in 10 hours using 4 A100s. After the first stage, Vicuna is able to understand the image. But the generation ability of Vicuna is heavily impacted.
 - To address this issue and improve usability, we propose a novel way to create high-quality image-text pairs by the model itself and ChatGPT together. Based on this, we then create a small (3500 pairs in total) yet high-quality dataset.
 - The second finetuning stage is trained on this dataset in a conversation template to significantly improve its generation reliability and overall usability. To our surprise, this stage is computationally efficient and takes only around 7 minutes with a single A100.
-- MiniGPT-4 yields many emerging vision-language capabilities similar to those demonstrated in GPT-4. 
+- MiniGPT-4 yields many emerging vision-language capabilities similar to those demonstrated in GPT-4.  -->
 
 
-![overview](figs/overview.png)
+<!-- ![overview](figs/overview.png) -->
 
 
 ## Getting Started
@@ -69,7 +69,7 @@ conda activate minigpt4
 Currently, we provide both Vicuna V0 and Llama 2 version of MiniGPT-4.
 Download the corresponding LLM weights from the following huggingface space via clone the repository using git-lfs.
 
-|                                          Vicuna V0 13B                                           |                                          Vicuna V0 7B                                          |                            Llama 2 Chat 7B                             |
+|                                          Vicuna V0 13B                                           |                                          Vicuna V0 7B                                          |                            Llama 2 Chat 7B                             | 
 :------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------:
  [Downlad](https://huggingface.co/Vision-CAIR/vicuna/tree/main) | [Download](https://huggingface.co/Vision-CAIR/vicuna-7b/tree/main) | [Download](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf/tree/main)
 
