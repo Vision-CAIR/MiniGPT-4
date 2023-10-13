@@ -2,7 +2,7 @@
 
 **MiniGPT-v2: Large Language Model as a Unified Interface for Vision-Language Multi-task Learning**
 
-<a href='https://minigpt-v2.github.io'><img src='https://img.shields.io/badge/Project-Page-Green'></a>   
+<a href='https://minigpt-v2.github.io'><img src='https://img.shields.io/badge/Project-Page-Green'></a>   [![YouTube](https://badges.aleen42.com/src/youtube.svg)](https://www.youtube.com/watch?v=atFCwV2hSY4)
 
 
 **MiniGPT-4: Enhancing Vision-language Understanding with Advanced Large Language Models**
@@ -15,7 +15,7 @@
 
 
 ## News
-[Oct.13 2023] Breaking! We release the first major update with our MiniGPT-v2
+[Oct.13 2023] Breaking! We release the first major update with our MiniGPT-V2
 
 [Aug.28 2023] We now provide a llama 2 version of MiniGPT-4
 
