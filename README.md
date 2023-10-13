@@ -9,6 +9,7 @@
 
 
 ## News
+We release the first major update with our MiniGPT-v2
 We now provide a llama 2 version of MiniGPT-4
 
 
