@@ -5,15 +5,26 @@
  For full license text, see the LICENSE_Lavis file in the repo root or https://opensource.org/licenses/BSD-3-Clause
 """
 
-import logging
 import os
+import logging
+import contextlib
 
+from omegaconf import OmegaConf
 import numpy as np
 import torch
 import torch.nn as nn
+from transformers import BertTokenizer, LlamaTokenizer
+from transformers.models.llama.modeling_llama import LlamaForCausalLM
+from peft import (
+    LoraConfig,
+    get_peft_model,
+    prepare_model_for_int8_training,
+)
+
 from minigpt4.common.dist_utils import download_cached_file, is_dist_avail_and_initialized
 from minigpt4.common.utils import get_abs_path, is_url
-from omegaconf import OmegaConf
+from minigpt4.models.eva_vit import create_eva_vit_g
+
 
 
 class BaseModel(nn.Module):
@@ -117,131 +128,121 @@ class BaseModel(nn.Module):
         else:
             return tot
 
+    def maybe_autocast(self, dtype=torch.float16):
+        # if on cpu, don't use autocast
+        # if on gpu, use autocast with dtype if provided, otherwise use torch.float16
+        enable_autocast = self.device != torch.device("cpu")
 
-class BaseEncoder(nn.Module):
-    """
-    Base class for primitive encoders, such as ViT, TimeSformer, etc.
-    """
+        if enable_autocast:
+            return torch.cuda.amp.autocast(dtype=dtype)
+        else:
+            return contextlib.nullcontext()
 
-    def __init__(self):
-        super().__init__()
+    @classmethod
+    def init_vision_encoder(
+        cls, model_name, img_size, drop_path_rate, use_grad_checkpoint, precision, freeze
+    ):
+        logging.info('Loading VIT')
 
-    def forward_features(self, samples, **kwargs):
-        raise NotImplementedError
+        assert model_name == "eva_clip_g", "vit model must be eva_clip_g for current version of MiniGPT-4"
+        if not freeze:
+            precision = "fp32"  # fp16 is not for training
 
-    @property
-    def device(self):
-        return list(self.parameters())[0].device
+        visual_encoder = create_eva_vit_g(
+            img_size, drop_path_rate, use_grad_checkpoint, precision
+        )
 
+        ln_vision = LayerNorm(visual_encoder.num_features)
 
-class SharedQueueMixin:
-    @torch.no_grad()
-    def _dequeue_and_enqueue(self, image_feat, text_feat, idxs=None):
-        # gather keys before updating queue
-        image_feats = concat_all_gather(image_feat)
-        text_feats = concat_all_gather(text_feat)
+        if freeze:
+            for name, param in visual_encoder.named_parameters():
+                param.requires_grad = False
+            visual_encoder = visual_encoder.eval()
+            visual_encoder.train = disabled_train
+            for name, param in ln_vision.named_parameters():
+                param.requires_grad = False
+            ln_vision = ln_vision.eval()
+            ln_vision.train = disabled_train
+            logging.info("freeze vision encoder")
 
-        batch_size = image_feats.shape[0]
+        logging.info('Loading VIT Done')
+        return visual_encoder, ln_vision
 
-        ptr = int(self.queue_ptr)
-        assert self.queue_size % batch_size == 0  # for simplicity
+    def init_llm(cls, llama_model_path, low_resource=False, low_res_device=0, lora_r=0,
+                 lora_target_modules=["q_proj","v_proj"], **lora_kargs):
+        logging.info('Loading LLAMA')
+        llama_tokenizer = LlamaTokenizer.from_pretrained(llama_model_path, use_fast=False)
+        llama_tokenizer.pad_token = "$$"
 
-        # replace the keys at ptr (dequeue and enqueue)
-        self.image_queue[:, ptr : ptr + batch_size] = image_feats.T
-        self.text_queue[:, ptr : ptr + batch_size] = text_feats.T
+        if low_resource:
+            llama_model = LlamaForCausalLM.from_pretrained(
+                llama_model_path,
+                torch_dtype=torch.float16,
+                load_in_8bit=True,
+                device_map={'': low_res_device}
+            )
+        else:
+            llama_model = LlamaForCausalLM.from_pretrained(
+                llama_model_path,
+                torch_dtype=torch.float16,
+            )
 
-        if idxs is not None:
-            idxs = concat_all_gather(idxs)
-            self.idx_queue[:, ptr : ptr + batch_size] = idxs.T
+        if lora_r > 0:
+            llama_model = prepare_model_for_int8_training(llama_model)
+            loraconfig = LoraConfig(
+                r=lora_r,
+                bias="none",
+                task_type="CAUSAL_LM",
+                target_modules=lora_target_modules,
+                **lora_kargs
+            )
+            llama_model = get_peft_model(llama_model, loraconfig)
 
-        ptr = (ptr + batch_size) % self.queue_size  # move pointer
-        self.queue_ptr[0] = ptr
+            llama_model.print_trainable_parameters()
 
-
-class MomentumDistilationMixin:
-    @torch.no_grad()
-    def copy_params(self):
-        for model_pair in self.model_pairs:
-            for param, param_m in zip(
-                model_pair[0].parameters(), model_pair[1].parameters()
-            ):
-                param_m.data.copy_(param.data)  # initialize
-                param_m.requires_grad = False  # not update by gradient
-
-    @torch.no_grad()
-    def _momentum_update(self):
-        for model_pair in self.model_pairs:
-            for param, param_m in zip(
-                model_pair[0].parameters(), model_pair[1].parameters()
-            ):
-                param_m.data = param_m.data * self.momentum + param.data * (
-                    1.0 - self.momentum
-                )
-
-
-class GatherLayer(torch.autograd.Function):
-    """
-    Gather tensors from all workers with support for backward propagation:
-    This implementation does not cut the gradients as torch.distributed.all_gather does.
-    """
-
-    @staticmethod
-    def forward(ctx, x):
-        output = [
-            torch.zeros_like(x) for _ in range(torch.distributed.get_world_size())
-        ]
-        torch.distributed.all_gather(output, x)
-        return tuple(output)
-
-    @staticmethod
-    def backward(ctx, *grads):
-        all_gradients = torch.stack(grads)
-        torch.distributed.all_reduce(all_gradients)
-        return all_gradients[torch.distributed.get_rank()]
+        else:
+            for name, param in llama_model.named_parameters():
+                param.requires_grad = False
+        logging.info('Loading LLAMA Done')
+        return llama_model, llama_tokenizer
 
 
-def all_gather_with_grad(tensors):
-    """
-    Performs all_gather operation on the provided tensors.
-    Graph remains connected for backward grad computation.
-    """
-    # Queue the gathered tensors
-    world_size = torch.distributed.get_world_size()
-    # There is no need for reduction in the single-proc case
-    if world_size == 1:
-        return tensors
+    def load_from_pretrained(self, url_or_filename):
+        if is_url(url_or_filename):
+            cached_file = download_cached_file(
+                url_or_filename, check_hash=False, progress=True
+            )
+            checkpoint = torch.load(cached_file, map_location="cpu")
+        elif os.path.isfile(url_or_filename):
+            checkpoint = torch.load(url_or_filename, map_location="cpu")
+        else:
+            raise RuntimeError("checkpoint url or path is invalid")
 
-    # tensor_all = GatherLayer.apply(tensors)
-    tensor_all = GatherLayer.apply(tensors)
+        state_dict = checkpoint["model"]
 
-    return torch.cat(tensor_all, dim=0)
+        msg = self.load_state_dict(state_dict, strict=False)
 
+        # logging.info("Missing keys {}".format(msg.missing_keys))
+        logging.info("load checkpoint from %s" % url_or_filename)
 
-@torch.no_grad()
-def concat_all_gather(tensor):
-    """
-    Performs all_gather operation on the provided tensors.
-    *** Warning ***: torch.distributed.all_gather has no gradient.
-    """
-    # if use distributed training
-    if not is_dist_avail_and_initialized():
-        return tensor
-
-    tensors_gather = [
-        torch.ones_like(tensor) for _ in range(torch.distributed.get_world_size())
-    ]
-    torch.distributed.all_gather(tensors_gather, tensor, async_op=False)
-
-    output = torch.cat(tensors_gather, dim=0)
-    return output
+        return msg
 
 
-def tile(x, dim, n_tile):
-    init_dim = x.size(dim)
-    repeat_idx = [1] * x.dim()
-    repeat_idx[dim] = n_tile
-    x = x.repeat(*(repeat_idx))
-    order_index = torch.LongTensor(
-        np.concatenate([init_dim * np.arange(n_tile) + i for i in range(init_dim)])
-    )
-    return torch.index_select(x, dim, order_index.to(x.device))
+def disabled_train(self, mode=True):
+    """Overwrite model.train with this function to make sure train/eval mode
+    does not change anymore."""
+    return self
+
+
+class LayerNorm(nn.LayerNorm):
+    """Subclass torch's LayerNorm to handle fp16."""
+
+    def forward(self, x: torch.Tensor):
+        orig_type = x.dtype
+        ret = super().forward(x.type(torch.float32))
+        return ret.type(orig_type)
+
+
+
+
+

@@ -1,11 +1,11 @@
 model:
-  arch: mini_gpt4
+  arch: minigpt4
   model_type: pretrain_vicuna0
   max_txt_len: 160
   end_sym: "###"
   low_resource: True
   prompt_template: '###Human: {} ###Assistant: '
-  ckpt: '/path/to/checkpoint/'
+  ckpt: 'please set this value to the path of pretrained checkpoint'
 
 
 datasets:
