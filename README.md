@@ -1,4 +1,4 @@
-# MiniGPT-4 and MiniGPT-v2
+# MiniGPT-V
 
 **MiniGPT-v2: Large Language Model as a Unified Interface for Vision-Language Multi-task Learning**
 
