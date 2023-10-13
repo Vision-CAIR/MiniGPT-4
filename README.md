@@ -63,14 +63,20 @@ Download the corresponding LLM weights from the following huggingface space via 
 [Download](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf/tree/main) | [Downlad](https://huggingface.co/Vision-CAIR/vicuna/tree/main) | [Download](https://huggingface.co/Vision-CAIR/vicuna-7b/tree/main) 
 
 
-Then, set the path to the vicuna weight in the model config file 
-[here](minigpt4/configs/models/minigpt4_vicuna0.yaml#L18) at Line 18
-and/or the path to the llama2 weight in the model config file 
+Then, set the variable *llama_model* in the model config file to the LLM weight path.
+
+* For MiniGPT-v2, set the LLM path 
+[here](minigpt4/configs/models/minigpt_v2.yaml#L15) at Line 14.
+
+* For MiniGPT-4 (Llama2), set the LLM path 
 [here](minigpt4/configs/models/minigpt4_llama2.yaml#L15) at Line 15.
+
+* For MiniGPT-4 (Vicuna), set the LLM path 
+[here](minigpt4/configs/models/minigpt4_vicuna0.yaml#L18) at Line 18
 
 **3. Prepare the pretrained model checkpoints**
 
-Download the pretrained checkpoints
+Download the pretrained model checkpoints
 
 
 | MiniGPT-v2 (LLaMA-2 Chat 7B) |
@@ -114,53 +120,17 @@ python demo.py --cfg-path eval_configs/minigpt4_llama2_eval.yaml  --gpu-id 0
 To save GPU memory, LLMs loads as 8 bit by default, with a beam search width of 1. 
 This configuration requires about 23G GPU memory for 13B LLM and 11.5G GPU memory for 7B LLM. 
 For more powerful GPUs, you can run the model
-in 16 bit by setting `low_resource` to `False` in the relevant config file 
-(**MiniGPT-v2**: [minigptv2_eval.yaml](eval_configs/minigptv2_eval.yaml#6); **MiniGPT-4 (Llama2)**: [minigpt4_llama2_eval.yaml](eval_configs/minigpt4_llama2_eval.yaml#6); **MiniGPT-4 (Vicuna)**: [minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml#6))
+in 16 bit by setting `low_resource` to `False` in the relevant config file:
+
+* MiniGPT-v2: [minigptv2_eval.yaml](eval_configs/minigptv2_eval.yaml#6) 
+* MiniGPT-4 (Llama2): [minigpt4_llama2_eval.yaml](eval_configs/minigpt4_llama2_eval.yaml#6)
+* MiniGPT-4 (Vicuna): [minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml#6)
 
 Thanks [@WangRongsheng](https://github.com/WangRongsheng), you can also run MiniGPT-4 on [Colab](https://colab.research.google.com/drive/1OK4kYsZphwt5DXchKkzMBjYF6jnkqh4R?usp=sharing)
 
 
 ### Training
-For training details of MiniGPT-4, check [here]().
-The training of MiniGPT-4 contains two alignment stages.
-
-**1. First pretraining stage**
-
-In the first pretrained stage, the model is trained using image-text pairs from Laion and CC datasets
-to align the vision and language model. To download and prepare the datasets, please check 
-our [first stage dataset preparation instruction](dataset/README_1_STAGE.md). 
-After the first stage, the visual features are mapped and can be understood by the language
-model.
-To launch the first stage training, run the following command. In our experiments, we use 4 A100. 
-You can change the save path in the config file 
-[train_configs/minigpt4_stage1_pretrain.yaml](train_configs/minigpt4_stage1_pretrain.yaml)
-
-```bash
-torchrun --nproc-per-node NUM_GPU train.py --cfg-path train_configs/minigpt4_stage1_pretrain.yaml
-```
-
-A MiniGPT-4 checkpoint with only stage one training can be downloaded 
-[here (13B)](https://drive.google.com/file/d/1u9FRRBB3VovP1HxCAlpD9Lw4t4P6-Yq8/view?usp=share_link) or [here (7B)](https://drive.google.com/file/d/1HihQtCEXUyBM1i9DQbaK934wW3TZi-h5/view?usp=share_link).
-Compared to the model after stage two, this checkpoint generate incomplete and repeated sentences frequently.
-
-
-**2. Second finetuning stage**
-
-In the second stage, we use a small high quality image-text pair dataset created by ourselves
-and convert it to a conversation format to further align MiniGPT-4.
-To download and prepare our second stage dataset, please check our 
-[second stage dataset preparation instruction](dataset/README_2_STAGE.md).
-To launch the second stage alignment, 
-first specify the path to the checkpoint file trained in stage 1 in 
-[train_configs/minigpt4_stage1_pretrain.yaml](train_configs/minigpt4_stage2_finetune.yaml).
-You can also specify the output path there. 
-Then, run the following command. In our experiments, we use 1 A100.
-
-```bash
-torchrun --nproc-per-node NUM_GPU train.py --cfg-path train_configs/minigpt4_stage2_finetune.yaml
-```
-
-After the second stage alignment, MiniGPT-4 is able to talk about the image coherently and user-friendly. 
+For training details of MiniGPT-4, check [here](MiniGPT4_Train.md).
 
 
 
@@ -173,7 +143,7 @@ After the second stage alignment, MiniGPT-4 is able to talk about the image cohe
 + [LLaMA](https://github.com/facebookresearch/llama) The strong open-sourced LLaMA 2 language model.
 
 
-If you're using MiniGPT-4 in your research or applications, please cite using this BibTeX:
+If you're using MiniGPT-4/MiniGPT-v2 in your research or applications, please cite using this BibTeX:
 ```bibtex
 
 @article{Chen2023minigpt,
