@@ -7,6 +7,7 @@ import torch.nn as nn
 
 from minigpt4.common.registry import registry
 from minigpt4.models.base_model import BaseModel
+from transformers import StoppingCriteria, StoppingCriteriaList
 
 
 
@@ -365,8 +366,8 @@ class MiniGPTBase(BaseModel):
                 do_sample=do_sample,
                 min_length=min_length,
                 top_p=top_p,
-                repetition_penalty=repetition_penalty
-                # stopping_criteria=stopping_criteria,
+                repetition_penalty=repetition_penalty,
+                stopping_criteria=stopping_criteria,
             )
 
         answers = []

@@ -170,7 +170,7 @@ class Chat:
             top_p=top_p,
             repetition_penalty=repetition_penalty,
             length_penalty=length_penalty,
-            temperature=temperature,
+            temperature=float(temperature),
         )
         return generation_kwargs
 
