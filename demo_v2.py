@@ -114,7 +114,7 @@ def computeIoU(bbox1, bbox2):
 
 def save_tmp_img(visual_img):
     file_name = "".join([str(random.randint(0, 9)) for _ in range(5)]) + ".jpg"
-    file_path = "/tmp/" + file_name
+    file_path = "/tmp/gradio" + file_name
     visual_img.save(file_path)
     return file_path
 
