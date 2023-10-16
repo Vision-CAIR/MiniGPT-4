@@ -115,7 +115,7 @@ in [eval_configs/minigpt4_eval.yaml](eval_configs/minigpt4_eval.yaml#L10) at Lin
 
 For MiniGPT-v2, run
 ```
-python demo_v2.py --cfg-path eval_configs/minigpt4v2_eval.yaml  --gpu-id 0
+python demo_v2.py --cfg-path eval_configs/minigptv2_eval.yaml  --gpu-id 0
 ```
 
 For MiniGPT-4 (Vicuna version), run
