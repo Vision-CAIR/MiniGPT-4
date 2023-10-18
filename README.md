@@ -163,7 +163,7 @@ If you're using MiniGPT-4/MiniGPT-v2 in your research or applications, please ci
 @article{Chen2023minigpt,
   title={MiniGPT-v2: Large Language Model as a Unified Interface for Vision-Language Multi-task Learning},
   author={Chen, Jun and Zhu, Deyao and Shen, Xiaoqian and Li, Xiang and Liu, Zechu and Zhang, Pengchuan and Krishnamoorthi, Raghuraman and Chandra, Vikas and Xiong, Yunyang and Elhoseiny, Mohamed},
-  journal={github},
+  journal={arXiv preprint arXiv:2310.09478},
   year={2023}
 }
 
