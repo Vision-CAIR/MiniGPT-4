@@ -160,11 +160,12 @@ For training details of MiniGPT-4, check [here](MiniGPT4_Train.md).
 If you're using MiniGPT-4/MiniGPT-v2 in your research or applications, please cite using this BibTeX:
 ```bibtex
 
-@article{Chen2023minigpt,
-  title={MiniGPT-v2: Large Language Model as a Unified Interface for Vision-Language Multi-task Learning},
-  author={Chen, Jun and Zhu, Deyao and Shen, Xiaoqian and Li, Xiang and Liu, Zechu and Zhang, Pengchuan and Krishnamoorthi, Raghuraman and Chandra, Vikas and Xiong, Yunyang and Elhoseiny, Mohamed},
-  journal={arXiv preprint arXiv:2310.09478},
-  year={2023}
+
+@article{chen2023minigptv2,
+      title={MiniGPT-v2: large language model as a unified interface for vision-language multi-task learning}, 
+      author={Chen, Jun and Zhu, Deyao and Shen, Xiaoqian and Li, Xiang and Liu, Zechu and Zhang, Pengchuan and Krishnamoorthi, Raghuraman and Chandra, Vikas and Xiong, Yunyang and Elhoseiny, Mohamed},
+      year={2023},
+      journal={arXiv preprint arXiv:2310.09478},
 }
 
 @article{zhu2023minigpt,
