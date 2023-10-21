@@ -5,6 +5,7 @@ model:
 
 datasets:
   laion:
+    batch_size: 64
     vis_processor:
       train:
         name: "blip2_image_train"
@@ -14,6 +15,7 @@ datasets:
         name: "blip_caption"
     sample_ratio: 115
   cc_sbu:
+    batch_size: 64
     vis_processor:
         train:
           name: "blip2_image_train"
@@ -34,8 +36,6 @@ run:
 
   weight_decay: 0.05
   max_epoch: 4
-  batch_size_train: 64
-  batch_size_eval: 64
   num_workers: 4
   warmup_steps: 5000
   iters_per_epoch: 5000
