@@ -236,7 +236,7 @@ class MiniGPTBase(BaseModel):
             else:
                 instruction = None
 
-            if self.chat_template:
+            if hasattr(self, 'chat_template') and self.chat_template:
                 instruction = [self.prompt_template.format(instruct) for instruct in instruction]
 
             if 'length' in samples:
