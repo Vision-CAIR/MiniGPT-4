@@ -21,12 +21,14 @@ class BaseTask:
         super().__init__()
 
         self.inst_id_key = "instance_id"
+        self.cfg = ""
 
     @classmethod
     def setup_task(cls, **kwargs):
         return cls()
 
     def build_model(self, cfg):
+        self.cfg = cfg
         model_config = cfg.model_cfg
 
         model_cls = registry.get_model_class(model_config.arch)

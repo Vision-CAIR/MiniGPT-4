@@ -11,6 +11,7 @@ model:
 
 datasets:
   cc_sbu_align:
+    batch_size: 12
     vis_processor:
       train:
         name: "blip2_image_train"
@@ -30,8 +31,6 @@ run:
   weight_decay: 0.05
   max_epoch: 5
   iters_per_epoch: 200
-  batch_size_train: 12
-  batch_size_eval: 12
   num_workers: 4
   warmup_steps: 200
 
