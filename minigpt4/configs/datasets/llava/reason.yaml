@@ -1,0 +1,12 @@
+datasets:
+  # llava_reason:
+  #   data_type: images
+  #   build_info:
+  #     image_path: /path/to/coco/images
+  #     ann_path: /path/to/llava/complex_reasoning_77k.json
+
+  llava_reason:
+    data_type: images
+    build_info:
+      image_path: /ibex/reference/CV/COCO/cocoapi/data/2014/images/jpeg/train
+      ann_path: /ibex/project/c2133/minigpt4_v2_dataset/llava/complex_reasoning_77k.json

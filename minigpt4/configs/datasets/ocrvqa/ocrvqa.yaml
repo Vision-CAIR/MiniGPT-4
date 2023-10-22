@@ -1,0 +1,12 @@
+datasets:
+  # ocrvqa:
+  #   data_type: images
+  #   build_info:
+  #     image_path: /ibex/project/c2133/minigpt4_v2_dataset/ocrvqa/images
+  #     ann_path: /ibex/project/c2133/minigpt4_v2_dataset/ocrvqa/dataset.json
+
+  ocrvqa:
+    data_type: images
+    build_info:
+      image_path: /ibex/project/c2133/minigpt4_v2_dataset/ocrvqa/images
+      ann_path: /ibex/project/c2133/minigpt4_v2_dataset/ocrvqa/dataset.json
