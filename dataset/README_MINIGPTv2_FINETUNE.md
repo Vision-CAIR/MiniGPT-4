@@ -14,7 +14,7 @@ After downloading all of them, organize the data as follows in `./playground/dat
 └── vg
     ├── VG_100K
     └── VG_100K_2
-
+```
 
 ### COCO captions
 - [train2017](http://images.cocodataset.org/zips/train2017.zip)
