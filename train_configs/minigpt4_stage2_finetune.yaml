@@ -47,3 +47,6 @@ run:
   world_size: 1
   dist_url: "env://"
   distributed: True
+
+  wandb_log: True
+  job_name: minigpt4_finetune

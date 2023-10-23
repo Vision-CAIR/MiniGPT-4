@@ -276,7 +276,6 @@ run:
   init_lr: 1e-5
   min_lr: 8e-5
   warmup_lr: 1e-6
-  wandb_log: True
 
   weight_decay: 0.05
   max_epoch: 50
@@ -297,3 +296,6 @@ run:
   world_size: 1
   dist_url: "env://"
   distributed: True
+
+  wandb_log: True
+  job_name: minigptv2_finetune
