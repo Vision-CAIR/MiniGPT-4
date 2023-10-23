@@ -76,6 +76,7 @@ detail_23k.json, and complex_reasoning_77k.json in conversation.yaml, detail.yam
 
 - [OK-VQA Input Questions](https://okvqa.allenai.org/static/data/OpenEnded_mscoco_train2014_questions.json.zip)
 - [OK-VQA Annotations](https://okvqa.allenai.org/static/data/mscoco_train2014_annotations.json.zip)
+- [okvqa_train](https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/okvqa/okvqa_train.json)
 - Images are from COCO
 
 ### AOK-VQA
