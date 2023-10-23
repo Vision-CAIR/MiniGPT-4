@@ -10,6 +10,9 @@
 
 ### TextCaps
 
+-[TextCaps_0.1_train](https://dl.fbaipublicfiles.com/textvqa/data/textcaps/TextCaps_0.1_train.json)
+-[Images](https://dl.fbaipublicfiles.com/textvqa/images/train_val_images.zip)
+
 ### RefCOCO, RefCOCO+, RefCOCOg
 Make sure you have the COCO 2014 images first. 
 
@@ -46,12 +49,6 @@ Similarly, set **ann_path** in all the following configs to the above folder (Lo
 - [minigpt4/configs/datasets/coco_bbox/invrefcoco.yaml](../minigpt4/configs/datasets/coco_bbox/invrefcoco.yaml)
 - [minigpt4/configs/datasets/coco_bbox/invrefcocog.yaml](../minigpt4/configs/datasets/coco_bbox/invrefcocog.yaml) 
 - [minigpt4/configs/datasets/coco_bbox/invrefcocop.yaml](../minigpt4/configs/datasets/coco_bbox/invrefcocop.yaml)
-
-
-
-### Visual Genome
-
-### textcaps
 
 ### LLaVA
 Makesure you have the COCO 2014 images first. 
