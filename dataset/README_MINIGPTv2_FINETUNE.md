@@ -10,8 +10,8 @@
 
 ### TextCaps
 
--[TextCaps_0.1_train](https://dl.fbaipublicfiles.com/textvqa/data/textcaps/TextCaps_0.1_train.json)
--[Images](https://dl.fbaipublicfiles.com/textvqa/images/train_val_images.zip)
+- [TextCaps_0.1_train](https://dl.fbaipublicfiles.com/textvqa/data/textcaps/TextCaps_0.1_train.json)
+- [Images](https://dl.fbaipublicfiles.com/textvqa/images/train_val_images.zip)
 
 ### RefCOCO, RefCOCO+, RefCOCOg
 Make sure you have the COCO 2014 images first. 
