@@ -19,11 +19,13 @@ After downloading all of them, organize the data as follows in `./playground/dat
 ### COCO captions
 - [train2017](http://images.cocodataset.org/zips/train2017.zip)
 
-### RefCOCO, RefCOCO+, RefCOCOg
+
 
 ### Visual genome
 - [part1](https://cs.stanford.edu/people/rak248/VG_100K_2/images.zip), [part2](https://cs.stanford.edu/people/rak248/VG_100K_2/images2.zip)
 ### TextCaps
+
+### RefCOCO, RefCOCO+, RefCOCOg
 Makesure you have the COCO 2014 images first. 
 
 Then,
