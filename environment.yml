@@ -1,4 +1,4 @@
-name: minigpt4
+name: minigpt-v
 channels:
   - pytorch
   - defaults
