@@ -2,16 +2,56 @@
 
 ### COCO captions
 
-
 ### RefCOCO, RefCOCO+, RefCOCOg
 
-### Visual genome
+Makesure you have the COCO 2014 images first. 
+
+Then,
+download RefCOCO, RefCOCO+, and RefCOCOg annotation files in the following links.
+
+- https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcoco.zip
+- https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcoco+.zip
+- https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcocog.zip
+
+Unzip these files to the location you like. It should have the structure like the following
+
+```
+Location_you_like
+├── refcoco
+│   ├── instances.json
+│   ├── refs(google).p
+│   └── refs(unc).p
+├── refcoco+
+│   ├── instances.json
+│   └── refs(unc).p
+└── refcocog
+    ├── instances.json
+    ├── refs(google).p
+    └── refs(umd).p
+```
+
+Set **image_path** in all the following dataset configuration files to the COCO 2014 image folder.
+Similarly, set **ann_path** in all the following configs to the above folder (Location_you_like) that contains refcoco, refcoco+, and refcocog.
+
+- [minigpt4/configs/refcoco.yaml](../minigpt4/configs/refcoco.yaml)
+- [minigpt4/configs/refcocog.yaml](../minigpt4/configs/refcocog.yaml) 
+- [minigpt4/configs/refcocop.yaml](../minigpt4/configs/refcocop.yaml)
+- [minigpt4/configs/invrefcoco.yaml](../minigpt4/configs/invrefcoco.yaml)
+- [minigpt4/configs/invrefcocog.yaml](../minigpt4/configs/invrefcocog.yaml) 
+- [minigpt4/configs/invrefcocop.yaml](../minigpt4/configs/invrefcocop.yaml)
+
+
+
+### Visual Genome
 
 ### textcaps
 
 ### LLaVA
 
-### gqa
+
+
+
+### GQA
 
 ### OKVQA
 
