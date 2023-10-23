@@ -91,9 +91,7 @@ class RefCOCOEvalData(torch.utils.data.Dataset):
         image_path = os.path.join(self.root_path, f'{img_id[:27]}.jpg')
         image = Image.open(image_path).convert('RGB')
         image = self.vis_processor(image)
-        # question = f"[refer] {sent}"
-        question = f"[refer] where is {sent}?"
-        # question = f"where is the bounding box location of {sent}?"
+        question = f"[refer] tell me the location of {sent}?"
         return image, question, img_id
 
 class EvalCaptionData(torch.utils.data.Dataset):

@@ -70,8 +70,6 @@ class COCOVQADataset(VQADataset, __DisplMixin):
 
         answer = random.choices(answers, weights=weights, k=1)[0]  # random sample an answer according to weights
 
-        # if "unk" in answer:
-        #     print("cocovqa", answer)
 
         return {
             "image": image,
@@ -93,33 +91,6 @@ class COCOVQADataset(VQADataset, __DisplMixin):
         }
 
 
-class COCOVQGDataset(COCOVQADataset):
-
-    def __init__(self, vis_processor, text_processor, vis_root, ann_paths):
-        super().__init__(vis_processor, text_processor, vis_root, ann_paths)
-        self.instruction_pool = [
-            'Given the image, generate a question whose answer is: {}',
-            'Based on the image, provide a question with the answer: {}',
-            'Given the visual representation, create a question for which the answer is "{}"',
-            'From the image provided, craft a question that leads to the reply: {}',
-            'Considering the picture, come up with a question where the answer is: {}',
-            'Taking the image into account, generate an question that has the answer: {}'
-        ]
-
-    def __getitem__(self, index):
-        data = self.get_data(index)
-        instruction = random.choice(self.instruction_pool).format(data['answer'])
-        instruction = "<Img><ImageHere></Img> {}".format(instruction)
-
-        return {
-            "image": data['image'],
-            "question_id": data["question_id"],
-            "instruction_input": instruction,
-            "answer": data['question'],
-        }
-
-
-
 class COCOVQAEvalDataset(VQAEvalDataset, __DisplMixin):
     def __init__(self, vis_processor, text_processor, vis_root, ann_paths):
         """
@@ -128,18 +99,8 @@ class COCOVQAEvalDataset(VQAEvalDataset, __DisplMixin):
         """
         
         self.instruction_pool = [
-#             '{}',
-#             'Question: {}',
-#             '{} A short answer to the question is',
-#             'Q: {} A:',
             'Question: {} Short answer:',
-#             'Given the image, answer the following question with no more than three words. {}',
-#             'Based on the image, respond to this question with a short answer: {}.',
-#             'Use the provided image to answer the question: {} Provide your answer as short as possible.',
-#             'What is the answer to the following question? "{}"',
-#             'The question "{}" can be answered using the image. A short answer is'
         ]
-#         print('vis_root', vis_root)
         self.vis_root = vis_root
 
         self.annotation = json.load(open(ann_paths[0]))

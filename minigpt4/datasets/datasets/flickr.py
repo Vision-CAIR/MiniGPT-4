@@ -52,9 +52,7 @@ class GroundedDetailDataset(Dataset):
         image = self.vis_processor(image)
 
         answer = info['grounded_caption']
-
         instruction = random.choice(self.instruction_pool)
-
         instruction = "<Img><ImageHere></Img> {} ".format(instruction)
 
         return {
@@ -91,7 +89,6 @@ class CaptionToObjectDataset(Dataset):
     def __getitem__(self, index):
         info = self.ann[index]
 
-        # image_file = 'COCO_train2014_{}.jpg'.format(info['image_id'])
         image_file = '{}.jpg'.format(info['image_id'])
         image_path = os.path.join(self.vis_root, image_file)
         image = Image.open(image_path).convert("RGB")
@@ -137,8 +134,6 @@ class PhraseToObjectDataset(Dataset):
 
     def __getitem__(self, index):
         info = self.ann[index]
-
-        # image_file = 'COCO_train2014_{}.jpg'.format(info['image_id'])
         image_file = '{}.jpg'.format(info['image_id'])
         image_path = os.path.join(self.vis_root, image_file)
         image = Image.open(image_path).convert("RGB")
@@ -146,7 +141,6 @@ class PhraseToObjectDataset(Dataset):
 
         input = info["phrase"]
         answer = "<p>"+input+"</p> "+info["bbox"]
-
         instruction = random.choice(self.instruction_pool).format(input)
 
         instruction = "<Img><ImageHere></Img> {} ".format(instruction)

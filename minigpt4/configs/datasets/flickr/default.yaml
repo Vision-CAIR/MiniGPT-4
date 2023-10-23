@@ -1,5 +1,5 @@
 datasets:
-  grounded_detailed_image_caption:
+  flickr_grounded_caption:
     data_type: images
     build_info:
       image_path: /ibex/project/c2133/minigpt4_v2_dataset/flickr/images

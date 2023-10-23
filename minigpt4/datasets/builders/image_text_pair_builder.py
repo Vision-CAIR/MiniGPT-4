@@ -16,8 +16,8 @@ from minigpt4.datasets.datasets.coco_dataset import ReferCOCODataset, InvReferCO
 from minigpt4.datasets.datasets.gqa_datasets import GQADataset
 from minigpt4.datasets.datasets.aok_vqa_datasets import AOKVQADataset
 from minigpt4.datasets.datasets.coco_vqa_datasets import COCOVQADataset
-from minigpt4.datasets.datasets.doc_dataset import OCRVQADataset
-
+from minigpt4.datasets.datasets.ocrvqa_dataset import OCRVQADataset
+from minigpt4.datasets.datasets.coco_caption import COCOCapDataset
 
 
 @registry.register_builder("multitask_conversation")
@@ -293,6 +293,13 @@ class COCOVQABuilder(BaseDatasetBuilder):
         "default": "configs/datasets/coco/defaults_vqa.yaml",
     }
 
+@registry.register_builder("ok_vqa")
+class OKVQABuilder(COCOVQABuilder):
+    DATASET_CONFIG_DICT = {
+        "default": "configs/datasets/okvqa/defaults.yaml",
+    }
+
+
 @registry.register_builder("aok_vqa")
 class AOKVQABuilder(BaseDatasetBuilder):
     train_dataset_cls = AOKVQADataset
@@ -310,7 +317,7 @@ class GQABuilder(BaseDatasetBuilder):
 
 
 
-@registry.register_builder("grounded_detailed_image_caption")
+@registry.register_builder("flickr_grounded_caption")
 class GroundedCaptionBuilder(BaseDatasetBuilder):
     train_dataset_cls = GroundedDetailDataset
     DATASET_CONFIG_DICT = {
@@ -336,7 +343,7 @@ class GroundedCaptionBuilder(BaseDatasetBuilder):
         return datasets
 
 
-@registry.register_builder("CaptionToPhrase")
+@registry.register_builder("flickr_CaptionToPhrase")
 class CaptionToPhraseBuilder(BaseDatasetBuilder):
     train_dataset_cls = CaptionToObjectDataset
     DATASET_CONFIG_DICT = {
@@ -361,7 +368,7 @@ class CaptionToPhraseBuilder(BaseDatasetBuilder):
 
         return datasets
 
-@registry.register_builder("ObjectToPhrase")
+@registry.register_builder("flickr_ObjectToPhrase")
 class CaptionToPhraseBuilder(BaseDatasetBuilder):
     train_dataset_cls = PhraseToObjectDataset
     DATASET_CONFIG_DICT = {
@@ -482,6 +489,17 @@ class LaionBuilder(BaseDatasetBuilder):
         ).inner_dataset
 
         return datasets
+
+
+
+@registry.register_builder("coco_caption")
+class COCOCapBuilder(BaseDatasetBuilder):
+    train_dataset_cls = COCOCapDataset
+
+    DATASET_CONFIG_DICT = {
+        "default": "configs/datasets/coco/caption.yaml",
+    }
+
 
 
 @registry.register_builder("cc_sbu_align")

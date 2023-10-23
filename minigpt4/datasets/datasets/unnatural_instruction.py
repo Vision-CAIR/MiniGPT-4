@@ -29,11 +29,6 @@ class UnnaturalDataset(Dataset):
         with open(ann_path, 'r') as f:
             self.ann = json.load(f)
 
-        # with open(ann_path, 'r') as f:
-        #     for data in f.readlines():
-        #         data = json.loads(data)
-        #         self.ann.append(data)
-
     def __len__(self):
         return len(self.ann)
 
@@ -46,7 +41,6 @@ class UnnaturalDataset(Dataset):
             instruction = instruction+" "+constraints
 
         return {
-            # "image":None,
             "instruction_input": self.text_processor(instruction),
             "answer": self.text_processor(answer),
         }

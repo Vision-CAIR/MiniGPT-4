@@ -51,15 +51,10 @@ class GQADataset(VQADataset, __DisplMixin):
         instruction = "<Img><ImageHere></Img> {} ".format(instruction)
 
         answers = self.text_processor(ann["answer"])
-        # if "unk" in answers:
-        #     print("gqa",answers)
-
-        # print(answers)
 
         return {
             "image": image,
             "instruction_input": instruction,
             "answer": answers,
-            # "weights": weights,
         }
 

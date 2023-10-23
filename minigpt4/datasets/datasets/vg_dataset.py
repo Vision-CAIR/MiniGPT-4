@@ -11,10 +11,6 @@ from torch.utils.data import Dataset
 from visual_genome import local
 
 
-import threading
-
-# Global lock
-lock = threading.Lock()
 
 
 class ReferVisualGenomeDataset(Dataset):
@@ -33,8 +29,6 @@ class ReferVisualGenomeDataset(Dataset):
 
         # follow OFA practice, only regions smaller than 16384 pixels are used for refer
         self.regions = [region for region in all_regions if region.width * region.height < 16384]
-
-        print('Visual Genome grounding', len(self.regions))
 
 
         self.instruction_pool = [
@@ -85,8 +79,6 @@ class ReferVisualGenomeDataset(Dataset):
         instruction = random.choice(self.instruction_pool).format(data['refer_sentence'])
 
         instruction = "<Img><ImageHere></Img> {} ".format(instruction)
-
-        # assert False
 
         return {
             "image": data['image'],

@@ -12,6 +12,7 @@ import random
 import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
+import wandb
 
 import minigpt4.tasks as tasks
 from minigpt4.common.config import Config
@@ -43,10 +44,9 @@ def parse_args():
         "in xxx=yyy format will be merged into config file (deprecate), "
         "change to --cfg-options instead.",
     )
+    parser.add_argument("--job_name", default="minigpt_v2",type=str)
 
     args = parser.parse_args()
-    # if 'LOCAL_RANK' not in os.environ:
-    #     os.environ['LOCAL_RANK'] = str(args.local_rank)
 
     return args
 
@@ -77,21 +77,24 @@ def main():
 
     # set before init_distributed_mode() to ensure the same job_id shared across all ranks.
     job_id = now()
-
-    cfg = Config(parse_args())
+    args = parse_args()
+    cfg = Config(args)
 
     init_distributed_mode(cfg.run_cfg)
-
     setup_seeds(cfg)
 
     # set after init_distributed_mode() to only log on master.
     setup_logger()
-
     cfg.pretty_print()
 
     task = tasks.setup_task(cfg)
     datasets = task.build_datasets(cfg)
     model = task.build_model(cfg)
+
+    if cfg.run_cfg.wandb_log:
+        wandb.login()
+        wandb.init(project="minigptv", name=cfg.run_cfg.job_name)
+        wandb.watch(model)
 
     runner = get_runner_class(cfg)(
         cfg=cfg, job_id=job_id, task=task, model=model, datasets=datasets
