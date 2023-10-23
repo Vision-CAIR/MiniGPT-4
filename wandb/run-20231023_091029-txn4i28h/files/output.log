@@ -1,2 +1,0 @@
-/home/chenj0g/anaconda3/envs/eye/lib/python3.9/site-packages/torch/utils/checkpoint.py:31: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
-  warnings.warn("None of the inputs have requires_grad=True. Gradients will be None")
