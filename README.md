@@ -63,7 +63,7 @@ Git clone our repository, creating a python environment and activate it via the 
 git clone https://github.com/Vision-CAIR/MiniGPT-4.git
 cd MiniGPT-4
 conda env create -f environment.yml
-conda activate minigpt-v
+conda activate minigptv
 ```
 
 
