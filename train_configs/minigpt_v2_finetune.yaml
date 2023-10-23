@@ -29,244 +29,244 @@ datasets:
         name: "blip_caption"
     sample_ratio: 40
 
-  # llava_conversation:   # 77k
-  #   batch_size: 2
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 10
+  llava_conversation:   # 77k
+    batch_size: 2
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 10
 
 
-  # unnatural_instruction:
-  #   batch_size: 1
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 15
+  unnatural_instruction:
+    batch_size: 1
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 15
 
 
-  # refvg:
-  #   batch_size: 6
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 40
+  refvg:
+    batch_size: 6
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 40
 
-  # llava_detail: #23K
-  #   batch_size: 4
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 20
+  llava_detail: #23K
+    batch_size: 4
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 20
 
-  # llava_reason:   # 77k
-  #   batch_size: 4
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 80
+  llava_reason:   # 77k
+    batch_size: 4
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 80
     
 
-  # flickr_grounded_caption:
-  #   batch_size: 2
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 80
+  flickr_grounded_caption:
+    batch_size: 2
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 80
 
-  # flickr_CaptionToPhrase:
-  #   batch_size: 2
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 80
+  flickr_CaptionToPhrase:
+    batch_size: 2
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 80
 
-  # flickr_ObjectToPhrase:
-  #   batch_size: 2
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 80
+  flickr_ObjectToPhrase:
+    batch_size: 2
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 80
 
-  # coco_caption:
-  #   batch_size: 6
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 10  
+  coco_caption:
+    batch_size: 6
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 10  
 
     
-  # textcaps_caption:  #
-  #   batch_size: 6
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 10
+  textcaps_caption:  #
+    batch_size: 6
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 10
 
-  # refcoco:  # 142k
-  #   batch_size: 6
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 15
-
-
-  # refcocop:
-  #   batch_size: 6
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 15
-
-  # refcocog:
-  #   batch_size: 6
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 15
+  refcoco:  # 142k
+    batch_size: 6
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 15
 
 
+  refcocop:
+    batch_size: 6
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 15
 
-  # invrefcoco:
-  #   batch_size: 6
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 10
-
-  # invrefcocop:
-  #   batch_size: 6
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 10
-
-  # invrefcocog:
-  #   batch_size: 6
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 10
+  refcocog:
+    batch_size: 6
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 15
 
 
-  # coco_vqa:    # 82K
-  #   batch_size: 6
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 15
 
-  # ok_vqa:   # 9k
-  #   batch_size: 6
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 8
+  invrefcoco:
+    batch_size: 6
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 10
 
-  # aok_vqa:  # 17k
-  #   batch_size: 6
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 12
+  invrefcocop:
+    batch_size: 6
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 10
 
-  # gqa:    # 82K
-  #   batch_size: 6
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 40
+  invrefcocog:
+    batch_size: 6
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 10
 
-  # ocrvqa:  # 800K
-  #   batch_size: 6
-  #   vis_processor:
-  #     train:
-  #       name: "blip2_image_train"
-  #       image_size: 448
-  #   text_processor:
-  #     train:
-  #       name: "blip_caption"
-  #   sample_ratio: 30
+
+  coco_vqa:    # 82K
+    batch_size: 6
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 15
+
+  ok_vqa:   # 9k
+    batch_size: 6
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 8
+
+  aok_vqa:  # 17k
+    batch_size: 6
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 12
+
+  gqa:    # 82K
+    batch_size: 6
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 40
+
+  ocrvqa:  # 800K
+    batch_size: 6
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 448
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 30
 
 
 run:
@@ -285,7 +285,7 @@ run:
   iters_per_epoch: 1000
 
   seed: 42
-  output_dir: "/ibex/project/c2090/minigpt4_ckpt/448_conversation_correct_best_v7_ablation1_v5_v6_again_system_prompt"
+  output_dir: "/ibex/project/c2090/minigpt4_ckpt/448_finetune_test_online"
 
   amp: True
   resume_ckpt_path: null
