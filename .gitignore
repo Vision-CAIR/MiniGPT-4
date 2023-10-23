@@ -175,6 +175,6 @@ output/
 ckpt/
 divide_vqa.py
 
-
+*.slurm
 slurm*
 sbatch_generate*
