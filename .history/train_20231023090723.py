@@ -48,7 +48,8 @@ def parse_args():
     parser.add_argument("--job_name",default="minigpt_v2",type=str)
 
     args = parser.parse_args()
-
+    # if 'LOCAL_RANK' not in os.environ:
+    #     os.environ['LOCAL_RANK'] = str(args.local_rank)
 
     return args
 

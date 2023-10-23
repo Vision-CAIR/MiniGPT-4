@@ -14,7 +14,7 @@ from minigpt4.common.dist_utils import get_rank, get_world_size, is_main_process
 from minigpt4.common.logger import MetricLogger, SmoothedValue
 from minigpt4.common.registry import registry
 from minigpt4.datasets.data_utils import prepare_sample
-import wandb
+
 
 class BaseTask:
     def __init__(self, **kwargs):
@@ -234,8 +234,7 @@ class BaseTask:
                 else:    
                     optimizer.step()
                 optimizer.zero_grad()
-                # if self.cfg.wandb_log:
-                if self.cfg.run_cfg.wandb_log:
+                if self.cfg.run_cfg.rank==0:
                     wandb.log({"epoch": inner_epoch, "loss": loss})
             metric_logger.update(loss=loss.item())
             metric_logger.update(lr=optimizer.param_groups[0]["lr"])

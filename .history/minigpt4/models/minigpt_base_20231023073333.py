@@ -179,6 +179,8 @@ class MiniGPTBase(BaseModel):
                                             return_tensors="pt",
                                             add_special_tokens=False).to(self.device) for a in answers]
 
+            print("question", questions)
+            print("answers", answers)
             cur_id = []
             cur_target = []
             for i in range(len(questions)):

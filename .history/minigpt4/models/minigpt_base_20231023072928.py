@@ -178,7 +178,6 @@ class MiniGPTBase(BaseModel):
             answers = [self.llama_tokenizer(a + self.end_sym,
                                             return_tensors="pt",
                                             add_special_tokens=False).to(self.device) for a in answers]
-
             cur_id = []
             cur_target = []
             for i in range(len(questions)):
@@ -226,7 +225,8 @@ class MiniGPTBase(BaseModel):
 
             conv_q = [[self.prompt_template.format(item) for item in items] for items in conv_q]
 
-        
+            print("conv q:", conv_q)
+            print("conv v",conv_a)
 
             cond_embeds, cond_atts = self.prompt_wrap(img_embeds, img_atts, [q[0] for q in conv_q])
             regress_token_ids, regress_atts, part_targets = self.tokenize_conversation(conv_q, conv_a)

@@ -48,7 +48,8 @@ def parse_args():
     parser.add_argument("--job_name",default="minigpt_v2",type=str)
 
     args = parser.parse_args()
-
+    # if 'LOCAL_RANK' not in os.environ:
+    #     os.environ['LOCAL_RANK'] = str(args.local_rank)
 
     return args
 
@@ -96,6 +97,11 @@ def main():
     datasets = task.build_datasets(cfg)
     model = task.build_model(cfg)
 
+    # login wandb
+
+
+    # print(args.wandb_log)
+    # if args.wandb_log:
     if cfg.run_cfg.wandb_log:
         wandb.login()
         wandb.init(project="minigptv2",name=args.job_name)

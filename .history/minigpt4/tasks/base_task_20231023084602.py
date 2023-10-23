@@ -234,8 +234,7 @@ class BaseTask:
                 else:    
                     optimizer.step()
                 optimizer.zero_grad()
-                # if self.cfg.wandb_log:
-                if self.cfg.run_cfg.wandb_log:
+                if self.cfg.wandb_log:
                     wandb.log({"epoch": inner_epoch, "loss": loss})
             metric_logger.update(loss=loss.item())
             metric_logger.update(lr=optimizer.param_groups[0]["lr"])

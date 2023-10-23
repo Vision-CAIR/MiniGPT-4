@@ -11,7 +11,6 @@ model:
   ckpt: "/ibex/project/c2090/minigpt4_ckpt/448_perforamnce_correct_v10_vg/20230925064/checkpoint_32.pth"
   use_grad_checkpoint: True
   chat_template: True
-  # wanda_log: False
   lora_r: 64
   lora_alpha: 16
 
@@ -276,7 +275,6 @@ run:
   init_lr: 1e-5
   min_lr: 8e-5
   warmup_lr: 1e-6
-  wandb_log: True
 
   weight_decay: 0.05
   max_epoch: 50
