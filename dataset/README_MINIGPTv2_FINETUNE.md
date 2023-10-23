@@ -26,7 +26,7 @@ After downloading all of them, organize the data as follows in `./playground/dat
 ### TextCaps
 
 ### RefCOCO, RefCOCO+, RefCOCOg
-Makesure you have the COCO 2014 images first. 
+Make sure you have the COCO 2014 images first. 
 
 Then,
 download RefCOCO, RefCOCO+, and RefCOCOg annotation files in the following links.
@@ -71,14 +71,10 @@ Similarly, set **ann_path** in all the following configs to the above folder (Lo
 ### LLaVA
 
 ### TextVQA
-- [train_val_images](https://dl.fbaipublicfiles.com/textvqa/images/train_val_images.zip)
-### GQA
-- [images](https://downloads.cs.stanford.edu/nlp/data/gqa/images.zip)
-- [Annotations](https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/gqa/testdev_balanced_questions.json)
-
-
+Images, and question-answer pairs will be loaded during evaluation.
 
 ### GQA
+Images, and question-answer pairs will be loaded during evaluation.
 
 ### OKVQA
 
