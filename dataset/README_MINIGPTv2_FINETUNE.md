@@ -1,23 +1,44 @@
 ## Download the COCO captions, RefCOCO, RefCOCO+. RefCOCOg, visual genome, textcaps, LLaVA, gqa, AOK-VQA, OK-VQA, OCR-VQA, filtered Flickr-30k, multi-task conversation, and Unnatural instruction datasets
 
-### COCO captions
+After downloading all of them, organize the data as follows in `./playground/data`,
 
+```
+├── coco
+│   └── train2017
+├── gqa
+│   └── images
+├── ocr_vqa
+│   └── images
+├── textvqa
+│   └── train_images
+└── vg
+    ├── VG_100K
+    └── VG_100K_2
+
+
+### COCO captions
+- [train2017](http://images.cocodataset.org/zips/train2017.zip)
 
 ### RefCOCO, RefCOCO+, RefCOCOg
 
 ### Visual genome
-
-### textcaps
+- [part1](https://cs.stanford.edu/people/rak248/VG_100K_2/images.zip), [part2](https://cs.stanford.edu/people/rak248/VG_100K_2/images2.zip)
+### TextCaps
 
 ### LLaVA
 
-### gqa
+### TextVQA
+- [train_val_images](https://dl.fbaipublicfiles.com/textvqa/images/train_val_images.zip)
+### GQA
+- [images](https://downloads.cs.stanford.edu/nlp/data/gqa/images.zip)
+- [Annotations](https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/gqa/testdev_balanced_questions.json)
 
 ### OKVQA
 
 ### AOK-VQA
 
 ### OCR-VQA
+- [download script](https://drive.google.com/drive/folders/1_GYPY5UkUy7HIcR0zq3ZCFgeZN7BAfm_?usp=sharing), **we save all files as `.jpg`**
 
 ### filtered Flickr-30k
 
