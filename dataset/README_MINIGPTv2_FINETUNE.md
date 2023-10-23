@@ -1,24 +1,8 @@
 ## Download the COCO captions, RefCOCO, RefCOCO+. RefCOCOg, visual genome, textcaps, LLaVA, gqa, AOK-VQA, OK-VQA, OCR-VQA, filtered Flickr-30k, multi-task conversation, and Unnatural instruction datasets
 
-After downloading all of them, organize the data as follows in `./playground/data`,
-
-```
-├── coco
-│   └── train2017
-├── gqa
-│   └── images
-├── ocr_vqa
-│   └── images
-├── textvqa
-│   └── train_images
-└── vg
-    ├── VG_100K
-    └── VG_100K_2
-```
 
 ### COCO captions
 - [train2017](http://images.cocodataset.org/zips/train2017.zip)
-
 
 
 ### Visual genome
@@ -69,12 +53,6 @@ Similarly, set **ann_path** in all the following configs to the above folder (Lo
 ### textcaps
 
 ### LLaVA
-
-### TextVQA
-Images, and question-answer pairs will be loaded during evaluation.
-
-### GQA
-Images, and question-answer pairs will be loaded during evaluation.
 
 ### OKVQA
 
