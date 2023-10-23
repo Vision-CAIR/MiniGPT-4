@@ -23,6 +23,7 @@ After downloading all of them, organize the data as follows in `./playground/dat
 
 ### Visual genome
 - [part1](https://cs.stanford.edu/people/rak248/VG_100K_2/images.zip), [part2](https://cs.stanford.edu/people/rak248/VG_100K_2/images2.zip)
+
 ### TextCaps
 
 ### RefCOCO, RefCOCO+, RefCOCOg
@@ -55,12 +56,12 @@ Location_you_like
 Set **image_path** in all the following dataset configuration files to the COCO 2014 image folder.
 Similarly, set **ann_path** in all the following configs to the above folder (Location_you_like) that contains refcoco, refcoco+, and refcocog.
 
-- [minigpt4/configs/refcoco.yaml](../minigpt4/configs/refcoco.yaml)
-- [minigpt4/configs/refcocog.yaml](../minigpt4/configs/refcocog.yaml) 
-- [minigpt4/configs/refcocop.yaml](../minigpt4/configs/refcocop.yaml)
-- [minigpt4/configs/invrefcoco.yaml](../minigpt4/configs/invrefcoco.yaml)
-- [minigpt4/configs/invrefcocog.yaml](../minigpt4/configs/invrefcocog.yaml) 
-- [minigpt4/configs/invrefcocop.yaml](../minigpt4/configs/invrefcocop.yaml)
+- [minigpt4/configs/datasets/coco_bbox/refcoco.yaml](../minigpt4/configs/datasets/coco_bbox/refcoco.yaml)
+- [minigpt4/configs/datasets/coco_bbox/refcocog.yaml](../minigpt4/configs/datasets/coco_bbox/refcocog.yaml) 
+- [minigpt4/configs/datasets/coco_bbox/refcocop.yaml](../minigpt4/configs/datasets/coco_bbox/refcocop.yaml)
+- [minigpt4/configs/datasets/coco_bbox/invrefcoco.yaml](../minigpt4/configs/datasets/coco_bbox/invrefcoco.yaml)
+- [minigpt4/configs/datasets/coco_bbox/invrefcocog.yaml](../minigpt4/configs/datasets/coco_bbox/invrefcocog.yaml) 
+- [minigpt4/configs/datasets/coco_bbox/invrefcocop.yaml](../minigpt4/configs/datasets/coco_bbox/invrefcocop.yaml)
 
 
 
@@ -69,6 +70,23 @@ Similarly, set **ann_path** in all the following configs to the above folder (Lo
 ### textcaps
 
 ### LLaVA
+Makesure you have the COCO 2014 images first. 
+
+Download Llava annotation files in the following link to the place you like.
+
+- https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/conversation_58k.json
+- https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/detail_23k.json
+- https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/complex_reasoning_77k.json
+
+Set **image_path** in all the following dataset configuration files to the COCO 2014 image folder.
+Similarly, set **ann_path** to the location of the previous downloaded conversation_58k.json, 
+detail_23k.json, and complex_reasoning_77k.json in conversation.yaml, detail.yaml, and reason.yaml, respectively.
+
+
+- [minigpt4/configs/datasets/llava/conversation.yaml](../minigpt4/configs/datasets/llava/conversation.yaml)
+- [minigpt4/configs/datasets/llava/detail.yaml](../minigpt4/configs/datasets/llava/detail.yaml) 
+- [minigpt4/configs/datasets/llava/reason.yaml](../minigpt4/configs/datasets/llava/reason.yaml)
+
 
 ### TextVQA
 - [train_val_images](https://dl.fbaipublicfiles.com/textvqa/images/train_val_images.zip)
