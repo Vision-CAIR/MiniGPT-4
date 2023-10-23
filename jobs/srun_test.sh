@@ -14,7 +14,7 @@ done
 
 
 #torchrun --master-port ${PORT} --nproc-per-node 2 train.py --job_name ${job_name}  --cfg-path train_configs_llama2/448_final_v1_gqa_ablation2.yaml
-torchrun --master-port ${PORT} --nproc-per-node 2 train.py  --cfg-path train_configs/minigpt_v2_finetune.yaml
+torchrun --master-port ${PORT} --nproc-per-node 1 train.py  --cfg-path train_configs/minigpt_v2_finetune.yaml
 
 #torchrun --master-port ${PORT} --nproc-per-node 2 train.py --job_name ${job_name}  --cfg-path finetune_conversation_ablation/conversation_v2_last_336_test.yaml
 

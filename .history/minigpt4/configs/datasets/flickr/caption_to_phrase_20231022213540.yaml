@@ -1,0 +1,6 @@
+datasets:
+  CaptionToPhrase:
+    data_type: images
+    build_info:
+      image_path: /ibex/project/c2133/minigpt4_v2_dataset/flickr/images
+      ann_path: /ibex/project/c2133/minigpt4_v2_dataset/flickr/train_grounding_phrase5_v2_last.json
