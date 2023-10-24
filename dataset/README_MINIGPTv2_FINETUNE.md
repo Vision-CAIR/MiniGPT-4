@@ -1,4 +1,4 @@
-## Download the COCO captions, RefCOCO, RefCOCO+. RefCOCOg, visual genome, textcaps, LLaVA, gqa, AOK-VQA, OK-VQA, OCR-VQA, filtered Flickr-30k, multi-task conversation, and Unnatural instruction datasets
+## Download the dataset for finetuning the MiniGPT-v2
 
 
 Download the dataset
@@ -28,12 +28,13 @@ Download the COCO 2014 images and captions
 
 
 ```
-├── ${MINIGPTv2_DATASET}
-│   ├── coco_captions
-│       ├── coco_images
-|       ├── annotations
-|            ├── coco_karpathy_train.json
-
+${MINIGPTv2_DATASET}
+├── coco_captions
+│   ├── coco_images
+│   └── annotations
+│       ├── coco_karpathy_train.json
+│       ...
+...
 ```
 
 Set **image_path** to the COCO 2014 image folder.
@@ -59,15 +60,16 @@ Similarly, set **ann_path** to the vqa_train.json and vqa_val.json path
 Download visiual genome images and annotation files
 
 ```
-├── ${MINIGPTv2_DATASET}
-│   ├── visual_genome
-│       ├── VG_100K
-│       ├── VG_100K_2
-|       ├── region_descriptions.json
+${MINIGPTv2_DATASET}
+├── visual_genome
+│   ├── VG_100K
+│   ├── VG_100K_2
+│   └── region_descriptions.json
+...
 ```
 
 Set **image_path** to visual_genome folder.
-Similarly, set **ann_path** to to visual_genome folder.
+Similarly, set **ann_path** to the visual_genome folder.
 
 - [minigpt4/configs/datasets/vg/ref.yaml](../minigpt4/configs/datasets/vg/ref.yaml)
 
@@ -91,25 +93,26 @@ Similarly, set **ann_path** to the TextCaps_0.1_train.json path
 Download the RefCOCO, RefCOCO+, RefCOCOg annotation files
 
 ```
-Location_you_like
-├── ${MINIGPTv2_DATASET}
-│   ├── refcoco_annotations
-│       ├── refcoco
-|            ├── instances.json
-|            ├── refs(google).p
-|            ├── refs(unc).p
-│       ├── refcoco+
-|            ├── instances.json
-|            ├── refs(unc).p
-│       ├── refcocog
-|            ├── instances.json
-|            ├── refs(google).p
-|            ├── refs(und).p
+
+${MINIGPTv2_DATASET}
+├── refcoco_annotations
+│   ├── refcoco
+│   │   ├── instances.json
+│   │   ├── refs(google).p
+│   │   └── refs(unc).p
+│   ├── refcoco+
+│   │   ├── instances.json
+│   │   └── refs(unc).p
+│   └── refcocog
+│       ├── instances.json
+│       ├── refs(google).p
+│       └─── refs(und).p
+...
 ```
 
 
 Set **image_path** to the COCO 2014 image folder.
-Similarly, set **ann_path** in all the following configs to the above folder (Location_you_like) that contains refcoco, refcoco+, and refcocog.
+Similarly, set **ann_path** in all the following configs to the above folder *refcoco_annotations* that contains refcoco, refcoco+, and refcocog.
 
 - [minigpt4/configs/datasets/coco_bbox/refcoco.yaml](../minigpt4/configs/datasets/coco_bbox/refcoco.yaml)
 - [minigpt4/configs/datasets/coco_bbox/refcocog.yaml](../minigpt4/configs/datasets/coco_bbox/refcocog.yaml) 
@@ -196,16 +199,16 @@ Similarly, set **ann_path** to the lhe OCR-VQA dataset.json
 
 
 ### filtered Flickr-30k
-Download filtered Flickr-30k images and annotation files
+Download filtered Flickr-30k images (fill this [form](https://forms.illinois.edu/sec/229675) on official website or from [kaggle](https://www.kaggle.com/datasets/hsankesara/flickr-image-dataset/download?datasetVersionNumber=1)) and annotation files
 
 ```
-Location_you_like
-├── ${MINIGPTv2_DATASET}
-│   ├── filtered_flickr
-│       ├── images
-│       ├── captiontobbox.json
-│       ├── groundedcaption.json
-│       ├── phrasetobbox.json
+${MINIGPTv2_DATASET}
+├── filtered_flickr
+│   ├── images
+│   ├── captiontobbox.json
+│   ├── groundedcaption.json
+│   └── phrasetobbox.json
+...
 ```
 
 Set **image_path** as the flickr-30k images foler.
@@ -222,9 +225,10 @@ Download the multi-task converstation dataset
 
 ```
 Location_you_like
-├── ${MINIGPTv2_DATASET}
-│   ├── multitask_conversation
-│       ├── multitask_conversation.json
+${MINIGPTv2_DATASET}
+├── multitask_conversation
+│   └── multitask_conversation.json
+...
 ```
 
 Set **image_path** as the COCO 2014 images folder.
