@@ -10,7 +10,7 @@ datasets:
     data_type: images
     
     build_info:
-      image_path: /ibex/project/c2133/minigpt4_v2_dataset/TextCaps/train_images
-      ann_path: /ibex/project/c2133/minigpt4_v2_dataset/TextCaps/TextCaps_0.1_train.json
+      image_path: /ibex/project/c2090/minigptv2_dataset/textcaps/train_images
+      ann_path: /ibex/project/c2090/minigptv2_dataset/textcaps/TextCaps_0.1_train.json
 
 

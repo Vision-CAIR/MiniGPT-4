@@ -31,6 +31,6 @@ datasets:
               # - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/okvqa/OpenEnded_mscoco_train2014_questions.json
               # - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/okvqa/mscoco_train2014_annotations.json
           storage:
-              - /ibex/project/c2133/minigpt4_v2_dataset/okvqa_v2/annotations/okvqa_train.json
+              - /ibex/project/c2090/minigptv2_dataset/okvqa/okvqa_train.json
       images:
           storage: /ibex/reference/CV/COCO/cocoapi/data/2014/images/jpeg

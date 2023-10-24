@@ -7,4 +7,4 @@ datasets:
   unnatural_instruction:
     data_type: text
     build_info:
-      ann_path: /ibex/project/c2133/minigpt4_v2_dataset/unnatural-instructions/data/unnatural_instruction_filer.json
+      ann_path: /ibex/project/c2090/minigptv2_dataset/unnatural_instructions/unnatural_instruction_filer.json

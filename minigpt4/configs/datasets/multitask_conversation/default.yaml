@@ -11,4 +11,4 @@ datasets:
     build_info:
     
       image_path: /ibex/reference/CV/COCO/cocoapi/data/2014/images/jpeg/train
-      ann_path: /ibex/project/c2133/minigpt4_v2_dataset/multitask_conversation/multi_task_conversation.json
+      ann_path: /ibex/project/c2090/minigptv2_dataset/multitask_conversation/multi_task_conversation.json

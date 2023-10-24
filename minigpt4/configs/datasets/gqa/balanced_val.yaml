@@ -28,6 +28,6 @@ datasets:
           url:
               - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/gqa/train_balanced_questions.json
           storage:
-              - /ibex/project/c2133/minigpt4_v2_dataset/gqa/annotations/train_balanced_questions.json
+              - /ibex/project/c2090/minigptv2_dataset/gqa/train_balanced_questions.json
       images:
-          storage: /ibex/project/c2133/minigpt4_v2_dataset/gqa/images_copy/
+          storage: /ibex/project/c2090/minigptv2_dataset/gqa/images
