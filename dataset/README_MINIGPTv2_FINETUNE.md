@@ -1,11 +1,45 @@
 ## Download the COCO captions, RefCOCO, RefCOCO+. RefCOCOg, visual genome, textcaps, LLaVA, gqa, AOK-VQA, OK-VQA, OCR-VQA, filtered Flickr-30k, multi-task conversation, and Unnatural instruction datasets
 
 
+Download the dataset
+
+Image source | Download path
+--- | :---:
+COCO 2014 images | <a href="http://images.cocodataset.org/zips/train2014.zip">images</a> <a href="https://storage.googleapis.com/sfr-vision-language-research/datasets/coco_karpathy_train.json"> captions</a>
+Visual Genome |  <a href="https://cs.stanford.edu/people/rak248/VG_100K_2/images.zip">images part1</a> <a href="https://cs.stanford.edu/people/rak248/VG_100K_2/images2.zip">images part2</a>
+TextCaps | <a href="https://cs.stanford.edu/people/rak248/VG_100K_2/images.zip">images</a> <a href="https://dl.fbaipublicfiles.com/textvqa/data/textcaps/TextCaps_0.1_train.json"> annotations</a> 
+RefCOCO | <a href="https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcoco.zip"> annotations </a>
+RefCOCO+ | <a href="https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcoco+.zip"> annotations </a>
+RefCOCOg | <a href="https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcocog.zip"> annotations </a>
+LLaVA | <a href="https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/complex_reasoning_77k.json"> Compelex reasoning </a> <a href="https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/detail_23k.json"> Detailed description </a>  <a href="https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/conversation_58k.json"> Conversation </a> 
+OKVQA | <a href="https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/okvqa/okvqa_train.json"> annotations </a>
+AOK-VQA | <a href="https://prior-datasets.s3.us-east-2.amazonaws.com/aokvqa/aokvqa_v1p0.tar.gz"> annotations </a>
+OCR-VQA | <a href="https://drive.google.com/drive/folders/1_GYPY5UkUy7HIcR0zq3ZCFgeZN7BAfm_?usp=sharing"> annotations </a>
+Filtered Flickr-30k | images:  annotations: <a href="https://drive.google.com/drive/folders/19c_ggBI77AvdtYlPbuI0ZpnPz73T5teX?usp=sharing"> annotations </a>
+Multi-task conversation ｜ <a href="https://drive.google.com/file/d/11HHqB2c29hbSk-WLxdta-nG8UCUrcCN1/view?usp=sharing"> annotations </a> 
+Filtered unnatural instruction ｜<a href="https://drive.google.com/file/d/1lXNnBcb5WU-sc8Fe2T2N8J0NRw4sBLev/view?usp=sharing"> annotations </a>
+
+
+.
+├── ${MINIGPTv2_DATASET}
+│   ├── coco_captions
+│       ├── coco_images
+|       ├── annotations
+|            ├── coco_karpathy_train.json
+
+
 ### COCO captions
-- [train2017](http://images.cocodataset.org/zips/train2017.zip)
+
+
+
+Download the COCO 2014 images
+- [train2014](http://images.cocodataset.org/zips/train2014.zip)
+
+
 
 
 ### Visual genome
+
 - [part1](https://cs.stanford.edu/people/rak248/VG_100K_2/images.zip), [part2](https://cs.stanford.edu/people/rak248/VG_100K_2/images2.zip)
 
 ### TextCaps
@@ -69,10 +103,14 @@ detail_23k.json, and complex_reasoning_77k.json in conversation.yaml, detail.yam
 - [minigpt4/configs/datasets/llava/reason.yaml](../minigpt4/configs/datasets/llava/reason.yaml)
 
 
+
+
+
 ### OKVQA
 
 - [OK-VQA Input Questions](https://okvqa.allenai.org/static/data/OpenEnded_mscoco_train2014_questions.json.zip)
 - [OK-VQA Annotations](https://okvqa.allenai.org/static/data/mscoco_train2014_annotations.json.zip)
+
 - [okvqa_train](https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/okvqa/okvqa_train.json)
 - Images are from COCO
 
@@ -88,6 +126,7 @@ curl -fsSL https://prior-datasets.s3.us-east-2.amazonaws.com/aokvqa/aokvqa_v1p0.
 - [download script](https://drive.google.com/drive/folders/1_GYPY5UkUy7HIcR0zq3ZCFgeZN7BAfm_?usp=sharing), **we save all files as `.jpg`**
 
 ### filtered Flickr-30k
+
 
 ### Multi-task conversation
 
