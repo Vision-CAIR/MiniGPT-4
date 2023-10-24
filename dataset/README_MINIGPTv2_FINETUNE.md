@@ -208,7 +208,7 @@ Similarly, set **ann_path** to the lhe OCR-VQA dataset.json
 
 
 ### filtered Flickr-30k
-Download filtered Flickr-30k images and annotation files
+Download filtered Flickr-30k images (fill this [form](https://forms.illinois.edu/sec/229675)) and annotation files
 
 ```
 ${MINIGPTv2_DATASET}
