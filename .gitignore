@@ -174,7 +174,8 @@ prompts/
 output/
 ckpt/
 divide_vqa.py
+jobs/
 
-
+*.slurm
 slurm*
 sbatch_generate*
