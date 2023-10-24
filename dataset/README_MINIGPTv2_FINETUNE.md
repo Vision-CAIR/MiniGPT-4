@@ -8,17 +8,18 @@ Image source | Download path
 COCO 2014 images | <a href="http://images.cocodataset.org/zips/train2014.zip">images</a> &nbsp;&nbsp;  <a href="https://storage.googleapis.com/sfr-vision-language-research/datasets/coco_karpathy_train.json"> captions</a>
 COCO VQA | <a href="https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/vqa_train.json">vqa train</a> &nbsp;&nbsp;  <a href="https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/vqa_val.json"> vqa val</a>
 Visual Genome |  <a href="https://cs.stanford.edu/people/rak248/VG_100K_2/images.zip">images part1</a> <a href="https://cs.stanford.edu/people/rak248/VG_100K_2/images2.zip">images part2</a>
-TextCaps | <a href="https://cs.stanford.edu/people/rak248/VG_100K_2/images.zip">images</a> <a href="https://dl.fbaipublicfiles.com/textvqa/data/textcaps/TextCaps_0.1_train.json"> annotations</a> 
+TextCaps | <a href="https://cs.stanford.edu/people/rak248/VG_100K_2/images.zip">images</a>  &nbsp;&nbsp; <a href="https://dl.fbaipublicfiles.com/textvqa/data/textcaps/TextCaps_0.1_train.json"> annotations</a> 
 RefCOCO | <a href="https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcoco.zip"> annotations </a>
 RefCOCO+ | <a href="https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcoco+.zip"> annotations </a>
 RefCOCOg | <a href="https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcocog.zip"> annotations </a>
-LLaVA | <a href="https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/complex_reasoning_77k.json"> Compelex reasoning </a> &nbsp;&nbsp;<a href="https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/detail_23k.json"> Detailed description </a> &nbsp;&nbsp; <a href="https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/conversation_58k.json"> Conversation </a> 
 OKVQA | <a href="https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/okvqa/okvqa_train.json"> annotations </a>
 AOK-VQA | <a href="https://prior-datasets.s3.us-east-2.amazonaws.com/aokvqa/aokvqa_v1p0.tar.gz"> annotations </a>
 OCR-VQA | <a href="https://drive.google.com/drive/folders/1_GYPY5UkUy7HIcR0zq3ZCFgeZN7BAfm_?usp=sharing"> annotations </a>
+GQA | <a href="">images</a>  &nbsp;&nbsp; <a href="/ibex/project/c2133/minigpt4_v2_dataset/gqa/annotations/train_balanced_questions.json"> annotations </a>
 Filtered Flickr-30k |  <a href="https://drive.google.com/drive/folders/19c_ggBI77AvdtYlPbuI0ZpnPz73T5teX?usp=sharing"> annotations </a>
 Multi-task conversation |  <a href="https://drive.google.com/file/d/11HHqB2c29hbSk-WLxdta-nG8UCUrcCN1/view?usp=sharing"> annotations </a> 
 Filtered unnatural instruction |  <a href="https://drive.google.com/file/d/1lXNnBcb5WU-sc8Fe2T2N8J0NRw4sBLev/view?usp=sharing"> annotations </a>
+LLaVA | <a href="https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/complex_reasoning_77k.json"> Compelex reasoning </a> &nbsp;&nbsp;<a href="https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/detail_23k.json"> Detailed description </a> &nbsp;&nbsp; <a href="https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/conversation_58k.json"> Conversation </a> 
 
 
 
@@ -76,7 +77,7 @@ Download the TextCaps images and annotation files
 
 ```
 ├── ${MINIGPTv2_DATASET}
-│   ├── TextCaps
+│   ├── textcaps
 │       ├── train_images
 │       ├── TextCaps_0.1_train.json
 ```
@@ -118,25 +119,6 @@ Similarly, set **ann_path** in all the following configs to the above folder (Lo
 - [minigpt4/configs/datasets/coco_bbox/invrefcocop.yaml](../minigpt4/configs/datasets/coco_bbox/invrefcocop.yaml)
 
 
-### LLaVA
-
-```
-Location_you_like
-├── ${MINIGPTv2_DATASET}
-│   ├── llava
-│       ├── conversation_58k.json
-│       ├── detail_23k.json
-│       ├── complex_reasoning_77k.json
-```
-
-Set **image_path** to the COCO 2014 image folder.
-Similarly, set **ann_path** to the location of the previous downloaded conversation_58k.json, 
-detail_23k.json, and complex_reasoning_77k.json in conversation.yaml, detail.yaml, and reason.yaml, respectively.
-
-
-- [minigpt4/configs/datasets/llava/conversation.yaml](../minigpt4/configs/datasets/llava/conversation.yaml)
-- [minigpt4/configs/datasets/llava/detail.yaml](../minigpt4/configs/datasets/llava/detail.yaml) 
-- [minigpt4/configs/datasets/llava/reason.yaml](../minigpt4/configs/datasets/llava/reason.yaml)
 
 
 ### OKVQA
@@ -145,7 +127,7 @@ detail_23k.json, and complex_reasoning_77k.json in conversation.yaml, detail.yam
 ```
 Location_you_like
 ├── ${MINIGPTv2_DATASET}
-│   ├── OKVQA
+│   ├── okvqa
 │       ├── okvqa_train.json
 ```
 
@@ -172,7 +154,7 @@ curl -fsSL https://prior-datasets.s3.us-east-2.amazonaws.com/aokvqa/aokvqa_v1p0.
 ```
 Location_you_like
 ├── ${MINIGPTv2_DATASET}
-│   ├── AOKVQA
+│   ├── aokvqa
 │       ├── aokvqa_v1p0_train.json
 ```
 
@@ -185,11 +167,24 @@ Similarly, set **ann_path** to the location of the AOKVQA dataset
 
 ### OCR-VQA
 Download the OCR-VQA annotation files
+download the images with loadDataset.py script
 
 ```
 Location_you_like
 ├── ${MINIGPTv2_DATASET}
-│   ├── OCR-VQA
+│   ├── ocrvqa
+│       ├── images
+│       ├── dataset.json
+```
+
+### GQA
+Download the GQA annotation files
+download the images with loadDataset.py script
+
+```
+Location_you_like
+├── ${MINIGPTv2_DATASET}
+│   ├── ocrvqa
 │       ├── images
 │       ├── dataset.json
 ```
@@ -243,7 +238,7 @@ Download the filtered unnatural instruction annotation files (we remove the very
 ```
 Location_you_like
 ├── ${MINIGPTv2_DATASET}
-│   ├── unnatural-instructions
+│   ├── unnatural_instructions
 │       ├── filtered_unnatural_instruction.json
 ```
 
@@ -251,3 +246,23 @@ There is no image path.
 Similarly, set **ann_path** to the filtered_unnatural_instruction.json file path
 
 - [minigpt4/configs/datasets/nlp/unnatural_instruction.yaml](../minigpt4/configs/datasets/nlp/unnatural_instruction.yaml)
+
+### LLaVA
+
+```
+Location_you_like
+├── ${MINIGPTv2_DATASET}
+│   ├── llava
+│       ├── conversation_58k.json
+│       ├── detail_23k.json
+│       ├── complex_reasoning_77k.json
+```
+
+Set **image_path** to the COCO 2014 image folder.
+Similarly, set **ann_path** to the location of the previous downloaded conversation_58k.json, 
+detail_23k.json, and complex_reasoning_77k.json in conversation.yaml, detail.yaml, and reason.yaml, respectively.
+
+
+- [minigpt4/configs/datasets/llava/conversation.yaml](../minigpt4/configs/datasets/llava/conversation.yaml)
+- [minigpt4/configs/datasets/llava/detail.yaml](../minigpt4/configs/datasets/llava/detail.yaml) 
+- [minigpt4/configs/datasets/llava/reason.yaml](../minigpt4/configs/datasets/llava/reason.yaml)

@@ -27,7 +27,7 @@ datasets:
               - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/vqa_train.json
               - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/vqa_val.json
           storage:
-              - /ibex/project/c2133/minigpt4_v2_dataset/vqav2/annotations/vqa_train.json
-              - /ibex/project/c2133/minigpt4_v2_dataset/vqav2/coco/annotations/vqa_val.json
+              - /ibex/project/c2090/minigptv2_dataset/vqav2/vqa_train.json
+              - /ibex/project/c2090/minigptv2_dataset/vqav2/vqa_val.json
       images:
           storage: /ibex/reference/CV/COCO/cocoapi/data/2014/images/jpeg

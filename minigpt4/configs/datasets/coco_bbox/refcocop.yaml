@@ -3,6 +3,6 @@ datasets:
     data_type: images
     build_info:
       image_path: /ibex/reference/CV/COCO/cocoapi/data/2014/images/jpeg/train
-      ann_path: /ibex/project/c2133/object_detection_datasets/
+      ann_path: /ibex/project/c2090/minigptv2_dataset/refcoco_annotations
       dataset: refcoco+
       splitBy: unc
