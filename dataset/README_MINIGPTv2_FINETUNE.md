@@ -15,7 +15,7 @@ RefCOCOg | <a href="https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcocog
 OKVQA | <a href="https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/okvqa/okvqa_train.json"> annotations </a>
 AOK-VQA | <a href="https://prior-datasets.s3.us-east-2.amazonaws.com/aokvqa/aokvqa_v1p0.tar.gz"> annotations </a>
 OCR-VQA | <a href="https://drive.google.com/drive/folders/1_GYPY5UkUy7HIcR0zq3ZCFgeZN7BAfm_?usp=sharing"> annotations </a>
-GQA | <a href="">images</a>  &nbsp;&nbsp; <a href="/ibex/project/c2133/minigpt4_v2_dataset/gqa/annotations/train_balanced_questions.json"> annotations </a>
+GQA | <a href="https://downloads.cs.stanford.edu/nlp/data/gqa/images.zip">images</a>  &nbsp;&nbsp; <a href="/ibex/project/c2133/minigpt4_v2_dataset/gqa/annotations/train_balanced_questions.json"> annotations </a>
 Filtered Flickr-30k |  <a href="https://drive.google.com/drive/folders/19c_ggBI77AvdtYlPbuI0ZpnPz73T5teX?usp=sharing"> annotations </a>
 Multi-task conversation |  <a href="https://drive.google.com/file/d/11HHqB2c29hbSk-WLxdta-nG8UCUrcCN1/view?usp=sharing"> annotations </a> 
 Filtered unnatural instruction |  <a href="https://drive.google.com/file/d/1lXNnBcb5WU-sc8Fe2T2N8J0NRw4sBLev/view?usp=sharing"> annotations </a>
@@ -180,21 +180,24 @@ Location_you_like
 │       ├── dataset.json
 ```
 
+Set **image_path** as the ocrvqa/images folder.
+Similarly, set **ann_path** to the dataset.json
+- [minigpt4/configs/datasets/ocrvqa/ocrvqa.yaml](../minigpt4/configs/datasets/ocrvqa/ocrvqa.yaml)
+
 ### GQA
-Download the GQA annotation files
-download the images with loadDataset.py script
+Download the GQA annotation files and images
 
 ```
 Location_you_like
 ├── ${MINIGPTv2_DATASET}
-│   ├── ocrvqa
+│   ├── gqa
 │       ├── images
-│       ├── dataset.json
+│       ├── train_balanced_questions.json
 ```
 
-Set **image_path** as the OCR-VQA image folder.
-Similarly, set **ann_path** to the lhe OCR-VQA dataset.json
-- [minigpt4/configs/datasets/ocrvqa/ocrvqa.yaml](../minigpt4/configs/datasets/ocrvqa/ocrvqa.yaml)
+Set **image_path** as the gqa/images folder.
+Similarly, set **ann_path** to the train_balanced_questions.json
+- [minigpt4/configs/datasets/gqa/balanced_val.yaml](../minigpt4/configs/datasets/gqa/balanced_val.yaml)
 
 
 
