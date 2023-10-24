@@ -7,7 +7,7 @@ Image source | Download path
 --- | :---:
 COCO 2014 images | <a href="http://images.cocodataset.org/zips/train2014.zip">images</a> &nbsp;&nbsp;  <a href="https://storage.googleapis.com/sfr-vision-language-research/datasets/coco_karpathy_train.json"> captions</a>
 COCO VQA | <a href="https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/vqa_train.json">vqa train</a> &nbsp;&nbsp;  <a href="https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/vqa_val.json"> vqa val</a>
-Visual Genome |  <a href="https://cs.stanford.edu/people/rak248/VG_100K_2/images.zip">images part1</a> <a href="https://cs.stanford.edu/people/rak248/VG_100K_2/images2.zip">images part2</a>
+Visual Genome |  <a href="https://cs.stanford.edu/people/rak248/VG_100K_2/images.zip">images part1</a> <a href="https://cs.stanford.edu/people/rak248/VG_100K_2/images2.zip">images part2</a> <a href="https://homes.cs.washington.edu/~ranjay/visualgenome/data/dataset/region_descriptions.json.zip">annotations</a> 
 TextCaps | <a href="https://cs.stanford.edu/people/rak248/VG_100K_2/images.zip">images</a> <a href="https://dl.fbaipublicfiles.com/textvqa/data/textcaps/TextCaps_0.1_train.json"> annotations</a> 
 RefCOCO | <a href="https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcoco.zip"> annotations </a>
 RefCOCO+ | <a href="https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcoco+.zip"> annotations </a>
@@ -63,8 +63,7 @@ ${MINIGPTv2_DATASET}
 ├── visual_genome
 │   ├── VG_100K
 │   ├── VG_100K_2
-│   ├── region_descriptions.json
-│   ...
+│   └── region_descriptions.json
 ...
 ```
 
@@ -126,7 +125,6 @@ Similarly, set **ann_path** in all the following configs to the above folder *re
 ### LLaVA
 
 ```
-Location_you_like
 ${MINIGPTv2_DATASET}
 ├── llava
 │   ├── conversation_58k.json
