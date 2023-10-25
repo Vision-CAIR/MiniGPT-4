@@ -1,22 +1,17 @@
 model:
   arch: minigpt_v2
   model_type: pretrain
-  freeze_vit: True
-  freeze_qformer: True
   max_txt_len: 1024
-  low_resource: False
   image_size: 448
   end_sym: "</s>"
-  llama_model: "/ibex/project/c2133/llama_v2/llama-2-7b-chat-pytorch_update"
-  ckpt: "/ibex/project/c2090/minigpt4_ckpt/448_perforamnce_correct_v10_vg/20230925064/checkpoint_32.pth"
+  llama_model: "/path/to/llama_checkpoint"
+  ckpt: "/path/to/pretrained_checkpoint"
   use_grad_checkpoint: True
   chat_template: True
   lora_r: 64
   lora_alpha: 16
 
-
 datasets:
-
   multitask_conversation:
     batch_size: 2
     vis_processor:
@@ -26,9 +21,9 @@ datasets:
     text_processor:
       train:
         name: "blip_caption"
-    sample_ratio: 40
+    sample_ratio: 50
 
-  llava_conversation:   # 77k
+  llava_conversation: 
     batch_size: 2
     vis_processor:
       train:
@@ -37,8 +32,7 @@ datasets:
     text_processor:
       train:
         name: "blip_caption"
-    sample_ratio: 10
-
+    sample_ratio: 30
 
   unnatural_instruction:
     batch_size: 1
@@ -49,7 +43,7 @@ datasets:
     text_processor:
       train:
         name: "blip_caption"
-    sample_ratio: 15
+    sample_ratio: 5
 
 
   refvg:
@@ -63,7 +57,7 @@ datasets:
         name: "blip_caption"
     sample_ratio: 40
 
-  llava_detail: #23K
+  llava_detail:
     batch_size: 4
     vis_processor:
       train:
@@ -74,7 +68,7 @@ datasets:
         name: "blip_caption"
     sample_ratio: 20
 
-  llava_reason:   # 77k
+  llava_reason: 
     batch_size: 4
     vis_processor:
       train:
@@ -142,7 +136,7 @@ datasets:
         name: "blip_caption"
     sample_ratio: 10
 
-  refcoco:  # 142k
+  refcoco: 
     batch_size: 6
     vis_processor:
       train:
@@ -151,7 +145,7 @@ datasets:
     text_processor:
       train:
         name: "blip_caption"
-    sample_ratio: 15
+    sample_ratio: 20
 
 
   refcocop:
@@ -163,7 +157,7 @@ datasets:
     text_processor:
       train:
         name: "blip_caption"
-    sample_ratio: 15
+    sample_ratio: 20
 
   refcocog:
     batch_size: 6
@@ -174,7 +168,7 @@ datasets:
     text_processor:
       train:
         name: "blip_caption"
-    sample_ratio: 15
+    sample_ratio: 20
 
 
 
@@ -212,7 +206,7 @@ datasets:
     sample_ratio: 10
 
 
-  coco_vqa:    # 82K
+  coco_vqa:    
     batch_size: 6
     vis_processor:
       train:
@@ -223,7 +217,7 @@ datasets:
         name: "blip_caption"
     sample_ratio: 15
 
-  ok_vqa:   # 9k
+  ok_vqa:   
     batch_size: 6
     vis_processor:
       train:
@@ -234,7 +228,7 @@ datasets:
         name: "blip_caption"
     sample_ratio: 8
 
-  aok_vqa:  # 17k
+  aok_vqa: 
     batch_size: 6
     vis_processor:
       train:
@@ -245,7 +239,7 @@ datasets:
         name: "blip_caption"
     sample_ratio: 12
 
-  gqa:    # 82K
+  gqa:  
     batch_size: 6
     vis_processor:
       train:
@@ -254,9 +248,9 @@ datasets:
     text_processor:
       train:
         name: "blip_caption"
-    sample_ratio: 40
+    sample_ratio: 50
 
-  ocrvqa:  # 800K
+  ocrvqa: 
     batch_size: 6
     vis_processor:
       train:
@@ -283,7 +277,7 @@ run:
   iters_per_epoch: 1000
 
   seed: 42
-  output_dir: "/ibex/project/c2090/minigpt4_ckpt/448_finetune_test_online"
+  output_dir: "/path/to/save_checkpoint"
 
   amp: True
   resume_ckpt_path: null

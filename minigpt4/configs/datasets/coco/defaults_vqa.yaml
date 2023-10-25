@@ -10,24 +10,15 @@ datasets:
 
     build_info:
 
-      # annotations:
-      #   train:
-      #     url:
-      #         - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/vqa_train.json
-      #         - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/vqa_val.json
-      #     storage:
-      #         - /path/to/vqav2/annotations/vqa_train.json
-      #         - /path/to/vqav2/coco/annotations/vqa_val.json
-      # images:
-      #     storage: /path/to/coco/images/
-
       annotations:
         train:
           url:
               - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/vqa_train.json
               - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/vqa_val.json
           storage:
-              - /ibex/project/c2090/minigptv2_dataset/vqav2/vqa_train.json
-              - /ibex/project/c2090/minigptv2_dataset/vqav2/vqa_val.json
+              - /path/to/vqav2/vqa_train.json
+              - /path/to/vqav2/vqa_val.json
       images:
-          storage: /ibex/reference/CV/COCO/cocoapi/data/2014/images/jpeg
+          storage: /path/to/coco/images
+
+  

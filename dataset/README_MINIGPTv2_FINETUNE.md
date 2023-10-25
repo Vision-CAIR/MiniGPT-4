@@ -26,11 +26,22 @@ LLaVA | <a href="https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/
 ### COCO captions
 Download the COCO 2014 images and captions
 
+coco 2014 images path
+
+```
+${MINIGPTv2_DATASET}
+├── coco
+│   ├── images
+│       ...
+...
+```
+
+
+coco caption annotation path
 
 ```
 ${MINIGPTv2_DATASET}
 ├── coco_captions
-│   ├── coco_images
 │   └── annotations
 │       ├── coco_karpathy_train.json
 │       ...

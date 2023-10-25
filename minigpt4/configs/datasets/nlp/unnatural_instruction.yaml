@@ -1,10 +1,5 @@
 datasets:
-  # unnatural_instruction:
-  #   data_type: text
-  #   build_info:
-  #     ann_path: /path/to/unnatural-instructions/data/unnatural_instruction_filer.json
-
   unnatural_instruction:
     data_type: text
     build_info:
-      ann_path: /ibex/project/c2090/minigptv2_dataset/unnatural_instructions/unnatural_instruction_filer.json
+      ann_path: /path/to/unnatural_instructions/filtered_unnatural_instruction.json
