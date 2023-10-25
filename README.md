@@ -93,9 +93,9 @@ Then, set the variable *llama_model* in the model config file to the LLM weight 
 Download the pretrained model checkpoints
 
 
-| MiniGPT-v2 (developing model (online demo)) | MiniGPT-v2 (after stage-2) | MiniGPT-v2 (after stage-3)
+| MiniGPT-v2 (after stage-2) | MiniGPT-v2 (after stage-3) | MiniGPT-v2 (online developing demo)| 
 |------------------------------|------------------------------|------------------------------|
-| [Download](https://drive.google.com/file/d/1aVbfW7nkCSYx99_vCRyP1sOlQiWVSnAl/view?usp=sharing) |[Download](https://drive.google.com/file/d/1Vi_E7ZtZXRAQcyz4f8E6LtLh2UXABCmu/view?usp=sharing) |[Download](https://drive.google.com/file/d/1jAbxUiyl04SFJMN4sF1vvUU69Etuz4qa/view?usp=sharing) |
+| [Download](https://drive.google.com/file/d/1Vi_E7ZtZXRAQcyz4f8E6LtLh2UXABCmu/view?usp=sharing) |[Download](https://drive.google.com/file/d/1jAbxUiyl04SFJMN4sF1vvUU69Etuz4qa/view?usp=sharing) | [Download](https://drive.google.com/file/d/1aVbfW7nkCSYx99_vCRyP1sOlQiWVSnAl/view?usp=sharing) |
 
 
 For **MiniGPT-v2**, set the path to the pretrained checkpoint in the evaluation config file 
