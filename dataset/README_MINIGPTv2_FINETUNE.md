@@ -32,7 +32,6 @@ coco 2014 images path
 ${MINIGPTv2_DATASET}
 ├── coco
 │   ├── images
-│       ...
 ...
 ```
 
