@@ -4,9 +4,12 @@
 You firstly need to prepare the dataset. you can follow this step to prepare the dataset.
 our [dataset preparation](dataset/README_MINIGPTv2_FINETUNE.md). 
 
-in train_configs/minigptv2_finetune.yaml, you need to set up the paths
+In the train_configs/minigptv2_finetune.yaml, you need to set up the paths:
+
 llama_model checkpoint path: "/path/to/llama_checkpoint"
+
 ckpt: "/path/to/pretrained_checkpoint"
+
 ckpt save path: "/path/to/save_checkpoint"
 
 For ckpt, you may load from our pretrained model checkpoints:
