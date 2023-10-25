@@ -44,7 +44,6 @@ ${MINIGPTv2_DATASET}
 ├── coco_captions
 │   └── annotations
 │       ├── coco_karpathy_train.json
-│       ...
 ...
 ```
 
@@ -77,7 +76,6 @@ ${MINIGPTv2_DATASET}
 │   ├── VG_100K_2
 │   └── region_descriptions.json
 │   └── image_data.json
-
 ...
 ```
 
