@@ -1,0 +1,6 @@
+datasets:
+  ocrvqa:
+    data_type: images
+    build_info:
+      image_path: /path/to/ocrvqa/images
+      ann_path: /path/to/ocrvqa/dataset.json

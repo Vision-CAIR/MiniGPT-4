@@ -1,0 +1,8 @@
+datasets:
+  invrefcocop:
+    data_type: images
+    build_info:
+      image_path: /path/to/coco/images
+      ann_path: /path/to/refcoco_annotations
+      dataset: invrefcoco+
+      splitBy: unc

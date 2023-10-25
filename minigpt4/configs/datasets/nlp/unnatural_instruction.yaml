@@ -1,0 +1,5 @@
+datasets:
+  unnatural_instruction:
+    data_type: text
+    build_info:
+      ann_path: /path/to/unnatural_instructions/filtered_unnatural_instruction.json

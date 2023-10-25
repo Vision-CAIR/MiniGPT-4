@@ -1,0 +1,7 @@
+datasets:
+
+  llava_conversation:
+    data_type: images
+    build_info:
+      image_path: /path/to/coco/images
+      ann_path: /path/to/llava/conversation_58k.json

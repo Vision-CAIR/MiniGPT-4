@@ -1,0 +1,6 @@
+datasets:
+  llava_detail:
+    data_type: images
+    build_info:
+      image_path: /path/to/coco/images
+      ann_path: /path/to/llava/detail_23k.json

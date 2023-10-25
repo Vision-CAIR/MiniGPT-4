@@ -1,0 +1,7 @@
+datasets:
+  multitask_conversation:
+    data_type: images
+    build_info:
+    
+      image_path: /path/to/coco/images
+      ann_path: /path/to/multitask_conversation/multi_task_conversation.json

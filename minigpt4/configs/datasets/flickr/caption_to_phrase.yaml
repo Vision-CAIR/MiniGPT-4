@@ -1,0 +1,6 @@
+datasets:
+  flickr_CaptionToPhrase:
+    data_type: images
+    build_info:
+      image_path: /path/to/filtered_flikcr/images
+      ann_path: /path/to/filtered_flickr/captiontobbox.json

@@ -1,0 +1,6 @@
+datasets:
+  flickr_ObjectToPhrase:
+    data_type: images
+    build_info:
+      image_path: /path/to/filtered_flikcr/images
+      ann_path: /path/to/filtered_flikcr/phrasetobbox.json
