@@ -23,6 +23,8 @@ Deyao Zhu*, Jun Chen*, Xiaoqian Shen, Xiang Li, Mohamed Elhoseiny
 
 
 ## News
+[Oct.24 2023] We release the finetuning code of our MiniGPT-v2.
+
 [Oct.13 2023] Breaking! We release the first major update with our MiniGPT-v2
 
 [Aug.28 2023] We now provide a llama 2 version of MiniGPT-4

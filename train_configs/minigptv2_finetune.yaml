@@ -43,7 +43,7 @@ datasets:
     text_processor:
       train:
         name: "blip_caption"
-    sample_ratio: 5
+    sample_ratio: 10
 
 
   refvg:
@@ -134,7 +134,7 @@ datasets:
     text_processor:
       train:
         name: "blip_caption"
-    sample_ratio: 10
+    sample_ratio: 30
 
   refcoco: 
     batch_size: 6
@@ -145,7 +145,7 @@ datasets:
     text_processor:
       train:
         name: "blip_caption"
-    sample_ratio: 20
+    sample_ratio: 25
 
 
   refcocop:
@@ -157,7 +157,7 @@ datasets:
     text_processor:
       train:
         name: "blip_caption"
-    sample_ratio: 20
+    sample_ratio: 25
 
   refcocog:
     batch_size: 6
@@ -168,7 +168,7 @@ datasets:
     text_processor:
       train:
         name: "blip_caption"
-    sample_ratio: 20
+    sample_ratio: 25
 
 
 
