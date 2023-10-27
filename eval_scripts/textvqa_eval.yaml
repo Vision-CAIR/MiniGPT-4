@@ -1,0 +1,48 @@
+model:
+  arch: minigpt4
+  model_type: pretrain_llama2
+  max_txt_len: 160
+  end_sym: "</s>"
+  low_resource: True
+  prompt_template: '[INST] {} [/INST] '
+  ckpt: 'please set this value to the path of pretrained checkpoint'
+  
+datasets:
+  coco_vqa: # not used
+    type: eval
+    vis_processor:
+      eval:
+        name: "blip2_image_eval"
+        image_size: 336
+    text_processor:
+      eval:
+        name: "blip_caption"
+
+run:
+  task: vqa
+  # optimization-specific
+  batch_size_train: 32
+  batch_size_eval: 128
+  # if do not use OCR token: batch=32, Evaluation Total time: 0:23:47 (9.0954 s / it)
+  use_ocr: True
+  # use OCR token: batch_size=16; Evaluation Total time: 0:36:34 (7.0116 s / it)
+  num_workers: 8
+
+  # inference-specific
+  max_len: 10
+  min_len: 1
+  num_beams: 1
+  inference_method: "generate"
+  prompt: "Question: {} Short answer:"
+
+  seed: 42
+  output_dir: "results"
+
+  evaluate: True
+  test_splits: ["val"]
+
+  # distribution-specific
+  device: "cuda"
+  world_size: 1
+  dist_url: "env://"
+  distributed: True
