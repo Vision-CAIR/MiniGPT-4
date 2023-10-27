@@ -1,4 +1,7 @@
 #!/bin/bash --login
+
+export PYTHONPATH=$PYTHONPATH:$(pwd)
+
 cfg_path=eval_configs/minigpt4_llama2_eval.yaml
 CKPT=YOUR_CKPT_PATH
 NAME=EXP_NAME
