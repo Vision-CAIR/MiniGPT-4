@@ -36,6 +36,7 @@ eval_dict = {'refcoco': args.split,
 
 model, vis_processor = init_model(args)
 model.eval()
+CONV_VISION = CONV_VISION_LLama2
 conv_temp = CONV_VISION.copy()
 conv_temp.system = ""
 
