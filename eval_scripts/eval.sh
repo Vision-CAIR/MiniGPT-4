@@ -14,3 +14,6 @@ torchrun --nproc_per_node 1 eval_vqa.py --name ${NAME} \
  --cfg-path ${cfg_path} \
  --ckpt ${CKPT} --split val,test --dataset okvqa,vizwiz,aokvqa,iconqa,gqa,vsr,hm --lora_r 64 --lora_alpha 16 \
  --batch_size 32 --max_new_tokens 20 --resample
+
+torchrun --master-port ${PORT} --nproc_per_node 1 run_textvqa_eval.py --name ${NAME} --ckpt_path ${CKPT} --lora_r 64 --lora_alpha 16 --eval_file_path ${EVAL_FILE_PATH}
+torchrun --master-port ${PORT} --nproc_per_node 1 run_sciencevqa_eval.py --name ${NAME} --ckpt_path ${CKPT} --lora_r 64 --lora_alpha 16
