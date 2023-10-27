@@ -17,7 +17,7 @@ from minigpt4.common.vqa_tools.VQA.PythonHelperTools.vqaTools.vqa import VQA
 from minigpt4.common.vqa_tools.VQA.PythonEvaluationTools.vqaEvaluation.vqaEval import VQAEval
 
 from minigpt4.common.eval_utils import prepare_texts, init_model, eval_parser
-from minigpt4.conversation.conversation import CONV_VISION
+from minigpt4.conversation.conversation import CONV_VISION_LLama2
 import random
 
 
