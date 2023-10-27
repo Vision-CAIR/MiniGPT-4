@@ -11,7 +11,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from minigpt4.common.eval_utils import prepare_texts, init_model, eval_parser, computeIoU
-from minigpt4.conversation.conversation import CONV_VISION
+from minigpt4.conversation.conversation import CONV_VISION_LLama2
 
 from minigpt4.datasets.datasets.coco_caption import RefCOCOEvalData
 
