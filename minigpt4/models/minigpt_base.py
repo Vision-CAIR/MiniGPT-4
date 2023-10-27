@@ -9,7 +9,7 @@ from minigpt4.common.registry import registry
 from minigpt4.models.base_model import BaseModel
 from transformers import StoppingCriteria, StoppingCriteriaList
 
-
+from minigpt4.conversation.conversation import StoppingCriteriaSub
 
 class MiniGPTBase(BaseModel):
     """
