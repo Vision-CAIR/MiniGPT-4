@@ -4,8 +4,8 @@ model:
   max_txt_len: 1024
   image_size: 448
   end_sym: "</s>"
-  llama_model: "/path/to/llama_checkpoint"
-  ckpt: "/path/to/pretrained_checkpoint"
+  llama_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/llama_2_7b_chat"
+  ckpt: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/minigptv2/checkpoint_stage2.pth"
   use_grad_checkpoint: True
   chat_template: True
   lora_r: 64

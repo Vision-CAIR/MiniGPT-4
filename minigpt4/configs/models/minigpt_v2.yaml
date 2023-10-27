@@ -11,7 +11,8 @@ model:
   # generation configs
   prompt: ""
 
-  llama_model: "please set this value to the path of llama2-chat-7b"
+  # llama_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/llama_2_7b_chat"
+  llama_model: "/mnt/pfs-guan-ssai/nlu/data/luhengtong/llama2_model/meta-llama:Llama-2-7b-chat-hf"
   lora_r: 64
   lora_alpha: 16
 

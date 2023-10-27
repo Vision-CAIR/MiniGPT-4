@@ -16,9 +16,9 @@ datasets:
               - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/vqa_train.json
               - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/vqa_val.json
           storage:
-              - /path/to/vqav2/vqa_train.json
-              - /path/to/vqav2/vqa_val.json
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/VQAv2/vqa_train.json
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/VQAv2/vqa_val.json
       images:
-          storage: /path/to/coco/images
+          storage: /mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO
 
   
