@@ -20,7 +20,6 @@ from minigpt4.common.optims import (
 )
 from minigpt4.common.registry import registry
 from minigpt4.common.utils import now
-from minigpt4.conversation.conversation import Conversation, SeparatorStyle, StoppingCriteriaList, StoppingCriteriaSub
 
 # imports modules for registration
 from minigpt4.datasets.builders import *
