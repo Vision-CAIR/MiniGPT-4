@@ -3,7 +3,6 @@ import json
 import pickle
 import random
 import time
-# import iterto
 import numpy as np
 from PIL import Image
 import skimage.io as io

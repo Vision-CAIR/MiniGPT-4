@@ -11,7 +11,7 @@ model:
   # generation configs
   prompt: ""
 
-  llama_model: "please set this value to the path of llama2-chat-7b"
+  llama_model: "/ibex/project/c2133/llama_v2/llama-2-7b-chat-pytorch"
   lora_r: 64
   lora_alpha: 16
 

@@ -127,7 +127,14 @@ CONV_VISION_LLama2 = Conversation(
     sep="",
 )
 
-
+CONV_VISION_minigptv2 = Conversation(
+    system="",
+    roles=("<s>[INST] ", " [/INST]"),
+    messages=[],
+    offset=2,
+    sep_style=SeparatorStyle.SINGLE,
+    sep="",
+)
 
 class Chat:
     def __init__(self, model, vis_processor, device='cuda:0', stopping_criteria=None):

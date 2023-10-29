@@ -11,13 +11,14 @@ import torch
 from torch.utils.data import DataLoader
 from datasets import load_dataset
 
-from minigpt4.datasets.datasets.vqa_datasets import OKVQAEvalData,VizWizEvalData,AOKVQADAEvalData,AOKVQAMCEvalData,IconQAEvalData,GQAEvalData,VSREvalData,HMEvalData
+
+from minigpt4.datasets.datasets.vqa_datasets import OKVQAEvalData,VizWizEvalData,IconQAEvalData,GQAEvalData,VSREvalData,HMEvalData
 
 from minigpt4.common.vqa_tools.VQA.PythonHelperTools.vqaTools.vqa import VQA
 from minigpt4.common.vqa_tools.VQA.PythonEvaluationTools.vqaEvaluation.vqaEval import VQAEval
 
 from minigpt4.common.eval_utils import prepare_texts, init_model, eval_parser
-from minigpt4.conversation.conversation import CONV_VISION_LLama2
+from minigpt4.conversation.conversation import CONV_VISION_minigptv2
 import random
 
 
@@ -37,7 +38,7 @@ print(args.ckpt)
 print(args.name)
 
 model, vis_processor = init_model(args)
-conv_temp = CONV_VISION.copy()
+conv_temp = CONV_VISION_LLama2.copy()
 conv_temp.system = ""
 
 model.eval()
@@ -45,8 +46,8 @@ model.eval()
 os.makedirs('results', exist_ok=True)
 
 if 'okvqa' in args.dataset:
-    img_path=f'{args.img_path}/COCO/cocoapi/data/2017/images/jpeg/train'
-    with open(f'{args.eval_file_path}/okvqa/test_split.json', 'r') as f:
+    img_path=os.path.join(args.img_path,"train")
+    with open(os.path.join(args.eval_file_path,"ok_vqa/test_split.json")) as f:
         ok_vqa_test_split = json.load(f)
 
     data = OKVQAEvalData(ok_vqa_test_split, vis_processor, img_path)
@@ -61,6 +62,8 @@ if 'okvqa' in args.dataset:
 
         for answer, question_id, question, img_id in zip(answers, question_ids, questions, img_ids):
             result = dict()
+            if "<unk>" in answer.lower():
+                print("answer: ", answer)
             answer = answer.lower().replace('<unk>','').strip()
             result['answer'] = answer
             result['question_id'] = int(question_id)
@@ -90,7 +93,7 @@ if 'okvqa' in args.dataset:
             if len(resamples) == 0:
                 break
 
-    save_path=f'results_correct/{args.name}_okvqa.json'
+    save_path=f'results/{args.name}_okvqa.json'
     with open(save_path,'w') as f:
         json.dump(minigpt4_predict, f)
 
