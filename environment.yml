@@ -30,4 +30,6 @@ dependencies:
     - gradio==3.47.1
     - accelerate==0.20.3
     - bitsandbytes==0.37.0
+    - scikit-image
+    - visual-genome
     - wandb
