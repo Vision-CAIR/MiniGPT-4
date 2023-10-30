@@ -2,7 +2,7 @@ datasets:
   invrefcocop:
     data_type: images
     build_info:
-      image_path: /ibex/reference/CV/COCO/cocoapi/data/2014/images/jpeg/train
-      ann_path: /ibex/project/c2133/object_detection_datasets/
+      image_path: /path/to/coco/images
+      ann_path: /path/to/refcoco_annotations
       dataset: invrefcoco+
       splitBy: unc

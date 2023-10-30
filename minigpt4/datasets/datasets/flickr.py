@@ -101,6 +101,9 @@ class CaptionToObjectDataset(Dataset):
 
         instruction = "<Img><ImageHere></Img> {} ".format(instruction)
 
+        print("CaptionToObject instruction", instruction)
+        print("CaptionToObject answer", answer)
+
         return {
             "image": image,
             "instruction_input": instruction,
@@ -144,6 +147,9 @@ class PhraseToObjectDataset(Dataset):
         instruction = random.choice(self.instruction_pool).format(input)
 
         instruction = "<Img><ImageHere></Img> {} ".format(instruction)
+
+        print("PhraseToObject instruction", instruction)
+        print("PhraseToObject answer", answer)
 
         return {
             "image": image,

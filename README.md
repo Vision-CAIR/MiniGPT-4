@@ -23,6 +23,8 @@ Deyao Zhu*, Jun Chen*, Xiaoqian Shen, Xiang Li, Mohamed Elhoseiny
 
 
 ## News
+[Oct.24 2023] We release the finetuning code of our MiniGPT-v2.
+
 [Oct.13 2023] Breaking! We release the first major update with our MiniGPT-v2
 
 [Aug.28 2023] We now provide a llama 2 version of MiniGPT-4
@@ -93,9 +95,10 @@ Then, set the variable *llama_model* in the model config file to the LLM weight 
 Download the pretrained model checkpoints
 
 
-| MiniGPT-v2 (LLaMA-2 Chat 7B) |
-|------------------------------|
-| [Download](https://drive.google.com/file/d/1aVbfW7nkCSYx99_vCRyP1sOlQiWVSnAl/view?usp=sharing) |
+| MiniGPT-v2 (after stage-2) | MiniGPT-v2 (after stage-3) | MiniGPT-v2 (online developing demo)| 
+|------------------------------|------------------------------|------------------------------|
+| [Download](https://drive.google.com/file/d/1Vi_E7ZtZXRAQcyz4f8E6LtLh2UXABCmu/view?usp=sharing) |[Download](https://drive.google.com/file/d/1jAbxUiyl04SFJMN4sF1vvUU69Etuz4qa/view?usp=sharing) | [Download](https://drive.google.com/file/d/1aVbfW7nkCSYx99_vCRyP1sOlQiWVSnAl/view?usp=sharing) |
+
 
 For **MiniGPT-v2**, set the path to the pretrained checkpoint in the evaluation config file 
 in [eval_configs/minigptv2_eval.yaml](eval_configs/minigptv2_eval.yaml#L10) at Line 8.
@@ -146,6 +149,7 @@ Thanks [@WangRongsheng](https://github.com/WangRongsheng), you can also run Mini
 ### Training
 For training details of MiniGPT-4, check [here](MiniGPT4_Train.md).
 
+For finetuning details of MiniGPT-v2, check [here](MiniGPTv2_Train.md)
 
 
 
