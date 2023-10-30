@@ -2,5 +2,5 @@ datasets:
   ocrvqa:
     data_type: images
     build_info:
-      image_path: /path/to/ocrvqa/images
-      ann_path: /path/to/ocrvqa/dataset.json
+      image_path: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/image   # 207572
+      ann_path: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/dataset.json

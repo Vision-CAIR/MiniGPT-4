@@ -309,6 +309,7 @@ class MiniGPTBase(BaseModel):
 
     def embed_tokens(self, token_ids):
         if hasattr(self.llama_model.base_model, 'model'): ## lora wrapped model
+            print(self.llama_model.base_model.device())
             embeds = self.llama_model.base_model.model.model.embed_tokens(token_ids)
         else:
             embeds = self.llama_model.base_model.embed_tokens(token_ids)

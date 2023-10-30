@@ -242,7 +242,51 @@ class LayerNorm(nn.LayerNorm):
         ret = super().forward(x.type(torch.float32))
         return ret.type(orig_type)
 
+def all_gather_with_grad(tensors):
+    """
+    Performs all_gather operation on the provided tensors.
+    Graph remains connected for backward grad computation.
+    """
+    # Queue the gathered tensors
+    world_size = torch.distributed.get_world_size()
+    # There is no need for reduction in the single-proc case
+    if world_size == 1:
+        return tensors
 
+    # tensor_all = GatherLayer.apply(tensors)
+    tensor_all = GatherLayer.apply(tensors)
+
+    return torch.cat(tensor_all, dim=0)
+
+
+@torch.no_grad()
+def concat_all_gather(tensor):
+    """
+    Performs all_gather operation on the provided tensors.
+    *** Warning ***: torch.distributed.all_gather has no gradient.
+    """
+    # if use distributed training
+    if not is_dist_avail_and_initialized():
+        return tensor
+
+    tensors_gather = [
+        torch.ones_like(tensor) for _ in range(torch.distributed.get_world_size())
+    ]
+    torch.distributed.all_gather(tensors_gather, tensor, async_op=False)
+
+    output = torch.cat(tensors_gather, dim=0)
+    return output
+
+
+def tile(x, dim, n_tile):
+    init_dim = x.size(dim)
+    repeat_idx = [1] * x.dim()
+    repeat_idx[dim] = n_tile
+    x = x.repeat(*(repeat_idx))
+    order_index = torch.LongTensor(
+        np.concatenate([init_dim * np.arange(n_tile) + i for i in range(init_dim)])
+    )
+    return torch.index_select(x, dim, order_index.to(x.device))
 
 
 

@@ -1,0 +1,29 @@
+model:
+  arch: minigpt4
+
+  # vit encoder
+  image_size: 224
+  drop_path_rate: 0
+  use_grad_checkpoint: False
+  vit_precision: "fp16"
+  freeze_vit: True
+  has_qformer: False
+
+  # generation configs
+  prompt: ""
+
+  llama_model: "please set this value to the path of llama2-chat-7b"
+
+preprocess:
+    vis_processor:
+        train:
+          name: "blip2_image_train"
+          image_size: 224
+        eval:
+          name: "blip2_image_eval"
+          image_size: 224
+    text_processor:
+        train:
+          name: "blip_caption"
+        eval:
+          name: "blip_caption"

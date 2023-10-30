@@ -43,7 +43,8 @@ class AOKVQADataset(VQADataset, __DisplMixin):
 
         exist_annotation = []
         for ann in self.annotation:
-            image_path = os.path.join(self.vis_root, ann["image"].split('/')[-1])
+            # image_path = os.path.join(self.vis_root, ann["image"].split('/')[-1])
+            image_path = os.path.join(self.vis_root, ann["image"])
             if os.path.exists(image_path):
                 exist_annotation.append(ann)
         self.annotation = exist_annotation
@@ -51,7 +52,8 @@ class AOKVQADataset(VQADataset, __DisplMixin):
     def get_data(self, index):
         ann = self.annotation[index]
 
-        image_path = os.path.join(self.vis_root, ann["image"].split('/')[-1])
+        # image_path = os.path.join(self.vis_root, ann["image"].split('/')[-1])
+        image_path = os.path.join(self.vis_root, ann["image"])
         image = Image.open(image_path).convert("RGB")
 
         image = self.vis_processor(image)

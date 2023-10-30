@@ -60,7 +60,7 @@ class Mlp(nn.Module):
         x = self.drop(x)
         return x
 
-
+# from visualizer import get_local # attention_visualization
 class Attention(nn.Module):
     def __init__(
             self, dim, num_heads=8, qkv_bias=False, qk_scale=None, attn_drop=0.,
@@ -115,6 +115,8 @@ class Attention(nn.Module):
         self.proj = nn.Linear(all_head_dim, dim)
         self.proj_drop = nn.Dropout(proj_drop)
 
+    # attention_visualization
+    # @get_local('attn') 
     def forward(self, x, rel_pos_bias=None):
         B, N, C = x.shape
         qkv_bias = None
@@ -369,7 +371,20 @@ class VisionTransformer(nn.Module):
 
         return features
     
-    
+    def get_num_layer(self, var_name=""):
+        if var_name in ("cls_token", "mask_token", "pos_embed"):
+            return 0
+        elif var_name.startswith("patch_embed"):
+            return 0
+        elif var_name.startswith("rel_pos_bias"):
+            return len(self.blocks) - 1
+        elif var_name.startswith("blocks"):
+            layer_id = int(var_name.split('.')[1])
+            return layer_id + 1
+        else:
+            return len(self.blocks)
+        
+            
 def interpolate_pos_embed(model, checkpoint_model):
     if 'pos_embed' in checkpoint_model:
         pos_embed_checkpoint = checkpoint_model['pos_embed'].float()
@@ -426,10 +441,14 @@ def create_eva_vit_g(img_size=224,drop_path_rate=0.4,use_checkpoint=False,precis
         norm_layer=partial(nn.LayerNorm, eps=1e-6),
         use_checkpoint=use_checkpoint,
     )  
-    url = "https://storage.googleapis.com/sfr-vision-language-research/LAVIS/models/BLIP2/eva_vit_g.pth"
-    cached_file = download_cached_file(
-        url, check_hash=False, progress=True
-    )
+    # url = "https://storage.googleapis.com/sfr-vision-language-research/LAVIS/models/BLIP2/eva_vit_g.pth"
+    # cached_file = download_cached_file(
+    #     url, check_hash=False, progress=True
+    # )
+
+    # cached_file = '/mnt/pfs-guan-ssai/nlu/dingyifeng/checkpoints/BLIP2/eva_vit_g.pth'
+    cached_file = '/mnt/pfs-guan-ssai/nlu/wanghanzi/models/eva_vit/eva_vit_g.pth'
+    
     state_dict = torch.load(cached_file, map_location="cpu")    
     interpolate_pos_embed(model,state_dict)
     

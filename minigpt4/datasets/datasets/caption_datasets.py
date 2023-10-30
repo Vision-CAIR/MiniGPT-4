@@ -110,7 +110,8 @@ class COCOCaptionDataset(BaseDataset, __DisplMixin):
         # TODO this assumes image input, not general enough
         ann = self.annotation[index]
 
-        img_file = ann["image"].split("/")[-1]
+        # img_file = ann["image"].split("/")[-1]
+        img_file = ann["image"]
         image_path = os.path.join(self.vis_root, img_file)
         image = Image.open(image_path).convert("RGB")
 

@@ -3,7 +3,15 @@ datasets:
     data_type: images
     
     build_info:
-      image_path: /path/to/textcaps/train_images
-      ann_path: /path/to/textcaps/TextCaps_0.1_train.json
-
-
+      annotations:
+        train:
+          storage:
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/TextCap/TextCaps_0.1_train.json
+        val:
+          storage:
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/TextCap/TextCaps_0.1_val.json
+        test:
+          storage:
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/TextCap/TextCaps_0.1_test.json
+      images:
+          storage: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/TextVQA

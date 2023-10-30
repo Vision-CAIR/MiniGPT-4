@@ -13,11 +13,11 @@ from minigpt4.datasets.datasets.multitask_conversation import MultiTaskConversat
 from minigpt4.datasets.datasets.flickr import GroundedDetailDataset,CaptionToObjectDataset,PhraseToObjectDataset
 from minigpt4.datasets.datasets.vg_dataset import ReferVisualGenomeDataset
 from minigpt4.datasets.datasets.coco_dataset import ReferCOCODataset, InvReferCOCODataset
-from minigpt4.datasets.datasets.gqa_datasets import GQADataset
+from minigpt4.datasets.datasets.gqa_datasets import GQADataset, GQAEvalDataset
 from minigpt4.datasets.datasets.aok_vqa_datasets import AOKVQADataset
 from minigpt4.datasets.datasets.coco_vqa_datasets import COCOVQADataset
 from minigpt4.datasets.datasets.ocrvqa_dataset import OCRVQADataset
-from minigpt4.datasets.datasets.coco_caption import COCOCapDataset
+from minigpt4.datasets.datasets.coco_caption import COCOCapDataset, COCOCapEvalDataset
 
 
 @registry.register_builder("multitask_conversation")
@@ -29,7 +29,7 @@ class MultitaskConversationBuilder(BaseDatasetBuilder):
 
     def build_datasets(self):
         # at this point, all the annotations and image/videos should be all downloaded to the specified locations.
-        logging.info("Building datasets...")
+        logging.info("[multitask_conversation]: Building datasets...")
         self.build_processors()
         build_info = self.config.build_info
         datasets = dict()
@@ -55,7 +55,7 @@ class UnnaturalInstructionBuilder(BaseDatasetBuilder):
 
     def build_datasets(self):
         # at this point, all the annotations and image/videos should be all downloaded to the specified locations.
-        logging.info("Building datasets...")
+        logging.info("[unnatural_instruction]: Building datasets...")
         self.build_processors()
         build_info = self.config.build_info
         datasets = dict()
@@ -80,7 +80,7 @@ class LlavaDetailBuilder(BaseDatasetBuilder):
 
     def build_datasets(self):
         # at this point, all the annotations and image/videos should be all downloaded to the specified locations.
-        logging.info("Building datasets...")
+        logging.info("[llava_detail]: Building datasets...")
         self.build_processors()
         build_info = self.config.build_info
         datasets = dict()
@@ -107,7 +107,7 @@ class LlavaReasonBuilder(BaseDatasetBuilder):
 
     def build_datasets(self):
         # at this point, all the annotations and image/videos should be all downloaded to the specified locations.
-        logging.info("Building datasets...")
+        logging.info("[llava_reason]: Building datasets...")
         self.build_processors()
         build_info = self.config.build_info
         datasets = dict()
@@ -132,7 +132,7 @@ class LlavaReasonBuilder(BaseDatasetBuilder):
 
     def build_datasets(self):
         # at this point, all the annotations and image/videos should be all downloaded to the specified locations.
-        logging.info("Building datasets...")
+        logging.info("[llava_conversation]: Building datasets...")
         self.build_processors()
         build_info = self.config.build_info
         datasets = dict()
@@ -153,7 +153,7 @@ class AllRefCOCOBuilder(BaseDatasetBuilder):
 
     def build_datasets(self):
         # at this point, all the annotations and image/videos should be all downloaded to the specified locations.
-        logging.info("Building datasets...")
+        logging.info("[AllRefCOCOBuilder]: Building datasets...")
         self.build_processors()
 
         build_info = self.config.build_info
@@ -256,6 +256,7 @@ class RefVisualGenomeBuilder(BaseDatasetBuilder):
 @registry.register_builder("textcaps_caption")
 class TextcapCaptionBuilder(BaseDatasetBuilder):
     train_dataset_cls = TextCapDataset
+    eval_dataset_cls = TextCapDataset
 
     DATASET_CONFIG_DICT = {"default": "configs/datasets/textcaps/caption.yaml"}
 
@@ -265,25 +266,26 @@ class TextcapCaptionBuilder(BaseDatasetBuilder):
     def _download_vis(self):
         pass
 
-    def build(self):
-        self.build_processors()
+    # def build(self):
+    #     logging.info("[textcaps_caption]: Building datasets...")
+    #     self.build_processors()
 
-        build_info = self.config.build_info
+    #     build_info = self.config.build_info
 
-        datasets = dict()
-        split = "train"
+    #     datasets = dict()
+    #     split = "train"
 
-        # create datasets
-        # [NOTE] return inner_datasets (wds.DataPipeline)
-        dataset_cls = self.train_dataset_cls
-        datasets[split] = dataset_cls(
-            vis_processor=self.vis_processors[split],
-            text_processor=self.text_processors[split],
-            ann_path=build_info.ann_path,
-            vis_root=build_info.image_path,
-        )
+    #     # create datasets
+    #     # [NOTE] return inner_datasets (wds.DataPipeline)
+    #     dataset_cls = self.train_dataset_cls
+    #     datasets[split] = dataset_cls(
+    #         vis_processor=self.vis_processors[split],
+    #         text_processor=self.text_processors[split],
+    #         ann_path=build_info.ann_path,
+    #         vis_root=build_info.image_path,
+    #     )
 
-        return datasets
+    #     return datasets
     
 @registry.register_builder("coco_vqa")
 class COCOVQABuilder(BaseDatasetBuilder):
@@ -303,6 +305,7 @@ class OKVQABuilder(COCOVQABuilder):
 @registry.register_builder("aok_vqa")
 class AOKVQABuilder(BaseDatasetBuilder):
     train_dataset_cls = AOKVQADataset
+    eval_dataset_cls = AOKVQADataset
 
     DATASET_CONFIG_DICT = {"default": "configs/datasets/aokvqa/defaults.yaml"}
 
@@ -310,8 +313,10 @@ class AOKVQABuilder(BaseDatasetBuilder):
 @registry.register_builder("gqa")
 class GQABuilder(BaseDatasetBuilder):
     train_dataset_cls = GQADataset
+    eval_dataset_cls = GQAEvalDataset
+
     DATASET_CONFIG_DICT = {
-        "default": "configs/datasets/gqa/balanced_val.yaml",
+        "balanced_sft_raw": "configs/datasets/gqa/balanced_sft_raw.yaml",
     }
 
 
@@ -326,7 +331,7 @@ class GroundedCaptionBuilder(BaseDatasetBuilder):
 
     def build_datasets(self):
         # at this point, all the annotations and image/videos should be all downloaded to the specified locations.
-        logging.info("Building datasets...")
+        logging.info("[flickr_grounded_caption]: Building datasets...")
         self.build_processors()
         build_info = self.config.build_info
         datasets = dict()
@@ -352,7 +357,7 @@ class CaptionToPhraseBuilder(BaseDatasetBuilder):
 
     def build_datasets(self):
         # at this point, all the annotations and image/videos should be all downloaded to the specified locations.
-        logging.info("Building datasets...")
+        logging.info("[flickr_CaptionToPhrase]: Building datasets...")
         self.build_processors()
         build_info = self.config.build_info
         datasets = dict()
@@ -377,7 +382,7 @@ class CaptionToPhraseBuilder(BaseDatasetBuilder):
 
     def build_datasets(self):
         # at this point, all the annotations and image/videos should be all downloaded to the specified locations.
-        logging.info("Building datasets...")
+        logging.info("[flickr_ObjectToPhrase]: Building datasets...")
         self.build_processors()
         build_info = self.config.build_info
         datasets = dict()
@@ -495,7 +500,8 @@ class LaionBuilder(BaseDatasetBuilder):
 @registry.register_builder("coco_caption")
 class COCOCapBuilder(BaseDatasetBuilder):
     train_dataset_cls = COCOCapDataset
-
+    eval_dataset_cls = COCOCapEvalDataset
+    
     DATASET_CONFIG_DICT = {
         "default": "configs/datasets/coco/caption.yaml",
     }

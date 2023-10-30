@@ -90,9 +90,6 @@ class LlavaReasonDataset(Dataset):
             "image_id": info['id'],
         }
 
-
-
-
 class LlavaConversationDataset(Dataset):
     def __init__(self, vis_processor, text_processor, vis_root, ann_path):
         """

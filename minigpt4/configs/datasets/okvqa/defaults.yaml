@@ -16,6 +16,6 @@ datasets:
               # TODO make this order insensitive
               - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/okvqa/okvqa_train.json
           storage:
-              - /path/to/okvqa/okvqa_train.json
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/OKVQA/okvqa_train.json
       images:
           storage: /path/to/coco/images

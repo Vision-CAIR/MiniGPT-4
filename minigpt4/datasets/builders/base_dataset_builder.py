@@ -208,7 +208,11 @@ class BaseDatasetBuilder:
             ann_paths = abs_ann_paths
 
             # visual data storage path
-            vis_path = os.path.join(vis_info.storage, split)
+            # vis_path = os.path.join(vis_info.storage, split)
+            vis_path = os.path.join(vis_info.storage)
+            print(ann_paths)
+            print(vis_path)
+            print(is_train)
 
             if not os.path.isabs(vis_path):
                 # vis_path = os.path.join(utils.get_cache_path(), vis_path)
@@ -219,6 +223,7 @@ class BaseDatasetBuilder:
 
             # create datasets
             dataset_cls = self.train_dataset_cls if is_train else self.eval_dataset_cls
+            print(dataset_cls)
             datasets[split] = dataset_cls(
                 vis_processor=vis_processor,
                 text_processor=text_processor,
