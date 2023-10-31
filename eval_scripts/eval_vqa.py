@@ -162,7 +162,7 @@ if 'gqa' in args.dataset:
         json.dump(minigpt4_predict, f)
 
 if 'vsr' in args.dataset:
-    annotation = load_dataset(args.eval_file_path, split='test')
+    annotation = load_dataset("cambridgeltl/vsr_zeroshot", split='test')
     img_path = args.img_path
     data = VSREvalData(annotation, vis_processor, img_path)
     eval_dataloader = DataLoader(data, batch_size=args.batch_size, shuffle=False)
