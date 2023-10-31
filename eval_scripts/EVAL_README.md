@@ -73,7 +73,7 @@ refcocog | val, test
 
 ```
 torchrun --master-port ${port} --nproc_per_node 1 eval_ref.py \
- --cfg-path ${cfg_path} --img_path ${IMG_PATH} --eval_file_path ${eval_file_path} --save_path ${save_path} \
+ --cfg-path ${cfg_path} --eval_file_path ${eval_file_path} --save_path ${save_path} \
  --ckpt ${ckpt} --split ${split}  --dataset ${dataset} --lora_r 64 --lora_alpha 16 \
  --batch_size 10 --max_new_tokens 20 --resample
 ```
