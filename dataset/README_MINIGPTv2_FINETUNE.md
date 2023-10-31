@@ -15,7 +15,7 @@ RefCOCOg | <a href="https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcocog
 OKVQA | <a href="https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/okvqa/okvqa_train.json"> annotations </a>
 AOK-VQA | <a href="https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/aokvqa/aokvqa_v1p0_train.json"> annotations </a>
 OCR-VQA | <a href="https://drive.google.com/drive/folders/1_GYPY5UkUy7HIcR0zq3ZCFgeZN7BAfm_?usp=sharing"> annotations </a>
-GQA | <a href="https://downloads.cs.stanford.edu/nlp/data/gqa/images.zip">images</a>  &nbsp;&nbsp; <a href="/ibex/project/c2133/minigpt4_v2_dataset/gqa/annotations/train_balanced_questions.json"> annotations </a>
+GQA | <a href="https://downloads.cs.stanford.edu/nlp/data/gqa/images.zip">images</a>  &nbsp;&nbsp; <a href="https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/gqa/train_balanced_questions.json"> annotations </a>
 Filtered flickr-30k |  <a href="https://drive.google.com/drive/folders/19c_ggBI77AvdtYlPbuI0ZpnPz73T5teX?usp=sharing"> annotations </a>
 Multi-task conversation |  <a href="https://drive.google.com/file/d/11HHqB2c29hbSk-WLxdta-nG8UCUrcCN1/view?usp=sharing"> annotations </a> 
 Filtered unnatural instruction |  <a href="https://drive.google.com/file/d/1lXNnBcb5WU-sc8Fe2T2N8J0NRw4sBLev/view?usp=sharing"> annotations </a>

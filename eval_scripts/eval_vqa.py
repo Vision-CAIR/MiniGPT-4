@@ -47,7 +47,7 @@ model.eval()
 os.makedirs('results', exist_ok=True)
 
 if 'okvqa' in args.dataset:
-    evaluation_annntation_path = os.path.join(args.eval_file_path, "test_split.json")
+    evaluation_annntation_path = os.path.join(args.eval_file_path, "okvqa_test_split.json")
     with open(evaluation_annntation_path) as f:
         ok_vqa_test_split = json.load(f)
 

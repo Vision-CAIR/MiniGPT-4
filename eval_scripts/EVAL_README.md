@@ -1,7 +1,19 @@
 ## Evaluation Instruction for MiniGPT-v2
 
 ### Data preparation
+Images download
+Image source | Download path
+--- | :---:
+OKVQA| <a href="https://drive.google.com/drive/folders/1jxIgAhtaLu_YqnZEl8Ym11f7LhX3nptN?usp=sharing">annotations</a> &nbsp;&nbsp;  <a href="http://images.cocodataset.org/zips/train2017.zip"> images</a>
+gqa | <a href="https://drive.google.com/drive/folders/1-dF-cgFwstutS4qq2D9CFQTDS0UTmIft?usp=drive_link">annotations</a> &nbsp;&nbsp;  <a href="https://downloads.cs.stanford.edu/nlp/data/gqa/images.zip">images</a> 
+hateful meme |  <a href="https://github.com/faizanahemad/facebook-hateful-memes">images and annotations</a> 
+iconqa |  <a href="https://iconqa.github.io/#download">images and annotation</a>
+vizwiz |  <a href="https://vizwiz.org/tasks-and-datasets/vqa/">images and annotation</a>
+RefCOCO | <a href="https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcoco.zip"> annotations </a>
+RefCOCO+ | <a href="https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcoco+.zip"> annotations </a>
+RefCOCOg | <a href="https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcocog.zip"> annotations </a>
 
+### Evaluation dataset structure
 
 
 ### environment setup
