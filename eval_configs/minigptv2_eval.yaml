@@ -3,10 +3,10 @@ model:
   model_type: pretrain
   max_txt_len: 500
   end_sym: "</s>"
-  low_resource: True
+  low_resource: False
   prompt_template: '[INST] {} [/INST]'
   llama_model: "/ibex/project/c2133/llama_v2/llama-2-7b-chat-pytorch_update"
-  ckpt: "/ibex/ai/project/c2090/minigpt4_ckpt/448_conversation_correct_best_v7_ablation1_v5_v6/20231007035/checkpoint_35.pth"
+  ckpt: ""
   lora_r: 64
   lora_alpha: 16
 

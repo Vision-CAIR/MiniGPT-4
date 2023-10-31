@@ -16,30 +16,6 @@ class VQADataset(BaseDataset):
     def __init__(self, vis_processor, text_processor, vis_root, ann_paths):
         super().__init__(vis_processor, text_processor, vis_root, ann_paths)
 
-    # def collater(self, samples):
-    #     image_list, question_list, answer_list, weight_list = [], [], [], []
-    
-    #     num_answers = []
-    
-    #     for sample in samples:
-    #         image_list.append(sample["image"])
-    #         question_list.append(sample["question"])
-    
-    #         weight_list.extend(sample["weights"])
-    
-    #         answers = sample["answer"]
-    
-    #         answer_list.extend(answers)
-    #         num_answers.append(len(answers))
-    
-    #     return {
-    #         "image": torch.stack(image_list, dim=0),
-    #         "text_input": question_list,
-    #         "answer": answer_list,
-    #         "weight": torch.Tensor(weight_list),
-    #         "n_answers": torch.LongTensor(num_answers),
-    #     }
-
 
 class VQAEvalDataset(BaseDataset):
     def __init__(self, vis_processor, text_processor, vis_root, ann_paths):
@@ -85,7 +61,7 @@ class VizWizEvalData(torch.utils.data.Dataset):
         image_path = os.path.join(self.root_path, img_id)
         image = Image.open(image_path).convert('RGB')
         image = self.vis_processor(image)
-        question = f"[vqa] The question is'{question}' Based on the image, answer the question with a single word or phrase. and reply 'unanswerable' when the provided information is insufficient"  # 52.0
+        question = f"[vqa] The question is '{question}' Based on the image, answer the question with a single word or phrase. and reply 'unanswerable' when the provided information is insufficient"
         return image, question, answers
 
 class IconQAEvalData(torch.utils.data.Dataset):

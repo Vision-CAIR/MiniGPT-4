@@ -367,9 +367,18 @@ class MiniGPTBase(BaseModel):
                 min_length=min_length,
                 top_p=top_p,
                 repetition_penalty=repetition_penalty,
-                stopping_criteria=stopping_criteria,
+                # stopping_criteria=stopping_criteria,
             )
 
+        # with self.maybe_autocast():
+        #     outputs = self.llama_model.generate(
+        #         inputs_embeds=embs,
+        #         attention_mask=attn_mask,
+        #         max_new_tokens=max_new_tokens,
+        #         num_beams=num_beams,
+        #         do_sample=do_sample,
+        #         # stopping_criteria=stopping_criteria,
+        #     )
         answers = []
         for output_token in outputs:
             if output_token[0] == 0:

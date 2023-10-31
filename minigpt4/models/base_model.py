@@ -184,7 +184,7 @@ class BaseModel(nn.Module):
         else:
             llama_model = LlamaForCausalLM.from_pretrained(
                 llama_model_path,
-                torch_dtype=torch.float16,
+                torch_dtype=torch.float32,
             )
 
         if lora_r > 0:

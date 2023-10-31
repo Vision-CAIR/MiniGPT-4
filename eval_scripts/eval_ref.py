@@ -11,7 +11,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from minigpt4.common.eval_utils import prepare_texts, init_model, eval_parser, computeIoU
-from minigpt4.conversation.conversation import CONV_VISION_LLama2
+from minigpt4.conversation.conversation import CONV_VISION_minigptv2
 
 from minigpt4.datasets.datasets.coco_caption import RefCOCOEvalData
 
@@ -25,7 +25,9 @@ parser.add_argument("--res", type=float, default=100.0, help="resolution used in
 parser.add_argument("--resample", action='store_true', help="resolution used in refcoco")
 parser.add_argument("--img_path", type=str)
 parser.add_argument("--eval_file_path", type=str)
+parser.add_argument("--save_path", type=str)
 args = parser.parse_args()
+
 
 print(args.ckpt)
 print(args.name)
@@ -36,23 +38,20 @@ eval_dict = {'refcoco': args.split,
 
 model, vis_processor = init_model(args)
 model.eval()
-CONV_VISION = CONV_VISION_LLama2
+CONV_VISION = CONV_VISION_minigptv2
 conv_temp = CONV_VISION.copy()
 conv_temp.system = ""
-
+# 
 model.eval()
-img_path=f'{args.img_path}/COCO/cocoapi/data/2017/images/jpeg/train'
-    
+
 for dataset in args.dataset:
     for split in eval_dict[dataset]:
-        with open(f'{args.eval_file_path}/{dataset}/{dataset}_{split}.json', 'r') as f:
+        with open(os.path.join(args.eval_file_path,f"{dataset}/{dataset}_{split}.json"), 'r') as f:
             refcoco = json.load(f)
 
-        data = RefCOCOEvalData(refcoco, vis_processor, img_path)
+        data = RefCOCOEvalData(refcoco, vis_processor, args.img_path)
         eval_dataloader = DataLoader(data, batch_size=args.batch_size, shuffle=False)
-
         minigpt4_predict = defaultdict(list)
-
         resamples = []
 
         for images, questions, img_ids in tqdm(eval_dataloader):
@@ -64,11 +63,10 @@ for dataset in args.dataset:
                 if re.match(pattern, answer):
                     minigpt4_predict[img_id].append(answer)
                 else:
-                    resamples.append({'img_id': img_id, 'sents': [question.replace('[refer] where is','').replace('?','').strip()]})
-        
+                    resamples.append({'img_id': img_id, 'sents': [question.replace('[refer] give me the location of','').strip()]})
         if args.resample:
             for i in range(20):
-                data = RefCOCOEvalData(resamples, vis_processor, img_path)
+                data = RefCOCOEvalData(resamples, vis_processor, args.img_path)
                 resamples = []
                 eval_dataloader = DataLoader(data, batch_size=args.batch_size, shuffle=False)
                 for images, questions, img_ids in tqdm(eval_dataloader):
@@ -80,12 +78,12 @@ for dataset in args.dataset:
                         if re.match(pattern, answer) or i == 4:
                             minigpt4_predict[img_id].append(answer)
                         else:
-                            resamples.append({'img_id': img_id, 'sents': [question.replace('[refer] where is','').replace('?','').strip()]})
+                            resamples.append({'img_id': img_id, 'sents': [question.replace('[refer] give me the location of','').strip()]})
                             
                 if len(resamples) == 0:
                     break
 
-        with open(f'results/{args.name}_{dataset}_{split}.json','w') as f:
+        with open(args.save_path,'w') as f:
             json.dump(minigpt4_predict, f)
 
         count=0
