@@ -15,6 +15,41 @@ RefCOCOg | <a href="https://bvisionweb1.cs.unc.edu/licheng/referit/data/refcocog
 
 ### Evaluation dataset structure
 
+```
+${MINIGPTv2_EVALUATION_DATASET}
+├── gqa
+│   └── test_balanced_questions.json
+│   ├── testdev_balanced_questions.json
+│   ├── gqa_images
+├── hateful_meme
+│   └── hm_images
+│   ├── dev.jsonl
+├── iconvqa
+│   └── iconvqa_images
+│   ├── choose_text_val.json
+├── vizwiz
+│   └── vizwiz_images
+│   ├── val.json
+├── vsr
+│   └── vsr_images
+├── okvqa
+│   ├── okvqa_test_split.json
+│   ├── mscoco_val2014_annotations_clean.json
+│   ├── OpenEnded_mscoco_val2014_questions_clean.json
+├── refcoco
+│   └── instances.json
+│   ├── refs(google).p
+│   ├── refs(unc).p
+├── refcoco+
+│   └── instances.json
+│   ├── refs(unc).p
+├── refercocog
+│   └── instances.json
+│   ├── refs(google).p
+│   ├── refs(und).p
+...
+```
+
 
 ### environment setup
 
