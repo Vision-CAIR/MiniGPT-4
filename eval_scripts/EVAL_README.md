@@ -58,17 +58,12 @@ export PYTHONPATH=$PYTHONPATH:/path/to/directory/of/MiniGPT-4
 ```
 
 ### start evalauting RefCOCO, RefCOCO+, RefCOCOg
-port=port_number
-
-cfg_path=/path/to/eval_configs/minigptv2_eval.yaml
-
-save_path=/path/to/save/path
-
-ckpt=/path/to/evaluation/checkpoint
-
-split=/evaluation/data/split/type  
-
-dataset=/data/type 
+port=port_number  
+cfg_path=/path/to/eval_configs/minigptv2_eval.yaml  
+save_path=/path/to/save/path  
+ckpt=/path/to/evaluation/checkpoint  
+split=data_evaluation_split  
+dataset=dataset_name  
 
 dataset | split
 --- | :---:
@@ -86,21 +81,15 @@ torchrun --master-port ${port} --nproc_per_node 1 eval_ref.py \
 
 ### start evaluating visual question answering
 
-port=port_number
+port=port_number  
+cfg_path=/path/to/eval_configs/minigptv2_eval.yaml  
+eval_file_path=/path/to/eval/annotation/path  
+image_path=/path/to/eval/image/path  
+save_path=/path/to/save/path  
+ckpt=/path/to/evaluation/checkpoint  
+split=evaluation_data_split
+dataset=dataset_type 
 
-cfg_path=/path/to/eval_configs/minigptv2_eval.yaml
-
-eval_file_path=/path/to/eval/annotation/path
-
-image_path=/path/to/eval/image/path
-
-save_path=/path/to/save/path
-
-ckpt=/path/to/evaluation/checkpoint
-
-split=/evaluation/data/split/type
-
-dataset=/data/type 
 
 dataset | image_path | eval_file_path
 --- | :---:| :---:
