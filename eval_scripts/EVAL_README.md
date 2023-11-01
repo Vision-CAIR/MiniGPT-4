@@ -61,9 +61,9 @@ export PYTHONPATH=$PYTHONPATH:/path/to/directory/of/MiniGPT-4
 
 Set **llama_model** to the path of LLaMA model.  
 Set **ckpt** to the path of our pretrained model.  
-Set **eval_file_path** to the path of the annotation files for the evaluation data.  
-Set **img_path** to the path of the images.  
-Set **save_path** to the path of saving evaluation output.    
+Set **eval_file_path** to the path of the annotation files for each evaluation data.  
+Set **img_path** to the img_path for each evaluation dataset.  
+Set **save_path** to the save_path for evch evaluation dataset.    
 
 in [minigpt4/eval_configs/minigptv2_benchmark_evaluation.yaml](../minigpt4/eval_configs/minigptv2_benchmark_evaluation.yaml) 
 
@@ -80,7 +80,7 @@ dataset names:
 
 ```
 torchrun --master-port ${port} --nproc_per_node 1 eval_ref.py \
- --cfg-path ${cfg_path} --dataset dataset_name --resample
+ --cfg-path ${cfg_path} --dataset refcoco,refcoco+,refcocog --resample
 ```
 
 
@@ -96,7 +96,7 @@ dataset names:
 
 ```
 torchrun --master-port ${port} --nproc_per_node 1 eval_vqa.py \
- --cfg-path ${cfg_path} --dataset dataset_name
+ --cfg-path ${cfg_path} --dataset okvqa,vizwiz,iconvqa,gqa,vsr,hm
 ```
 
 

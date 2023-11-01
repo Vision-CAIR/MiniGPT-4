@@ -39,6 +39,7 @@ conv_temp.system = ""
 
 # 
 model.eval()
+save_path = cfg.run_cfg.save_path
 
 
 
@@ -49,7 +50,6 @@ for dataset in args.dataset:
         img_path = cfg.evaluation_datasets_cfg[dataset]["img_path"]
         batch_size = cfg.evaluation_datasets_cfg[dataset]["batch_size"]
         max_new_tokens = cfg.evaluation_datasets_cfg[dataset]["max_new_tokens"]
-        save_path = cfg.evaluation_datasets_cfg[dataset]["save_path"]
 
         with open(os.path.join(eval_file_path,f"{dataset}/{dataset}_{split}.json"), 'r') as f:
             refcoco = json.load(f)
@@ -87,8 +87,9 @@ for dataset in args.dataset:
                             
                 if len(resamples) == 0:
                     break
-
-        with open(os.path.join(save_path,f"{args.dataset}_{split}.json"),'w') as f:
+        
+        file_save_path = os.path.join(save_path,f"{args.dataset}_{split}.json")
+        with open(file_save_path,'w') as f:
             json.dump(minigpt4_predict, f)
 
         count=0

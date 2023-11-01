@@ -35,7 +35,7 @@ model, vis_processor = init_model(args)
 conv_temp = CONV_VISION_minigptv2.copy()
 conv_temp.system = ""
 model.eval()
-
+save_path = cfg.run_cfg.save_path
 
 
 if 'okvqa' in args.dataset:
@@ -44,10 +44,10 @@ if 'okvqa' in args.dataset:
     img_path = cfg.evaluation_datasets_cfg["okvqa"]["img_path"]
     batch_size = cfg.evaluation_datasets_cfg["okvqa"]["batch_size"]
     max_new_tokens = cfg.evaluation_datasets_cfg["okvqa"]["max_new_tokens"]
-    save_path = cfg.evaluation_datasets_cfg["okvqa"]["save_path"]
+    
 
-    # evaluation_annntation_path = os.path.join(eval_file_path, "okvqa_test_split.json")
-    with open(eval_file_path) as f:
+    evaluation_annntation_path = os.path.join(eval_file_path, "okvqa_test_split.json")
+    with open(evaluation_annntation_path) as f:
         ok_vqa_test_split = json.load(f)
 
     data = OKVQAEvalData(ok_vqa_test_split, vis_processor, img_path)
@@ -65,14 +65,15 @@ if 'okvqa' in args.dataset:
             result['question_id'] = int(question_id)
             minigpt4_predict.append(result)
 
-    with open(save_path,'w') as f:
+    file_save_path= os.join(save_path,"okvqa.json")
+    with open(file_save_path,'w') as f:
         json.dump(minigpt4_predict, f)
 
     annFile = os.path.join(eval_file_path,"mscoco_val2014_annotations_clean.json")
     quesFile = os.path.join(eval_file_path,"OpenEnded_mscoco_val2014_questions_clean.json" )
 
     vqa = VQA(annFile, quesFile)
-    vqaRes = vqa.loadRes(save_path, quesFile)
+    vqaRes = vqa.loadRes(file_save_path, quesFile)
 
     vqaEval = VQAEval(vqa, vqaRes, n=2)
     vqaEval.evaluate()
@@ -84,7 +85,6 @@ if 'vizwiz' in args.dataset:
     img_path = cfg.evaluation_datasets_cfg["vizwiz"]["img_path"]
     batch_size = cfg.evaluation_datasets_cfg["vizwiz"]["batch_size"]
     max_new_tokens = cfg.evaluation_datasets_cfg["vizwiz"]["max_new_tokens"]
-    save_path = cfg.evaluation_datasets_cfg["vizwiz"]["save_path"]
 
     vizwiz = json.load(open(eval_file_path, 'r'))
 
@@ -109,7 +109,8 @@ if 'vizwiz' in args.dataset:
             acc = min(count/3.0, 1.0)
             total_acc.append(acc)
         
-    with open(save_path,'w') as f:
+    file_save_path = os.path.join(save_path, "vizwiz.json")
+    with open(file_save_path,'w') as f:
         json.dump(minigpt4_predict, f)
     print('vizwiz Acc: ', np.average(total_acc)* 100.0, flush=True)
 
@@ -120,8 +121,6 @@ if 'iconvqa' in args.dataset:
     img_path = cfg.evaluation_datasets_cfg["iconvqa"]["img_path"]
     batch_size = cfg.evaluation_datasets_cfg["iconvqa"]["batch_size"]
     max_new_tokens = cfg.evaluation_datasets_cfg["iconvqa"]["max_new_tokens"]
-    save_path = cfg.evaluation_datasets_cfg["iconvqa"]["save_path"]
-
 
     iconqa_text_val = json.load(open(eval_file_path,"r"))
 
@@ -150,7 +149,6 @@ if 'gqa' in args.dataset:
     img_path = cfg.evaluation_datasets_cfg["gqa"]["img_path"]
     batch_size = cfg.evaluation_datasets_cfg["gqa"]["batch_size"]
     max_new_tokens = cfg.evaluation_datasets_cfg["gqa"]["max_new_tokens"]
-    save_path = cfg.evaluation_datasets_cfg["gqa"]["save_path"]
 
     gqa = json.load(open(eval_file_path))
     data = GQAEvalData(gqa, vis_processor, img_path)
@@ -172,7 +170,8 @@ if 'gqa' in args.dataset:
             total+=1
     print('gqa val:', count / total * 100, flush=True)
 
-    with open(save_path,'w') as f:
+    file_save_path = os.path.join(save_path, "gqa.json")
+    with open(file_save_path,'w') as f:
         json.dump(minigpt4_predict, f)
 
 if 'vsr' in args.dataset:
@@ -180,7 +179,6 @@ if 'vsr' in args.dataset:
     img_path = cfg.evaluation_datasets_cfg["vsr"]["img_path"]
     batch_size = cfg.evaluation_datasets_cfg["vsr"]["batch_size"]
     max_new_tokens = cfg.evaluation_datasets_cfg["vsr"]["max_new_tokens"]
-    save_path = cfg.evaluation_datasets_cfg["vsr"]["save_path"]
 
     annotation = load_dataset("cambridgeltl/vsr_zeroshot", split='test')
     data = VSREvalData(annotation, vis_processor, img_path)
@@ -203,7 +201,8 @@ if 'vsr' in args.dataset:
                 count+=1
             total+=1
     print('vsr test:', count / total * 100, flush=True)
-    with open(save_path,'w') as f:
+    file_save_path = os.path.join(save_path,"vsr.json")
+    with open(file_save_path,'w') as f:
         json.dump(minigpt4_predict, f)
 
 if 'hm' in args.dataset:
@@ -212,7 +211,6 @@ if 'hm' in args.dataset:
     img_path = cfg.evaluation_datasets_cfg["hm"]["img_path"]
     batch_size = cfg.evaluation_datasets_cfg["hm"]["batch_size"]
     max_new_tokens = cfg.evaluation_datasets_cfg["hm"]["max_new_tokens"]
-    save_path = cfg.evaluation_datasets_cfg["hm"]["save_path"]
 
     annotation = []
     with open(eval_file_path, 'r') as jsonl_file:
@@ -247,8 +245,8 @@ if 'hm' in args.dataset:
             if answer == label:
                 count+=1
             total+=1
-
+            
     print('hm val:', count / total * 100, flush=True)
-
-    with open(save_path,'w') as f:
+    file_save_path = os.path.join(save_path, "hm.json")
+    with open(file_save_path,'w') as f:
         json.dump(minigpt4_predict, f)

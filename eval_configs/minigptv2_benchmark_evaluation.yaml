@@ -25,61 +25,53 @@ evaluation_datasets:
   refcoco:
     eval_file_path: /ibex/project/c2133/minigpt4_v2_dataset  
     img_path: /ibex/ai/reference/CV/COCO/cocoapi/data/2014/images/jpeg/train   
-    save_path: results/refcoco.json
     max_new_tokens: 20
     batch_size: 10
   refcocog:
     eval_file_path: /path/to/eval/annotation/path  
     img_path: /path/to/eval/image/path    
-    save_path: /path/to/save/path 
     max_new_tokens: 20
     batch_size: 10
   refcoco+:
     eval_file_path: /path/to/eval/annotation/path  
     img_path: /path/to/eval/image/path    
-    save_path: /path/to/save/path 
     max_new_tokens: 20
     batch_size: 10
   gqa:
     eval_file_path: /path/to/eval/annotation/path  
     img_path: /path/to/eval/image/path    
-    save_path: /path/to/save/path 
     max_new_tokens: 20
     batch_size: 10
   okvqa:
-    eval_file_path: /path/to/eval/annotation/path  
-    img_path: /path/to/eval/image/path    
-    save_path: /path/to/save/path 
+    eval_file_path: /ibex/project/c2133/blip_dataset/ok_vqa_copy  
+    img_path: /ibex/ai/reference/CV/COCO/cocoapi/data/2017/images/jpeg/train    
     max_new_tokens: 20
     batch_size: 10
   vizwiz:
-    eval_file_path: /path/to/eval/annotation/path  
-    img_path: /path/to/eval/image/path    
-    save_path: /path/to/save/path 
+    eval_file_path: /ibex/project/c2133/minigpt4_v2_dataset/vizwiz/val.json 
+    img_path: /ibex/project/c2133/minigpt4_v2_dataset/vizwiz/val   
     max_new_tokens: 20
     batch_size: 10
   iconvqa:
     eval_file_path: /path/to/eval/annotation/path  
     img_path: /path/to/eval/image/path    
-    save_path: /path/to/save/path 
     max_new_tokens: 20
     batch_size: 10
   vsr:
     eval_file_path: cambridgeltl/vsr_zeroshot 
     img_path: /path/to/eval/image/path    
-    save_path: /path/to/save/path 
     max_new_tokens: 20
     batch_size: 10
   hm:
-    eval_file_path: /path/to/eval/annotation/path  
-    img_path: /path/to/eval/image/path    
-    save_path: /path/to/save/path 
+    eval_file_path: /ibex/project/c2133/minigpt4_v2_dataset/hateful_meme/dev.jsonl  
+    img_path: /ibex/project/c2133/minigpt4_v2_dataset/hateful_meme   
     max_new_tokens: 20
     batch_size: 10
 
 run:
   task: image_text_pretrain
   name: minigptv2_evaluation
+  save_path: /path/to/save/folder_path
 
   
 
