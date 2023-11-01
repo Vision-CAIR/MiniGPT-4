@@ -46,9 +46,9 @@ def prepare_texts(texts, conv_temp):
 def init_model(args):
     print('Initialization Model')
     cfg = Config(args)
-    cfg.model_cfg.ckpt = args.ckpt
-    cfg.model_cfg.lora_r = args.lora_r
-    cfg.model_cfg.lora_alpha = args.lora_alpha
+    # cfg.model_cfg.ckpt = args.ckpt
+    # cfg.model_cfg.lora_r = args.lora_r
+    # cfg.model_cfg.lora_alpha = args.lora_alpha
 
     model_config = cfg.model_cfg
     model_cls = registry.get_model_class(model_config.arch)

@@ -9,7 +9,7 @@ from PIL import Image
 from tqdm import tqdm
 import torch
 from torch.utils.data import DataLoader
-
+from minigpt4.common.config import Config
 from minigpt4.common.eval_utils import prepare_texts, init_model, eval_parser, computeIoU
 from minigpt4.conversation.conversation import CONV_VISION_minigptv2
 
@@ -20,43 +20,43 @@ def list_of_str(arg):
 
 parser = eval_parser()
 parser.add_argument("--dataset", type=list_of_str, default='refcoco', help="dataset to evaluate")
-parser.add_argument("--split", type=list_of_str, default='test', help="dataset to evaluate")
 parser.add_argument("--res", type=float, default=100.0, help="resolution used in refcoco")
 parser.add_argument("--resample", action='store_true', help="resolution used in refcoco")
-parser.add_argument("--img_path", type=str)
-parser.add_argument("--eval_file_path", type=str)
-parser.add_argument("--save_path", type=str)
 args = parser.parse_args()
 
+cfg = Config(args)
 
-print(args.ckpt)
-print(args.name)
-
-eval_dict = {'refcoco': args.split, 
-            'refcoco+': args.split,
-            'refcocog': args.split}
+eval_dict = {'refcoco': ['val','testA','testB'], 
+            'refcoco+': ['val','testA','testB'],
+            'refcocog': ['val','test']}
 
 model, vis_processor = init_model(args)
 model.eval()
 CONV_VISION = CONV_VISION_minigptv2
 conv_temp = CONV_VISION.copy()
 conv_temp.system = ""
+
 # 
 model.eval()
 
+eval_file_path = cfg.run_cfg.eval_file_path
+img_path = cfg.run_cfg.img_path
+batch_size = cfg.run_cfg.batch_size
+max_new_tokens = cfg.run_cfg.max_new_tokens
+
 for dataset in args.dataset:
     for split in eval_dict[dataset]:
-        with open(os.path.join(args.eval_file_path,f"{dataset}/{dataset}_{split}.json"), 'r') as f:
+        with open(os.path.join(eval_file_path,f"{dataset}/{dataset}_{split}.json"), 'r') as f:
             refcoco = json.load(f)
 
-        data = RefCOCOEvalData(refcoco, vis_processor, args.img_path)
-        eval_dataloader = DataLoader(data, batch_size=args.batch_size, shuffle=False)
+        data = RefCOCOEvalData(refcoco, vis_processor, img_path)
+        eval_dataloader = DataLoader(data, batch_size=batch_size, shuffle=False)
         minigpt4_predict = defaultdict(list)
         resamples = []
 
         for images, questions, img_ids in tqdm(eval_dataloader):
             texts = prepare_texts(questions, conv_temp)  # warp the texts with conversation template
-            answers = model.generate(images, texts, max_new_tokens=args.max_new_tokens, do_sample=False)
+            answers = model.generate(images, texts, max_new_tokens=max_new_tokens, do_sample=False)
             for answer, img_id, question in zip(answers, img_ids, questions):
                 answer = answer.replace("<unk>","").replace(" ","").strip()
                 pattern = r'\{<\d{1,3}><\d{1,3}><\d{1,3}><\d{1,3}>\}'
@@ -66,12 +66,12 @@ for dataset in args.dataset:
                     resamples.append({'img_id': img_id, 'sents': [question.replace('[refer] give me the location of','').strip()]})
         if args.resample:
             for i in range(20):
-                data = RefCOCOEvalData(resamples, vis_processor, args.img_path)
+                data = RefCOCOEvalData(resamples, vis_processor, img_path)
                 resamples = []
-                eval_dataloader = DataLoader(data, batch_size=args.batch_size, shuffle=False)
+                eval_dataloader = DataLoader(data, batch_size=batch_size, shuffle=False)
                 for images, questions, img_ids in tqdm(eval_dataloader):
                     texts = prepare_texts(questions, conv_temp)  # warp the texts with conversation template
-                    answers = model.generate(images, texts, max_new_tokens=args.max_new_tokens, do_sample=False)
+                    answers = model.generate(images, texts, max_new_tokens=max_new_tokens, do_sample=False)
                     for answer, img_id, question in zip(answers, img_ids, questions):
                         answer = answer.replace("<unk>","").replace(" ","").strip()
                         pattern = r'\{<\d{1,3}><\d{1,3}><\d{1,3}><\d{1,3}>\}'
@@ -83,7 +83,7 @@ for dataset in args.dataset:
                 if len(resamples) == 0:
                     break
 
-        with open(args.save_path,'w') as f:
+        with open(save_path,'w') as f:
             json.dump(minigpt4_predict, f)
 
         count=0
