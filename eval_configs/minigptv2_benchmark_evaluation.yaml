@@ -5,8 +5,8 @@ model:
   end_sym: "</s>"
   low_resource: False
   prompt_template: '[INST] {} [/INST]'
-  llama_model: "/ibex/project/c2133/llama_v2/llama-2-7b-chat-pytorch_update"
-  ckpt: "/ibex/project/c2133/minigpt_checkpoints/checkpoint_stage3_correct/checkpoint_10.pth"
+  llama_model: ""
+  ckpt: ""
   lora_r: 64
   lora_alpha: 16
 
@@ -23,8 +23,8 @@ datasets:
 
 evaluation_datasets:
   refcoco:
-    eval_file_path: /ibex/project/c2133/minigpt4_v2_dataset  
-    img_path: /ibex/ai/reference/CV/COCO/cocoapi/data/2014/images/jpeg/train   
+    eval_file_path: /path/to/eval/annotation/path  
+    img_path: /path/to/eval/image/path      
     max_new_tokens: 20
     batch_size: 10
   refcocog:
@@ -43,15 +43,15 @@ evaluation_datasets:
     max_new_tokens: 20
     batch_size: 10
   okvqa:
-    eval_file_path: /ibex/project/c2133/blip_dataset/ok_vqa_copy  
-    img_path: /ibex/ai/reference/CV/COCO/cocoapi/data/2017/images/jpeg/train    
+    eval_file_path: /path/to/eval/annotation/path  
+    img_path: /path/to/eval/image/path     
     max_new_tokens: 20
     batch_size: 10
   vizwiz:
-    eval_file_path: /ibex/project/c2133/minigpt4_v2_dataset/vizwiz/val.json 
-    img_path: /ibex/project/c2133/minigpt4_v2_dataset/vizwiz/val   
+    eval_file_path: /path/to/eval/annotation/path  
+    img_path: /path/to/eval/image/path    
     max_new_tokens: 20
-    batch_size: 10
+    batch_size: 100
   iconvqa:
     eval_file_path: /path/to/eval/annotation/path  
     img_path: /path/to/eval/image/path    
@@ -63,10 +63,10 @@ evaluation_datasets:
     max_new_tokens: 20
     batch_size: 10
   hm:
-    eval_file_path: /ibex/project/c2133/minigpt4_v2_dataset/hateful_meme/dev.jsonl  
-    img_path: /ibex/project/c2133/minigpt4_v2_dataset/hateful_meme   
+    eval_file_path: /path/to/eval/annotation/path  
+    img_path: /path/to/eval/image/path     
     max_new_tokens: 20
-    batch_size: 10
+    batch_size: 100
 
 run:
   task: image_text_pretrain

@@ -65,7 +65,7 @@ if 'okvqa' in args.dataset:
             result['question_id'] = int(question_id)
             minigpt4_predict.append(result)
 
-    file_save_path= os.join(save_path,"okvqa.json")
+    file_save_path= os.path.join(save_path,"okvqa.json")
     with open(file_save_path,'w') as f:
         json.dump(minigpt4_predict, f)
 
@@ -245,7 +245,7 @@ if 'hm' in args.dataset:
             if answer == label:
                 count+=1
             total+=1
-            
+
     print('hm val:', count / total * 100, flush=True)
     file_save_path = os.path.join(save_path, "hm.json")
     with open(file_save_path,'w') as f:
