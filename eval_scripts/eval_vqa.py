@@ -36,15 +36,18 @@ conv_temp = CONV_VISION_minigptv2.copy()
 conv_temp.system = ""
 model.eval()
 
-eval_file_path = cfg.run_cfg.eval_file_path
-img_path=cfg.run_cfg.img_path
-save_path = cfg.run_cfg.save_path
-batch_size = cfg.run_cfg.batch_size
-max_new_tokens = cfg.run_cfg.max_new_tokens
+
 
 if 'okvqa' in args.dataset:
-    evaluation_annntation_path = os.path.join(eval_file_path, "okvqa_test_split.json")
-    with open(evaluation_annntation_path) as f:
+
+    eval_file_path = cfg.evaluation_datasets_cfg["okvqa"]["eval_file_path"]
+    img_path = cfg.evaluation_datasets_cfg["okvqa"]["img_path"]
+    batch_size = cfg.evaluation_datasets_cfg["okvqa"]["batch_size"]
+    max_new_tokens = cfg.evaluation_datasets_cfg["okvqa"]["max_new_tokens"]
+    save_path = cfg.evaluation_datasets_cfg["okvqa"]["save_path"]
+
+    # evaluation_annntation_path = os.path.join(eval_file_path, "okvqa_test_split.json")
+    with open(eval_file_path) as f:
         ok_vqa_test_split = json.load(f)
 
     data = OKVQAEvalData(ok_vqa_test_split, vis_processor, img_path)
@@ -76,6 +79,13 @@ if 'okvqa' in args.dataset:
     print ("Overall OKVQA Accuracy is: %.02f\n" %(vqaEval.accuracy['overall']), flush=True)
 
 if 'vizwiz' in args.dataset:
+
+    eval_file_path = cfg.evaluation_datasets_cfg["vizwiz"]["eval_file_path"]
+    img_path = cfg.evaluation_datasets_cfg["vizwiz"]["img_path"]
+    batch_size = cfg.evaluation_datasets_cfg["vizwiz"]["batch_size"]
+    max_new_tokens = cfg.evaluation_datasets_cfg["vizwiz"]["max_new_tokens"]
+    save_path = cfg.evaluation_datasets_cfg["vizwiz"]["save_path"]
+
     vizwiz = json.load(open(eval_file_path, 'r'))
 
     data = VizWizEvalData(vizwiz, vis_processor, img_path)
@@ -105,6 +115,14 @@ if 'vizwiz' in args.dataset:
 
 
 if 'iconvqa' in args.dataset:
+
+    eval_file_path = cfg.evaluation_datasets_cfg["iconvqa"]["eval_file_path"]
+    img_path = cfg.evaluation_datasets_cfg["iconvqa"]["img_path"]
+    batch_size = cfg.evaluation_datasets_cfg["iconvqa"]["batch_size"]
+    max_new_tokens = cfg.evaluation_datasets_cfg["iconvqa"]["max_new_tokens"]
+    save_path = cfg.evaluation_datasets_cfg["iconvqa"]["save_path"]
+
+
     iconqa_text_val = json.load(open(eval_file_path,"r"))
 
     data = IconQAEvalData(iconqa_text_val, vis_processor, img_path)
@@ -127,6 +145,13 @@ if 'iconvqa' in args.dataset:
 
 
 if 'gqa' in args.dataset:
+
+    eval_file_path = cfg.evaluation_datasets_cfg["gqa"]["eval_file_path"]
+    img_path = cfg.evaluation_datasets_cfg["gqa"]["img_path"]
+    batch_size = cfg.evaluation_datasets_cfg["gqa"]["batch_size"]
+    max_new_tokens = cfg.evaluation_datasets_cfg["gqa"]["max_new_tokens"]
+    save_path = cfg.evaluation_datasets_cfg["gqa"]["save_path"]
+
     gqa = json.load(open(eval_file_path))
     data = GQAEvalData(gqa, vis_processor, img_path)
     eval_dataloader = DataLoader(data, batch_size=batch_size, shuffle=False)
@@ -151,6 +176,12 @@ if 'gqa' in args.dataset:
         json.dump(minigpt4_predict, f)
 
 if 'vsr' in args.dataset:
+
+    img_path = cfg.evaluation_datasets_cfg["vsr"]["img_path"]
+    batch_size = cfg.evaluation_datasets_cfg["vsr"]["batch_size"]
+    max_new_tokens = cfg.evaluation_datasets_cfg["vsr"]["max_new_tokens"]
+    save_path = cfg.evaluation_datasets_cfg["vsr"]["save_path"]
+
     annotation = load_dataset("cambridgeltl/vsr_zeroshot", split='test')
     data = VSREvalData(annotation, vis_processor, img_path)
     eval_dataloader = DataLoader(data, batch_size=batch_size, shuffle=False)
@@ -176,6 +207,13 @@ if 'vsr' in args.dataset:
         json.dump(minigpt4_predict, f)
 
 if 'hm' in args.dataset:
+
+    eval_file_path = cfg.evaluation_datasets_cfg["hm"]["eval_file_path"]
+    img_path = cfg.evaluation_datasets_cfg["hm"]["img_path"]
+    batch_size = cfg.evaluation_datasets_cfg["hm"]["batch_size"]
+    max_new_tokens = cfg.evaluation_datasets_cfg["hm"]["max_new_tokens"]
+    save_path = cfg.evaluation_datasets_cfg["hm"]["save_path"]
+
     annotation = []
     with open(eval_file_path, 'r') as jsonl_file:
         for line in jsonl_file:

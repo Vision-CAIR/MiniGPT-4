@@ -30,6 +30,7 @@ eval_dict = {'refcoco': ['val','testA','testB'],
             'refcoco+': ['val','testA','testB'],
             'refcocog': ['val','test']}
 
+
 model, vis_processor = init_model(args)
 model.eval()
 CONV_VISION = CONV_VISION_minigptv2
@@ -39,13 +40,17 @@ conv_temp.system = ""
 # 
 model.eval()
 
-eval_file_path = cfg.run_cfg.eval_file_path
-img_path = cfg.run_cfg.img_path
-batch_size = cfg.run_cfg.batch_size
-max_new_tokens = cfg.run_cfg.max_new_tokens
+
 
 for dataset in args.dataset:
     for split in eval_dict[dataset]:
+
+        eval_file_path = cfg.evaluation_datasets_cfg[dataset]["eval_file_path"]
+        img_path = cfg.evaluation_datasets_cfg[dataset]["img_path"]
+        batch_size = cfg.evaluation_datasets_cfg[dataset]["batch_size"]
+        max_new_tokens = cfg.evaluation_datasets_cfg[dataset]["max_new_tokens"]
+        save_path = cfg.evaluation_datasets_cfg[dataset]["save_path"]
+
         with open(os.path.join(eval_file_path,f"{dataset}/{dataset}_{split}.json"), 'r') as f:
             refcoco = json.load(f)
 
@@ -83,7 +88,7 @@ for dataset in args.dataset:
                 if len(resamples) == 0:
                     break
 
-        with open(save_path,'w') as f:
+        with open(os.path.join(save_path,f"{args.dataset}_{split}.json"),'w') as f:
             json.dump(minigpt4_predict, f)
 
         count=0

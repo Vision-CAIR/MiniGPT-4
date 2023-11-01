@@ -80,7 +80,7 @@ dataset names:
 
 ```
 torchrun --master-port ${port} --nproc_per_node 1 eval_ref.py \
- --cfg-path ${cfg_path} --dataset dataset_name
+ --cfg-path ${cfg_path} --dataset dataset_name --resample
 ```
 
 

@@ -5,8 +5,8 @@ model:
   end_sym: "</s>"
   low_resource: False
   prompt_template: '[INST] {} [/INST]'
-  llama_model: ""
-  ckpt: ""
+  llama_model: "/ibex/project/c2133/llama_v2/llama-2-7b-chat-pytorch_update"
+  ckpt: "/ibex/project/c2133/minigpt_checkpoints/checkpoint_stage3_correct/checkpoint_10.pth"
   lora_r: 64
   lora_alpha: 16
 
@@ -21,14 +21,66 @@ datasets:
       train:
         name: "blip_caption"
 
+evaluation_datasets:
+  refcoco:
+    eval_file_path: /ibex/project/c2133/minigpt4_v2_dataset  
+    img_path: /ibex/ai/reference/CV/COCO/cocoapi/data/2014/images/jpeg/train   
+    save_path: results/refcoco.json
+    max_new_tokens: 20
+    batch_size: 10
+  refcocog:
+    eval_file_path: /path/to/eval/annotation/path  
+    img_path: /path/to/eval/image/path    
+    save_path: /path/to/save/path 
+    max_new_tokens: 20
+    batch_size: 10
+  refcoco+:
+    eval_file_path: /path/to/eval/annotation/path  
+    img_path: /path/to/eval/image/path    
+    save_path: /path/to/save/path 
+    max_new_tokens: 20
+    batch_size: 10
+  gqa:
+    eval_file_path: /path/to/eval/annotation/path  
+    img_path: /path/to/eval/image/path    
+    save_path: /path/to/save/path 
+    max_new_tokens: 20
+    batch_size: 10
+  okvqa:
+    eval_file_path: /path/to/eval/annotation/path  
+    img_path: /path/to/eval/image/path    
+    save_path: /path/to/save/path 
+    max_new_tokens: 20
+    batch_size: 10
+  vizwiz:
+    eval_file_path: /path/to/eval/annotation/path  
+    img_path: /path/to/eval/image/path    
+    save_path: /path/to/save/path 
+    max_new_tokens: 20
+    batch_size: 10
+  iconvqa:
+    eval_file_path: /path/to/eval/annotation/path  
+    img_path: /path/to/eval/image/path    
+    save_path: /path/to/save/path 
+    max_new_tokens: 20
+    batch_size: 10
+  vsr:
+    eval_file_path: cambridgeltl/vsr_zeroshot 
+    img_path: /path/to/eval/image/path    
+    save_path: /path/to/save/path 
+    max_new_tokens: 20
+    batch_size: 10
+  hm:
+    eval_file_path: /path/to/eval/annotation/path  
+    img_path: /path/to/eval/image/path    
+    save_path: /path/to/save/path 
+    max_new_tokens: 20
+    batch_size: 10
+
 run:
   task: image_text_pretrain
-  max_new_tokens: 20
   name: minigptv2_evaluation
-  batch_size: 10
-  eval_file_path: /path/to/eval/annotation/path  # annotation file
-  img_path: /path/to/eval/image/path    # image file path
-  save_path: /path/to/save/path   # saved result
+
   
 
   
