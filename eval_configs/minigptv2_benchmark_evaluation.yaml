@@ -64,9 +64,9 @@ evaluation_datasets:
     batch_size: 10
   hm:
     eval_file_path: /path/to/eval/annotation/path  
-    img_path: /path/to/eval/image/path     
+    img_path: /path/to/eval/image/path 
     max_new_tokens: 20
-    batch_size: 10
+    batch_size: 100
 
 run:
   task: image_text_pretrain
