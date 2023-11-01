@@ -88,8 +88,6 @@ torchrun --master-port ${port} --nproc_per_node 1 eval_ref.py \
 
 port=port_number  
 cfg_path=/path/to/eval_configs/minigptv2_benchmark_evaluation.yaml 
-dataset=dataset_type 
-
 
 dataset names:  
 | okvqa | vizwiz | iconvqa | gqa | vsr | hm |
