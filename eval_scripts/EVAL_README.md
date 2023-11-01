@@ -57,14 +57,15 @@ ${MINIGPTv2_EVALUATION_DATASET}
 export PYTHONPATH=$PYTHONPATH:/path/to/directory/of/MiniGPT-4
 ```
 
-### evaluation config files
+### config file setup
+
 Set **llama_model** to the path of LLaMA model.  
 Set **ckpt** to the path of our pretrained model.  
 Set **eval_file_path** to the path of the annotation files for the evaluation data.  
 Set **img_path** to the path of the images.  
 Set **save_path** to the path of saving evaluation output.    
 
-- [minigpt4/eval_configs/minigptv2_benchmark_evaluation.yaml](../minigpt4/eval_configs/minigptv2_benchmark_evaluation.yaml) 
+in [minigpt4/eval_configs/minigptv2_benchmark_evaluation.yaml](../minigpt4/eval_configs/minigptv2_benchmark_evaluation.yaml) 
 
 
 
@@ -73,12 +74,9 @@ Set **save_path** to the path of saving evaluation output.
 port=port_number  
 cfg_path=/path/to/eval_configs/minigptv2_benchmark_evaluation.yaml  
 
-
-dataset |
---- | 
-refcoco | 
-refcoco+ | 
-refcocog | 
+dataset names:  
+| refcoco | refcoco+ | refcocog |
+| ------- | -------- | -------- |
 
 ```
 torchrun --master-port ${port} --nproc_per_node 1 eval_ref.py \
@@ -90,29 +88,16 @@ torchrun --master-port ${port} --nproc_per_node 1 eval_ref.py \
 
 port=port_number  
 cfg_path=/path/to/eval_configs/minigptv2_benchmark_evaluation.yaml 
-eval_file_path=/path/to/eval/annotation/path  
-image_path=/path/to/eval/image/path  
-save_path=/path/to/save/path  
-ckpt=/path/to/evaluation/checkpoint  
-split=evaluation_data_split
 dataset=dataset_type 
 
 
-dataset_names |
---- | 
-okvqa |
-vizwiz |
-iconvqa |
-gqa |
-vsr |
-hm |
-
+dataset_names:  
+|okvqa | vizwiz | iconvqa | gqa | vsr | hm |
+| ------- | -------- | -------- |-------- | -------- |
 
 ```
 torchrun --master-port ${port} --nproc_per_node 1 eval_vqa.py \
- --cfg-path ${cfg_path} --img_path ${image_path} --eval_file_path ${eval_file_path} --save_path ${save_path} \
- --ckpt ${ckpt} --split ${split}  --dataset ${dataset} --lora_r 64 --lora_alpha 16 \
- --batch_size 10 --max_new_tokens 20 --resample
+ --cfg-path ${cfg_path} --dataset dataset_name
 ```
 
 
