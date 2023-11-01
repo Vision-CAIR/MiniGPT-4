@@ -91,9 +91,10 @@ cfg_path=/path/to/eval_configs/minigptv2_benchmark_evaluation.yaml
 dataset=dataset_type 
 
 
-dataset_names:  
-|okvqa | vizwiz | iconvqa | gqa | vsr | hm |
-| ------- | -------- | -------- |-------- | -------- |
+dataset names:  
+| okvqa | vizwiz | iconvqa | gqa | vsr | hm |
+| ------- | -------- | -------- |-------- | -------- | -------- |
+
 
 ```
 torchrun --master-port ${port} --nproc_per_node 1 eval_vqa.py \
