@@ -10,6 +10,11 @@ from minigpt4.models.base_model import BaseModel
 from transformers import StoppingCriteria, StoppingCriteriaList
 
 from minigpt4.conversation.conversation import StoppingCriteriaSub
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> upstream/main
 
 class MiniGPTBase(BaseModel):
     """
@@ -313,7 +318,6 @@ class MiniGPTBase(BaseModel):
         else:
             embeds = self.llama_model.base_model.embed_tokens(token_ids)
         return embeds
-
 
     @torch.no_grad()
     def generate(
