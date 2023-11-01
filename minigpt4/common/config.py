@@ -116,21 +116,22 @@ class Config:
     @staticmethod
     def build_evaluation_dataset_config(config):
         datasets = config.get("evaluation_datasets", None)
-        if datasets is None:
-            raise KeyError(
-                "Expecting 'datasets' as the root key for dataset configuration."
-            )
+        # if datasets is None:
+        #     raise KeyError(
+        #         "Expecting 'datasets' as the root key for dataset configuration."
+        #     )
 
         dataset_config = OmegaConf.create()
 
-        for dataset_name in datasets:
-            builder_cls = registry.get_builder_class(dataset_name)
+        if datasets is not None:
+            for dataset_name in datasets:
+                builder_cls = registry.get_builder_class(dataset_name)
 
-            # hierarchy override, customized config > default config
-            dataset_config = OmegaConf.merge(
-                dataset_config,
-                {"evaluation_datasets": {dataset_name: config["evaluation_datasets"][dataset_name]}},
-            )
+                # hierarchy override, customized config > default config
+                dataset_config = OmegaConf.merge(
+                    dataset_config,
+                    {"evaluation_datasets": {dataset_name: config["evaluation_datasets"][dataset_name]}},
+                )
 
         return dataset_config
 
