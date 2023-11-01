@@ -23,7 +23,9 @@ Deyao Zhu*, Jun Chen*, Xiaoqian Shen, Xiang Li, Mohamed Elhoseiny
 
 
 ## News
-[Oct.24 2023] We release the finetuning code of our MiniGPT-v2.
+[Oct.31 2023] We release the [evluation code](eval_scripts/EVAL_README.md) of our MiniGPT-v2.  
+
+[Oct.24 2023] We release the [finetuning code](MiniGPTv2_Train.md) of our MiniGPT-v2.
 
 [Oct.13 2023] Breaking! We release the first major update with our MiniGPT-v2
 
@@ -151,6 +153,9 @@ For training details of MiniGPT-4, check [here](MiniGPT4_Train.md).
 
 For finetuning details of MiniGPT-v2, check [here](MiniGPTv2_Train.md)
 
+
+### Evaluation
+For finetuning details of MiniGPT-v2, check [here](eval_scripts/EVAL_README.md)  
 
 
 ## Acknowledgement
