@@ -1,11 +1,11 @@
 model:
   arch: minigpt_v2
   model_type: pretrain
-  max_txt_len: 160
+  max_txt_len: 500
   end_sym: "</s>"
   low_resource: True
   prompt_template: '[INST] {} [/INST]'
-  ckpt: 'please set this value to the path of pretrained checkpoint'
+  ckpt: "please set this value to the path of pretrained checkpoint"
   lora_r: 64
   lora_alpha: 16
 

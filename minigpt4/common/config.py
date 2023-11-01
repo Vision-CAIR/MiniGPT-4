@@ -29,6 +29,7 @@ class Config:
         runner_config = self.build_runner_config(config)
         model_config = self.build_model_config(config, **user_config)
         dataset_config = self.build_dataset_config(config)
+        evaluation_dataset_config = self.build_evaluation_dataset_config(config)
 
         # Validate the user-provided runner configuration
         # model and dataset configuration are supposed to be validated by the respective classes
@@ -37,7 +38,7 @@ class Config:
 
         # Override the default configuration with user options.
         self.config = OmegaConf.merge(
-            runner_config, model_config, dataset_config, user_config
+            runner_config, model_config, dataset_config,evaluation_dataset_config, user_config
         )
 
     def _validate_runner_config(self, runner_config):
@@ -111,6 +112,28 @@ class Config:
 
         return dataset_config
 
+
+    @staticmethod
+    def build_evaluation_dataset_config(config):
+        datasets = config.get("evaluation_datasets", None)
+        if datasets is None:
+            raise KeyError(
+                "Expecting 'datasets' as the root key for dataset configuration."
+            )
+
+        dataset_config = OmegaConf.create()
+
+        for dataset_name in datasets:
+            builder_cls = registry.get_builder_class(dataset_name)
+
+            # hierarchy override, customized config > default config
+            dataset_config = OmegaConf.merge(
+                dataset_config,
+                {"evaluation_datasets": {dataset_name: config["evaluation_datasets"][dataset_name]}},
+            )
+
+        return dataset_config
+
     def _convert_to_dot_list(self, opts):
         if opts is None:
             opts = []
@@ -135,6 +158,10 @@ class Config:
     @property
     def datasets_cfg(self):
         return self.config.datasets
+
+    @property
+    def evaluation_datasets_cfg(self):
+        return self.config.evaluation_datasets
 
     @property
     def model_cfg(self):
