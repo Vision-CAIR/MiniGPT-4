@@ -75,9 +75,8 @@ class Blip2ImageTrainProcessor(BlipImageBaseProcessor):
 
         self.transform = transforms.Compose(
             [
-                transforms.RandomResizedCrop(
-                    image_size,
-                    scale=(min_scale, max_scale),
+                transforms.Resize(
+                    (image_size,image_size),
                     interpolation=InterpolationMode.BICUBIC,
                 ),
                 transforms.ToTensor(),
