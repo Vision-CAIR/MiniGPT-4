@@ -65,7 +65,7 @@ Set **eval_file_path** to the path of the annotation files for each evaluation d
 Set **img_path** to the img_path for each evaluation dataset.  
 Set **save_path** to the save_path for evch evaluation dataset.    
 
-in [minigpt4/eval_configs/minigptv2_benchmark_evaluation.yaml](../minigpt4/eval_configs/minigptv2_benchmark_evaluation.yaml) 
+in [eval_configs/minigptv2_benchmark_evaluation.yaml](../eval_configs/minigptv2_benchmark_evaluation.yaml) 
 
 
 
