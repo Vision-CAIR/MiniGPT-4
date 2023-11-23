@@ -8,7 +8,7 @@
 from minigpt4.common.registry import registry
 from minigpt4.tasks.base_task import BaseTask
 from minigpt4.tasks.image_text_pretrain import ImageTextPretrainTask
-
+from minigpt4.tasks.instruction_tuning import InstructionTask
 
 def setup_task(cfg):
     assert "task" in cfg.run_cfg, "Task name must be provided."
@@ -23,4 +23,5 @@ def setup_task(cfg):
 __all__ = [
     "BaseTask",
     "ImageTextPretrainTask",
+    "InstructionTask",
 ]

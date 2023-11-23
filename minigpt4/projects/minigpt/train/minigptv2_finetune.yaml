@@ -268,19 +268,21 @@ run:
   warmup_lr: 1e-6
 
   weight_decay: 0.05
-  max_epoch: 50
+  max_epoch: 1
   num_workers: 6
   warmup_steps: 1000
   iters_per_epoch: 1000
 
   seed: 42
-  output_dir: "/path/to/save_checkpoint"
+  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/minigpt/v2/vqa_pretrain_3B_llama2_7b_chat_stage3_train_linear_lora_test_1030"
 
   amp: True
   resume_ckpt_path: null
 
   evaluate: False 
   train_splits: ["train"]
+  valid_splits: ["val"]
+  test_splits: ["test"]
 
   device: "cuda"
   world_size: 1

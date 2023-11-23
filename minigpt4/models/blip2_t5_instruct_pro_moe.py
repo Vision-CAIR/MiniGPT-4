@@ -23,7 +23,7 @@ from minigpt4.models.blip2 import Blip2Base, disabled_train
 from minigpt4.models.modeling_t5 import T5Config, T5ForConditionalGeneration
 from transformers.modeling_outputs import BaseModelOutput
 
-from minigpt4.models.prompt_moe.prompt_moe import init_query_token_candidates, PrePromptMoE, PostPromptMoE
+from minigpt4.models.moe.prompt_moe import init_query_token_candidates, PrePromptMoE, PostPromptMoE
 
 @registry.register_model("blip2_t5_instruct_pro_moe")
 class Blip2T5InstructPromptMOE(Blip2Base):
@@ -68,7 +68,6 @@ class Blip2T5InstructPromptMOE(Blip2Base):
         moe_topk=2,
         moe_position="pre",
         embed_extract="t5",
-        text_embed_key="prompt",
         eval_gate_save=False,
         train_gate_save=False,
         gate_save_path="",
@@ -118,7 +117,6 @@ class Blip2T5InstructPromptMOE(Blip2Base):
         print('Loading T5')
         self.t5_tokenizer = T5TokenizerFast.from_pretrained(t5_model, truncation_side='left')
         self.t5_output_tokenizer = T5TokenizerFast.from_pretrained(t5_model, truncation_side='right')
-
         t5_config = T5Config.from_pretrained(t5_model)
         t5_config.dense_act_fn = "gelu"
         self.t5_model = T5ForConditionalGeneration.from_pretrained(
@@ -141,7 +139,9 @@ class Blip2T5InstructPromptMOE(Blip2Base):
         print("Loading BLIP2 Parameters from :", q_former_model)
         self.load_from_pretrained(url_or_filename=q_former_model)
 
+
         print('Init query token candidates')
+        self.moe_position = moe_position
         if num_qt_candidates > 1:
             
             self.query_token_candidates = init_query_token_candidates(num_query_token, num_qt_candidates) # shape:[num_qt_candidates, num_query_token, q_former_hidden_size]
@@ -149,7 +149,6 @@ class Blip2T5InstructPromptMOE(Blip2Base):
                 self.query_token_candidates = torch.nn.Parameter(self.query_tokens.repeat(num_qt_candidates, 1, 1))
                 self.query_tokens.requires_grad = False
             print(self.query_token_candidates.shape)
-            self.moe_position = moe_position
             
             if self.moe_position == "pre": # PromptMoE + Qformer
                 self.embed_extract = embed_extract
@@ -183,7 +182,6 @@ class Blip2T5InstructPromptMOE(Blip2Base):
                 param.requires_grad = False
             self.Qformer = self.Qformer.eval()
             self.Qformer.train = disabled_train
-            # self.query_tokens.requires_grad = False
             logging.info("freeze Qformer")
 
         # After loading, freeze t5_proj
@@ -206,7 +204,6 @@ class Blip2T5InstructPromptMOE(Blip2Base):
         self.qformer_text_input = qformer_text_input
 
         self.num_qt_candidates = num_qt_candidates
-        self.text_embed_key = text_embed_key
         self.gate_save_path = gate_save_path
         self.train_gate_save = train_gate_save
         self.eval_gate_save = eval_gate_save
@@ -246,9 +243,9 @@ class Blip2T5InstructPromptMOE(Blip2Base):
                 ## extract text_embeds
                 with self.maybe_autocast(dtype=torch.bfloat16):
                     if self.embed_extract == "t5":
-                        text_embeds = self._extract_text_embed_by_t5(samples['text_input'], samples['text_output'], image.device)
+                        text_embeds = self._extract_text_embed_by_t5(samples['q_input'], samples['text_output'], image.device)
                     elif self.embed_extract == "blip2_pretrain":
-                        text_embeds = self._extract_text_embed_by_qformer_pretrain_s1(samples['text_input'], image.device)
+                        text_embeds = self._extract_text_embed_by_qformer_pretrain_s1(samples['q_input'], image.device)
                     elif self.embed_extract == "random":
                         text_embeds = torch.randn(bz, 1, self.text_embed_size )
                     ## select proper query_tokens by prompt moe
@@ -261,7 +258,7 @@ class Blip2T5InstructPromptMOE(Blip2Base):
             ## Q-former Forward with one query tokens
             if self.qformer_text_input:
                 text_Qformer = self.tokenizer(
-                    samples["text_input"],
+                    samples["q_input"],
                     padding='longest',
                     truncation=True,
                     max_length=self.max_txt_len,
@@ -285,14 +282,12 @@ class Blip2T5InstructPromptMOE(Blip2Base):
                     encoder_attention_mask=image_atts,
                     return_dict=True,
                 )
-                query_output_to_linear = query_output.last_hidden_state[:,:query_tokens.size(1),:]
+            query_output_to_linear = query_output.last_hidden_state[:,:query_tokens.size(1),:]
 
 
         elif self.moe_position == "post":
             # self.query_token_candidates : size[num_qt_candidates, 32, 768]
             candi_query_tokens = self.query_token_candidates.expand(bz, -1, -1, -1).reshape(-1, self.query_token_candidates.shape[1], self.query_token_candidates.shape[2]) # size[num_qt_candidates*bz, 32, 768]
-            # image_embeds_repeat = np.repeat(image_embeds, self.num_qt_candidates, axis=0)
-            # image_atts_repeat = np.repeat(image_atts, self.num_qt_candidates, axis=0)
 
             image_embeds_repeat = image_embeds.repeat_interleave(self.num_qt_candidates, dim=0)
             image_atts_repeat = image_atts.repeat_interleave(self.num_qt_candidates, dim=0)
@@ -300,14 +295,12 @@ class Blip2T5InstructPromptMOE(Blip2Base):
             ## Q-former Forward with candidates query tokens
             if self.qformer_text_input:
                 text_Qformer = self.tokenizer(
-                    samples["text_input"],
+                    samples["q_input"],
                     padding='longest',
                     truncation=True,
                     max_length=self.max_txt_len,
                     return_tensors="pt",
                 ).to(image.device)
-                # text_Qformer_input_ids_repeat = np.repeat(text_Qformer.input_ids, self.num_qt_candidates, axis=0) # [bz*num_qt_candidates, batch_seq_len]
-                # text_Qformer_attn_mask_repeat = np.repeat(text_Qformer.attention_mask, self.num_qt_candidates, axis=0) # [bz*num_qt_candidates, batch_seq_len]
 
                 text_Qformer_input_ids_repeat = text_Qformer.input_ids.repeat_interleave(self.num_qt_candidates, dim=0) # [bz*num_qt_candidates, batch_seq_len]
                 text_Qformer_attn_mask_repeat = text_Qformer.attention_mask.repeat_interleave(self.num_qt_candidates, dim=0) # [bz*num_qt_candidates, batch_seq_len]
@@ -346,7 +339,7 @@ class Blip2T5InstructPromptMOE(Blip2Base):
 
         with self.maybe_autocast(dtype=torch.bfloat16):
             input_tokens = self.t5_tokenizer(
-                samples["text_input"],
+                samples["llm_input"],
                 padding="longest",
                 truncation=True,
                 max_length=self.max_txt_len,
@@ -384,7 +377,7 @@ class Blip2T5InstructPromptMOE(Blip2Base):
 
             if self.train_gate_save:
                 self._save_gate(
-                    samples['text_input'],
+                    samples['q_input'],
                     samples['text_output'],
                     gate,
                     samples['image_id'],
@@ -427,12 +420,6 @@ class Blip2T5InstructPromptMOE(Blip2Base):
         if "ocr_tokens" in samples.keys() and "{}" in prompt[0]:
             prompt = [p.format(', '.join(samples['ocr_tokens'][i][:30])) for i, p in enumerate(prompt)]
 
-        # define select key
-        if self.text_embed_key in samples.keys():
-            text_input = samples[self.text_embed_key]
-        else:
-            text_input = samples["prompt"]
-
         # image embed
         with self.maybe_autocast():
             image_embeds = self.ln_vision(self.visual_encoder(image))
@@ -444,9 +431,9 @@ class Blip2T5InstructPromptMOE(Blip2Base):
                 
                 with self.maybe_autocast(dtype=torch.bfloat16):
                     if self.embed_extract == "t5":
-                        text_embeds = self._extract_text_embed_by_t5(text_input, samples['text_output'], image.device)
+                        text_embeds = self._extract_text_embed_by_t5(samples["q_input"], samples['text_output'], image.device)
                     elif self.embed_extract == "blip2_pretrain":
-                        text_embeds = self._extract_text_embed_by_qformer_pretrain_s1(text_input, image.device)
+                        text_embeds = self._extract_text_embed_by_qformer_pretrain_s1(samples["q_input"], image.device)
                     elif self.embed_extract == "random":
                         text_embeds = torch.randn(bs, 1, self.text_embed_size )
                     select_query_tokens, _, _, gate_load, gate = self.PromptMoE._forward_gate_single_token(text_embeds)
@@ -460,7 +447,7 @@ class Blip2T5InstructPromptMOE(Blip2Base):
                 # qformer_prompt = ['Question: ' + qp.split(' Question: ')[1] for qp in qformer_prompt]
 
                 text_Qformer = self.tokenizer(
-                    prompt,
+                    samples["q_input"],
                     padding='longest',
                     truncation=True,
                     max_length=self.max_txt_len,
@@ -484,27 +471,23 @@ class Blip2T5InstructPromptMOE(Blip2Base):
                     encoder_attention_mask=image_atts,
                     return_dict=True,
                 )
-                query_output_to_linear = query_output.last_hidden_state[:,:query_tokens.size(1),:]
+            query_output_to_linear = query_output.last_hidden_state[:,:query_tokens.size(1),:]
 
         elif self.moe_position == "post":
             # self.query_token_candidates : size[num_qt_candidates, 32, 768]
             candi_query_tokens = self.query_token_candidates.expand(bs, -1, -1, -1).reshape(-1, self.query_token_candidates.shape[1], self.query_token_candidates.shape[2]) # size[num_qt_candidates*bz, 32, 768]
-            # image_embeds_repeat = np.repeat(image_embeds, self.num_qt_candidates, axis=0)
-            # image_atts_repeat = np.repeat(image_atts, self.num_qt_candidates, axis=0)
             image_embeds_repeat = image_embeds.repeat_interleave(self.num_qt_candidates, dim=0)
             image_atts_repeat = image_atts.repeat_interleave(self.num_qt_candidates, dim=0)
 
             ## Q-former Forward with candidates query tokens
             if self.qformer_text_input:
                 text_Qformer = self.tokenizer(
-                    text_input,
+                    samples["q_input"],
                     padding='longest',
                     truncation=True,
                     max_length=self.max_txt_len,
                     return_tensors="pt",
                 ).to(image.device)
-                # text_Qformer_input_ids_repeat = np.repeat(text_Qformer.input_ids, self.num_qt_candidates, axis=0) # [bz*num_qt_candidates, batch_seq_len]
-                # text_Qformer_attn_mask_repeat = np.repeat(text_Qformer.attention_mask, self.num_qt_candidates, axis=0) # [bz*num_qt_candidates, batch_seq_len]
                 text_Qformer_input_ids_repeat = text_Qformer.input_ids.repeat_interleave(self.num_qt_candidates, dim=0) # [bz*num_qt_candidates, batch_seq_len]
                 text_Qformer_attn_mask_repeat = text_Qformer.attention_mask.repeat_interleave(self.num_qt_candidates, dim=0) # [bz*num_qt_candidates, batch_seq_len]
 
@@ -574,7 +557,7 @@ class Blip2T5InstructPromptMOE(Blip2Base):
                 id_lst = samples['image_id']
             try:
                 self._save_gate(
-                    samples['prompt'],
+                    samples['q_input'],
                     output_text,
                     gate,
                     id_lst,
@@ -583,6 +566,7 @@ class Blip2T5InstructPromptMOE(Blip2Base):
                 )
             except Exception as e:
                 print("Evaluate save gate Error:", e)
+                # : TODO Evaluate save gate Error: local variable 'id_lst' referenced before assignment
 
         return output_text
 
@@ -599,25 +583,25 @@ class Blip2T5InstructPromptMOE(Blip2Base):
         length_penalty=-1,
         **kwargs
     ):
-        if isinstance(samples["text_input"], str):
-            samples["text_input"] = [samples["text_input"]]
+        if isinstance(samples["llm_input"], str):
+            samples["llm_input"] = [samples["llm_input"]]
 
         if prompt:
             if prompt.count("{}") == 2:
                 if 'ocr_tokens' in samples:
                     text_input = [
-                        prompt.format(', '.join(samples['ocr_tokens'][i][:30]), samples["text_input"][i])
-                    for i in range(len(samples["text_input"]))]
+                        prompt.format(', '.join(samples['ocr_tokens'][i][:30]), samples["llm_input"][i])
+                    for i in range(len(samples["llm_input"]))]
                 elif 'choices' in samples:
                     text_input = []
-                    for i in range(len(samples["text_input"])):
+                    for i in range(len(samples["llm_input"])):
                         this_choices = [f"({string.ascii_lowercase[j]}) {ch}" for j, ch in enumerate(samples["choices"][i])]
                         this_choices = " ".join(this_choices)
-                        text_input.append(prompt.format(samples["text_input"][i], this_choices))
+                        text_input.append(prompt.format(samples["llm_input"][i], this_choices))
             else:
-                text_input = [prompt.format(question) for question in samples["text_input"]]
+                text_input = [prompt.format(question) for question in samples["llm_input"]]
         else:
-            text_input = samples["text_input"]
+            text_input = samples["llm_input"]
 
         samples["prompt"] = text_input
 
@@ -1092,7 +1076,6 @@ class Blip2T5InstructPromptMOE(Blip2Base):
         moe_topk = cfg.get("moe_topk", 2)
         moe_position = cfg.get("moe_position", "pre")
         embed_extract = cfg.get("embed_extract", "t5")
-        text_embed_key = cfg.get("text_embed_key", "prompt")
         train_gate_save = cfg.get("train_gate_save", False)
         eval_gate_save = cfg.get("eval_gate_save", False)
         gate_save_path = cfg.get("gate_save_path", "")
@@ -1122,7 +1105,6 @@ class Blip2T5InstructPromptMOE(Blip2Base):
             moe_topk=moe_topk,
             moe_position=moe_position,
             embed_extract=embed_extract,
-            text_embed_key=text_embed_key,
             eval_gate_save=eval_gate_save,
             train_gate_save=train_gate_save,
             gate_save_path=gate_save_path,

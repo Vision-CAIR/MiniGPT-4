@@ -8,7 +8,6 @@ model:
   model_type: flant5xxl
   load_finetuned: False
   load_pretrained: True
-  # pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/instruct_blip_flant5xxl/instruct_blip_flanxxl_trimmed.pth"
   vit_model: eva_clip_g
   pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2-flant5-xxl/blip2_pretrained_flant5xxl.pth"
   finetuned: ""
@@ -36,10 +35,10 @@ model:
   freeze_t5_proj: False
 
   # moe
-  moe_position: "post" # post (position to insert PromptMoE Part)
+  moe_position: "pre" # post (position to insert PromptMoE Part)
   embed_extract: "blip2_pretrain" # t5, random (way to extract embeddings of task instruction if moe_position is pre)
   repeat_to_init_qt_candidates: True
-  num_qt_candidates: 5
+  num_qt_candidates: 20
   moe_topk: 2
   eval_gate_save: False
   train_gate_save: False

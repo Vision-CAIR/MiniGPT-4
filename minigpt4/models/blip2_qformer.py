@@ -75,8 +75,11 @@ class Blip2Qformer(Blip2Base):
         state_dict = self.Qformer.state_dict()
         for name, param in self.Qformer.named_parameters():
             if "_query" in name:
+                # bert.encoder.layer.10.intermediate_query.dense.weight / bias
+                # bert.encoder.layer.10.output_query.dense.weight / bias
+                # bert.encoder.layer.10.output_query.LayerNorm.weight / bias
                 key_orig = name.replace("_query", "")
-                param.data.copy_(state_dict[key_orig])
+                param.data.copy_(state_dict[key_orig]) # copy state_dict[key_orig] to param 
 
         self.vision_proj = nn.Linear(self.Qformer.config.hidden_size, embed_dim)
         self.text_proj = nn.Linear(self.Qformer.config.hidden_size, embed_dim)

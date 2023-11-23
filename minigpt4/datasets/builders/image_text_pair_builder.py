@@ -7,7 +7,7 @@ from minigpt4.datasets.builders.base_dataset_builder import BaseDatasetBuilder
 from minigpt4.datasets.datasets.laion_dataset import LaionDataset
 from minigpt4.datasets.datasets.cc_sbu_dataset import CCSBUDataset, CCSBUAlignDataset
 from minigpt4.datasets.datasets.text_caps import TextCapDataset
-from minigpt4.datasets.datasets.llava_dataset import LlavaDetailDataset, LlavaReasonDataset, LlavaConversationDataset
+from minigpt4.datasets.datasets.llava_dataset import LlavaDetailDataset, LlavaReasonDataset, LlavaConversationDataset, LlavaMixDataset
 from minigpt4.datasets.datasets.unnatural_instruction import UnnaturalDataset
 from minigpt4.datasets.datasets.multitask_conversation import MultiTaskConversationDataset
 from minigpt4.datasets.datasets.flickr import GroundedDetailDataset,CaptionToObjectDataset,PhraseToObjectDataset
@@ -15,7 +15,8 @@ from minigpt4.datasets.datasets.vg_dataset import ReferVisualGenomeDataset
 from minigpt4.datasets.datasets.coco_dataset import ReferCOCODataset, InvReferCOCODataset
 from minigpt4.datasets.datasets.gqa_datasets import GQADataset, GQAEvalDataset
 from minigpt4.datasets.datasets.aok_vqa_datasets import AOKVQADataset
-from minigpt4.datasets.datasets.coco_vqa_datasets import COCOVQADataset
+from minigpt4.datasets.datasets.coco_vqa_datasets import COCOVQADataset, COCOVQAEvalDataset
+from minigpt4.datasets.datasets.ok_vqa_datasets import OKVQADataset, OKVQAEvalDataset
 from minigpt4.datasets.datasets.ocrvqa_dataset import OCRVQADataset
 from minigpt4.datasets.datasets.coco_caption import COCOCapDataset, COCOCapEvalDataset
 
@@ -66,6 +67,7 @@ class UnnaturalInstructionBuilder(BaseDatasetBuilder):
             text_processor=self.text_processors["train"],
             ann_path=build_info.ann_path,
         )
+        print("{} Length: {}".format(dataset_cls.__name__, len(datasets['train']))) # print class name
 
         return datasets
 
@@ -93,11 +95,10 @@ class LlavaDetailBuilder(BaseDatasetBuilder):
             ann_path=build_info.ann_path,
             vis_root=build_info.image_path,
         )
+        print("{} Length: {}".format(dataset_cls.__name__, len(datasets['train']))) # print class name
 
         return datasets
     
-
-
 @registry.register_builder("llava_reason")
 class LlavaReasonBuilder(BaseDatasetBuilder):
     train_dataset_cls = LlavaReasonDataset
@@ -120,6 +121,7 @@ class LlavaReasonBuilder(BaseDatasetBuilder):
             ann_path=build_info.ann_path,
             vis_root=build_info.image_path,
         )
+        print("{} Length: {}".format(dataset_cls.__name__, len(datasets['train']))) # print class name
 
         return datasets
 
@@ -145,7 +147,50 @@ class LlavaReasonBuilder(BaseDatasetBuilder):
             ann_path=build_info.ann_path,
             vis_root=build_info.image_path,
         )
+        print("{} Length: {}".format(dataset_cls.__name__, len(datasets['train']))) # print class name
 
+        return datasets
+
+@registry.register_builder("llava_mix")
+class LlavaMixBuilder(BaseDatasetBuilder):
+    train_dataset_cls = LlavaMixDataset
+    DATASET_CONFIG_DICT = {
+        "default": "configs/datasets/llava/mix.yaml",
+        "mix_coco_gqa": "configs/datasets/mix_vqa/mix_vqa.yaml",
+    }
+
+    def build_datasets(self):
+        # at this point, all the annotations and image/videos should be all downloaded to the specified locations.
+        logging.info("[llava_mix]: Building datasets...")
+        self.build_processors()
+        build_info = self.config.build_info
+        datasets = dict()
+
+        # create datasets
+        dataset_cls = self.train_dataset_cls
+        vis_roots = {
+            'coco':build_info.image_path_coco,
+            'gqa':build_info.image_path_gqa,
+            'ocr':build_info.image_path_ocr,
+            'text':build_info.image_path_text,
+            # 'vg':build_info.image_path_vg,
+        }
+        datasets['train'] = dataset_cls(
+            vis_processor=self.vis_processors["train"],
+            text_processor=self.text_processors["train"],
+            ann_path=build_info.ann_path,
+            vis_root=vis_roots,
+        )
+        print("{} Length: {}".format(dataset_cls.__name__, len(datasets['train']))) # print class name
+
+        # vis_roots = {
+        #     'coco':'/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/train2014',
+        #     'gqa':'/mnt/pfs-guan-ssai/nlu/wanghanzi/data/GQA/images',
+        #     'ocr':'/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/images',
+        #     'text':'/mnt/pfs-guan-ssai/nlu/wanghanzi/data/TextVQA/train_images',
+        #     # 'vg':build_info.image_path_vg,
+        # }
+        
         return datasets
 
 
@@ -290,15 +335,22 @@ class TextcapCaptionBuilder(BaseDatasetBuilder):
 @registry.register_builder("coco_vqa")
 class COCOVQABuilder(BaseDatasetBuilder):
     train_dataset_cls = COCOVQADataset
+    eval_dataset_cls = COCOVQAEvalDataset
 
     DATASET_CONFIG_DICT = {
         "default": "configs/datasets/coco/defaults_vqa.yaml",
+        "vqa_v2_eval": "configs/datasets/coco/defaults_vqa_eval.yaml",
+        "vqa_v2_part": "configs/datasets/coco/defaults_vqa_part.yaml",
     }
 
 @registry.register_builder("ok_vqa")
 class OKVQABuilder(COCOVQABuilder):
+    train_dataset_cls = OKVQADataset
+    eval_dataset_cls = OKVQAEvalDataset
+
     DATASET_CONFIG_DICT = {
         "default": "configs/datasets/okvqa/defaults.yaml",
+        "ok_vqa_eval": "configs/datasets/okvqa/eval.yaml",
     }
 
 
@@ -317,9 +369,9 @@ class GQABuilder(BaseDatasetBuilder):
 
     DATASET_CONFIG_DICT = {
         "balanced_sft_raw": "configs/datasets/gqa/balanced_sft_raw.yaml",
+        "balanced_sft_raw_eval":"configs/datasets/gqa/balanced_sft_raw_eval.yaml",
+        "balanced_sft_raw_part":"configs/datasets/gqa/balanced_sft_raw_part.yaml",
     }
-
-
 
 
 @registry.register_builder("flickr_grounded_caption")
@@ -422,6 +474,7 @@ class DocumentVQABuilder(BaseDatasetBuilder):
             vis_root=build_info.image_path,
             ann_path=build_info.ann_path
         )
+        print("{} Length: {}".format(dataset_cls.__name__, len(datasets['train']))) # print class name
 
         return datasets
     

@@ -21,6 +21,7 @@ from minigpt4.common.utils import is_url
 from minigpt4.common.logger import MetricLogger
 from minigpt4.models.base_model import BaseModel
 from minigpt4.models.Qformer import BertConfig, BertLMHeadModel
+from minigpt4.models.QformerMoE import BertMoELMHeadModel
 from minigpt4.models.eva_vit import create_eva_vit_g
 from transformers import BertTokenizer
 
@@ -58,7 +59,31 @@ class Blip2Base(BaseModel):
         )
         query_tokens.data.normal_(mean=0.0, std=encoder_config.initializer_range)
         return Qformer, query_tokens
+    
+    @classmethod
+    def init_QformerMoE(cls, num_query_token, vision_width, moebert_expert_num, moebert_route_method, moebert_load_balance, moe_topk=1, cross_attention_freq=2):
+        moe_encoder_config = BertConfig.from_pretrained("/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased")
 
+        moe_encoder_config.encoder_width = vision_width
+        # insert cross-attention layer every other block
+        moe_encoder_config.add_cross_attention = True
+        moe_encoder_config.cross_attention_freq = cross_attention_freq
+        moe_encoder_config.query_length = num_query_token
+
+        moe_encoder_config.moebert_expert_num = moebert_expert_num
+        moe_encoder_config.moebert_route_method = moebert_route_method
+        moe_encoder_config.moebert_load_balance = moebert_load_balance
+        moe_encoder_config.moe_topk = moe_topk
+
+        MoEQformer = BertMoELMHeadModel.from_pretrained(
+            "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config
+        )
+        query_tokens = nn.Parameter(
+            torch.zeros(1, num_query_token, moe_encoder_config.hidden_size)
+        )
+        query_tokens.data.normal_(mean=0.0, std=moe_encoder_config.initializer_range)
+        return MoEQformer, query_tokens
+    
     def init_vision_encoder(
         self, model_name, img_size, drop_path_rate, use_grad_checkpoint, precision
     ):

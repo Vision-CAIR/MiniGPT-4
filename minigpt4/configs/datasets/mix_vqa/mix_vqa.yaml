@@ -1,0 +1,10 @@
+datasets:
+
+  llava_mix:
+    data_type: images
+    build_info:
+      ann_path: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/llava_v1_5_mix665k/mix_coco_gqa_162k.json
+      image_path_coco: /mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/train2014
+      image_path_gqa: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/GQA/images
+      image_path_ocr: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/images
+      image_path_text: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/TextVQA/train_images

@@ -210,9 +210,6 @@ class BaseDatasetBuilder:
             # visual data storage path
             # vis_path = os.path.join(vis_info.storage, split)
             vis_path = os.path.join(vis_info.storage)
-            print(ann_paths)
-            print(vis_path)
-            print(is_train)
 
             if not os.path.isabs(vis_path):
                 # vis_path = os.path.join(utils.get_cache_path(), vis_path)
@@ -230,6 +227,7 @@ class BaseDatasetBuilder:
                 ann_paths=ann_paths,
                 vis_root=vis_path,
             )
+            print("{} Length {} : {}".format(dataset_cls.__name__, split, len(datasets[split]))) # print class name
 
         return datasets
 

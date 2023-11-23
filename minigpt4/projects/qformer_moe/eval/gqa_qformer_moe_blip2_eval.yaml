@@ -4,12 +4,14 @@
  # For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
 
 model:
-  arch: blip2_t5_instruct_pro_moe
+  arch: blip2_t5_qformer_moe
   model_type: flant5xxl
   load_pretrained: True
-  load_finetuned: False
+  load_finetuned: True
   vit_model: eva_clip_g
   pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2-flant5-xxl/blip2_pretrained_flant5xxl.pth"
+  finetuned: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/flant5xxl/prompt_moe/gqa_943k_raw_QformerMoE_train_qf_train_qt_linear_gate_5ex_top1_2loss_textinqf_epo3_1107/20231107103/checkpoint_0.pth"
+  q_former_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2-flant5-xxl/blip2_pretrained_flant5xxl.pth"
 
   # vit encoder
   image_size: 224
@@ -34,33 +36,27 @@ model:
   freeze_t5_proj: False
 
   # moe
-  embed_extract: "blip2_pretrain" # t5
-  repeat_to_init_qt_candidates: True
-  num_qt_candidates: 20
+  moebert_expert_num: 20
+  moebert_route_method: "gate-sentence"
+  moebert_load_balance: 0.05
   moe_topk: 2
-  eval_gate_save: True
-  train_gate_save: True
-  gate_save_path: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/flant5xxl/prompt_moe/gqa_943k_raw_train_qf_train_qt_linear_gate_textblip2_20ex_top2_3loss_textinqf_epo3_1021/"
-
+  
 datasets:
-  gqa:
+  gqa: # train: 943000, 12578, 12578)
     type: balanced_sft_raw
+    batch_size: 16
     vis_processor:
       train:
-        name: "blip_image_train"
+        name: "blip2_image_train"
         image_size: 224
       eval:
-        name: "blip_image_eval"
+        name: "blip2_image_eval"
         image_size: 224
     text_processor:
       train:
-        name: "blip_question"
+        name: "blip_caption"
       eval:
-        name: "blip_question"
-    build_info:
-      images:
-        storage: "/mnt/pfs-guan-ssai/nlu/wanghanzi/data/GQA/images/"
-    
+        name: "blip_caption"
 
 run:
   task: instruction_tuning
@@ -74,20 +70,18 @@ run:
 
   weight_decay: 0.05
   max_epoch: 3
-  batch_size_train: 8
-  batch_size_eval: 16
   num_workers: 4
   warmup_steps: 600
 
   seed: 42
-  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/flant5xxl/prompt_moe/gqa_943k_raw_train_qf_train_qt_linear_gate_textblip2_20ex_top2_3loss_textinqf_epo3_1021/"
+  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/flant5xxl/prompt_moe/gqa_943k_raw_QformerMoE_train_qf_train_qt_linear_gate_5ex_top1_2loss_textinqf_epo3_1107_eval/"
   
   amp: True
   resume_ckpt_path: null
 
-  evaluate: False 
-  train_splits: ["train"]
-  valid_splits: ["val"]
+  evaluate: True 
+  # train_splits: ["train"]
+  # valid_splits: ["val"]
   test_splits: ["val"]
 
   device: "cuda"

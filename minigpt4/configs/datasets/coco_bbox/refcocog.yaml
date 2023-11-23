@@ -2,7 +2,7 @@ datasets:
   refcocog:
     data_type: images
     build_info:
-      image_path: /path/to/coco/images
+      image_path: /mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO
       ann_path: /path/to/refcoco_annotations
       dataset: refcocog
       splitBy: umd

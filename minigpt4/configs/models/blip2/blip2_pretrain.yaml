@@ -12,7 +12,7 @@ model:
   finetuned: ""
 
   # vit encoder
-  image_size: 224
+  image_size: 336
   drop_path_rate: 0
   use_grad_checkpoint: False
   vit_precision: "fp16"
@@ -21,15 +21,20 @@ model:
   # Q-Former
   num_query_token: 32
 
+  # moe
+  # moebert_expert_num: 20
+  # moebert_route_method: "gate-sentence"
+  # moebert_load_balance: 0.05
+  # moe_topk: 2
 
 preprocess:
     vis_processor:
         train:
           name: "blip_image_train"
-          image_size: 224
+          image_size: 336
         eval:
           name: "blip_image_eval"
-          image_size: 224
+          image_size: 336
     text_processor:
         train:
           name: "blip_caption"

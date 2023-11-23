@@ -164,18 +164,3 @@ class PrePromptMoE(PromptMoEBase):
         ### TODO: refer MOEBERT
         return None
 
-
-    # def forward(self, x, attention_mask=None):
-    #     if self.route_method == "gate-single-token":
-    #         x, balance_loss, gate_load, gate = self._forward_gate_single_token(x)
-    #     elif self.route_method == "gate-token":
-    #         x, balance_loss, gate_load, gate = self._forward_gate_token(x)
-    #     elif self.route_method == "gate-sentence":
-    #         if x.size(0) == 1:
-    #             x, balance_loss, gate_load, gate = self._forward_sentence_single_expert(x, attention_mask)
-    #         else:
-    #             x, balance_loss, gate_load, gate = self._forward_gate_sentence(x, attention_mask)
-    #     else:
-    #         raise KeyError("Routing method not supported.")
-
-    #     return x, balance_loss, gate_load, gate

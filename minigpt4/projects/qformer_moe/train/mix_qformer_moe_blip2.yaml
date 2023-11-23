@@ -4,12 +4,14 @@
  # For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
 
 model:
-  arch: blip2_t5_instruct_pro_moe
+  arch: blip2_t5_qformer_moe
   model_type: flant5xxl
   load_pretrained: True
   load_finetuned: False
   vit_model: eva_clip_g
   pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2-flant5-xxl/blip2_pretrained_flant5xxl.pth"
+  finetuned: ""
+  q_former_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2-flant5-xxl/blip2_pretrained_flant5xxl.pth"
 
   # vit encoder
   image_size: 224
@@ -34,32 +36,63 @@ model:
   freeze_t5_proj: False
 
   # moe
-  repeat_to_init_qt_candidates: True
-  num_qt_candidates: 5
-  moe_topk: 1
-  eval_gate_save: True
-  train_gate_save: True
-  gate_save_path: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/flant5xxl/prompt_moe/gqa_943k_raw_train_qf_train_qt_linear_gate_textt5_5ex_top1_3loss_textinqf_epo3_1016_gate/"
+  moebert_expert_num: 20
+  moebert_route_method: "gate-sentence"
+  moebert_load_balance: 0.05
+  moe_topk: 2
 
 datasets:
-  gqa:
+  gqa: # train: 943000, 12578, 12578)
     type: balanced_sft_raw
+    # batch_size: 4
+    batch_size: 16
     vis_processor:
       train:
-        name: "blip_image_train"
+        name: "blip2_image_train"
         image_size: 224
       eval:
-        name: "blip_image_eval"
+        name: "blip2_image_eval"
         image_size: 224
     text_processor:
       train:
-        name: "blip_question"
+        name: "blip_caption"
       eval:
-        name: "blip_question"
-    build_info:
-      images:
-        storage: "/mnt/pfs-guan-ssai/nlu/wanghanzi/data/GQA/images/"
-    
+        name: "blip_caption"
+    sample_ratio: 50
+  
+  ok_vqa: # train, valid (9009, 5046)
+    # batch_size: 6
+    batch_size: 16
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 224
+      eval:
+        name: "blip2_image_eval"
+        image_size: 224
+    text_processor:
+      train:
+        name: "blip_caption"
+      eval:
+        name: "blip_caption"
+    sample_ratio: 8  
+  
+  coco_vqa:    # 658104
+    # batch_size: 6
+    batch_size: 16
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 224
+      eval:
+        name: "blip2_image_eval"
+        image_size: 224
+    text_processor:
+      train:
+        name: "blip_caption"
+      eval:
+        name: "blip_caption"
+    sample_ratio: 15
 
 run:
   task: instruction_tuning
@@ -72,14 +105,12 @@ run:
   save_freq: 1500
 
   weight_decay: 0.05
-  max_epoch: 3
-  batch_size_train: 8
-  batch_size_eval: 16
+  max_epoch: 5
   num_workers: 4
   warmup_steps: 600
 
   seed: 42
-  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/flant5xxl/prompt_moe/gqa_943k_raw_train_qf_train_qt_linear_gate_textt5_5ex_top1_3loss_textinqf_epo3_1016/"
+  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/flant5xxl/prompt_moe/mix_coco_gqa_1610k_raw_QformerMoE_train_qf_train_qt_linear_gate_20ex_top2_3loss_textinqf_epo5_1115/"
   
   amp: True
   resume_ckpt_path: null
@@ -87,7 +118,7 @@ run:
   evaluate: False 
   train_splits: ["train"]
   valid_splits: ["val"]
-  test_splits: ["val"]
+  # test_splits: ["val"]
 
   device: "cuda"
   world_size: 1

@@ -16,6 +16,8 @@ from minigpt4.models.minigpt4 import MiniGPT4
 from minigpt4.models.minigpt_v2 import MiniGPTv2
 from minigpt4.models.blip2_qformer import Blip2Qformer
 from minigpt4.models.blip2_t5_instruct_pro_moe import Blip2T5InstructPromptMOE
+from minigpt4.models.blip2_t5_qformer_moe import Blip2T5InstructQformerMoE
+from minigpt4.models.blip2_vicuna_instruct import Blip2VicunaInstruct
 from minigpt4.processors.base_processor import BaseProcessor
 
 
@@ -26,7 +28,9 @@ __all__ = [
     "MiniGPT4",
     "MiniGPTv2",
     "Blip2Qformer",
-    "Blip2T5InstructPromptMOE"
+    "Blip2T5InstructPromptMOE",
+    "Blip2T5InstructQformerMoE",
+    "Blip2VicunaInstruct"
 ]
 
 

@@ -14,7 +14,8 @@ from minigpt4.common.dist_utils import get_rank, get_world_size, is_main_process
 from minigpt4.common.logger import MetricLogger, SmoothedValue
 from minigpt4.common.registry import registry
 from minigpt4.datasets.data_utils import prepare_sample
-import wandb
+from torch.utils.tensorboard import SummaryWriter
+# import wandb
 
 class BaseTask:
     def __init__(self, **kwargs):
@@ -34,6 +35,20 @@ class BaseTask:
         model_cls = registry.get_model_class(model_config.arch)
         return model_cls.from_config(model_config)
 
+    def build_tensorboard(self, cfg):
+        """
+        Build a tensorboard monitoring the global training process.
+        """
+        setattr(self, 'writer', None)
+        if is_main_process():
+            writer = SummaryWriter(log_dir=cfg.run_cfg.output_dir)
+            setattr(self, 'writer', writer)
+
+        if is_dist_avail_and_initialized():
+            dist.barrier()
+        
+        return None
+    
     def build_datasets(self, cfg):
         """
         Build a dictionary of datasets, keyed by split 'train', 'valid', 'test'.
@@ -57,8 +72,12 @@ class BaseTask:
 
             builder = registry.get_builder_class(name)(dataset_config)
             dataset = builder.build_datasets()
+            try:
+                dataset['train'].name = name
+            except Exception as e:
+                print(e,'\n No train dataset')
+                dataset['val'].name = name
 
-            dataset['train'].name = name
             if 'sample_ratio' in dataset_config:
                 dataset['train'].sample_ratio = dataset_config.sample_ratio
 
@@ -235,8 +254,8 @@ class BaseTask:
                     optimizer.step()
                 optimizer.zero_grad()
                 # if self.cfg.wandb_log:
-                if self.cfg.run_cfg.wandb_log:
-                    wandb.log({"epoch": inner_epoch, "loss": loss})
+                # if self.cfg.run_cfg.wandb_log:
+                #     wandb.log({"epoch": inner_epoch, "loss": loss})
             metric_logger.update(loss=loss.item())
             metric_logger.update(lr=optimizer.param_groups[0]["lr"])
 

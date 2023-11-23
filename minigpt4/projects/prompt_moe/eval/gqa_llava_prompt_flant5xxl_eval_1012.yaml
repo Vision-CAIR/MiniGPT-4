@@ -9,7 +9,6 @@ model:
   load_pretrained: True
   load_finetuned: False
   vit_model: eva_clip_g
-  # pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2-flant5-xxl/blip2_pretrained_flant5xxl.pth"
   # pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/flant5xxl/prompt_moe/llava_st_257k_raw_train_qf_train_qt_linear_gate_textt5_20ex_3loss_textinqf_epo3_1012/20231014175/checkpoint_best.pth"
   pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/instruct_blip_flant5xxl/instruct_blip_flanxxl_trimmed.pth"
 
@@ -86,4 +85,3 @@ run:
   world_size: 1
   dist_url: "env://"
   distributed: True
-  

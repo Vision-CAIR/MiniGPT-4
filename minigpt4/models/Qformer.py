@@ -245,6 +245,7 @@ class BertSelfAttention(nn.Module):
         attention_scores = attention_scores / math.sqrt(self.attention_head_size)
         if attention_mask is not None:
             # Apply the attention mask is (precomputed for all layers in BertModel forward() function)
+            # extended_attention_mask
             attention_scores = attention_scores + attention_mask
 
         # Normalize the attention scores to probabilities.
@@ -559,7 +560,6 @@ class BertEncoder(nn.Module):
                     output_attentions,
                     query_length,
                 )
-
             hidden_states = layer_outputs[0]
             if use_cache:
                 next_decoder_cache += (layer_outputs[-1],)
@@ -801,6 +801,7 @@ class BertModel(BertPreTrainedModel):
             dtype=self.dtype
         )  # fp16 compatibility
         extended_attention_mask = (1.0 - extended_attention_mask) * -10000.0
+
         return extended_attention_mask
 
     def forward(
