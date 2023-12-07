@@ -22,8 +22,8 @@ Deyao Zhu*, Jun Chen*, Xiaoqian Shen, Xiang Li, Mohamed Elhoseiny
 ## 💡 Get help - [Q&A](https://github.com/Vision-CAIR/MiniGPT-4/discussions/categories/q-a) or [Discord 💬](https://discord.gg/5WdJkjbAeE)
 
 ##  Related Efforts Built on Top of MiniGPT-4 
-* SkinGPT-4: An Interactive Dermatology Diagnostic System with Visual Large Language Model}, Juexiao Zhou and Xiaonan He and Liyuan Sun and Jiannan Xu and Xiuying Chen and Yuetan Chu and Longxi Zhou and Xingyu Liao and Bin Zhang and Xin Gao},Arxiv. 
-    <a href='[https://minigpt-4.github.io](https://github.com/JoshuaChou2018/SkinGPT-4)'></a>  
+* SkinGPT-4: An Interactive Dermatology Diagnostic System with Visual Large Language Model}, Juexiao Zhou and Xiaonan He and Liyuan Sun and Jiannan Xu and Xiuying Chen and Yuetan Chu and Longxi Zhou and Xingyu Liao and Bin Zhang and Xin Gao}, Arxiv. 
+    <a href='https://minigpt-4.github.io](https://github.com/JoshuaChou2018/SkinGPT-4'></a>  
 
 
 
