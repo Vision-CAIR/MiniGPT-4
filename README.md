@@ -21,7 +21,7 @@ Deyao Zhu*, Jun Chen*, Xiaoqian Shen, Xiang Li, Mohamed Elhoseiny
 
 ## 💡 Get help - [Q&A](https://github.com/Vision-CAIR/MiniGPT-4/discussions/categories/q-a) or [Discord 💬](https://discord.gg/5WdJkjbAeE)
 
-<font size='4'> ##  Example Community Efforts Built on Top of MiniGPT-4 </font> 
+<font size='4'> **  Example Community Efforts Built on Top of MiniGPT-4 ** </font> 
 
 <font size='3'>
   
