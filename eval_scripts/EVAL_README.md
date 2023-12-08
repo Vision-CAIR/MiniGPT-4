@@ -63,7 +63,7 @@ Set **llama_model** to the path of LLaMA model.
 Set **ckpt** to the path of our pretrained model.  
 Set **eval_file_path** to the path of the annotation files for each evaluation data.  
 Set **img_path** to the img_path for each evaluation dataset.  
-Set **save_path** to the save_path for evch evaluation dataset.    
+Set **save_path** to the save_path for each evaluation dataset.    
 
 in [eval_configs/minigptv2_benchmark_evaluation.yaml](../eval_configs/minigptv2_benchmark_evaluation.yaml) 
 
