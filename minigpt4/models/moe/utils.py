@@ -7,14 +7,27 @@ from dataclasses import dataclass
 from torch import Tensor
 from transformers.activations import ACT2FN
 from transformers.file_utils import ModelOutput
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 
 def use_experts(layer_idx):
-    if layer_idx % 2 == 0: # use moe_ffn after cross_attns
+    # if layer_idx % 2 == 0:
+    # use moe_ffn after cross_attns
+    if int(layer_idx) in [6,8,10]:
+    # layer 6/8/10
         return True
     else:
         return False
+
+def moe_layer_judge(layer_idx):
+    if layer_idx == 6:
+        return 'first'
+    elif layer_idx == 8:
+        return 'mid'
+    elif layer_idx == 10:
+        return 'last'
+    else:
+        return None
 
 def process_ffn(model):
     if model.config.model_type == "bert":
@@ -120,6 +133,10 @@ class MoEModelOutput(ModelOutput):
     attentions: Optional[Tuple[torch.FloatTensor]] = None
     cross_attentions: Optional[Tuple[torch.FloatTensor]] = None
     gate_loss: torch.FloatTensor = None
+    gate_loads: Optional[Tuple[torch.FloatTensor]] = None
+    beam_scores: Optional[Tuple[torch.FloatTensor]] = None
+    expert_route: Optional[Tuple[torch.FloatTensor]] = None
+
 
 
 @dataclass
@@ -131,3 +148,6 @@ class MoEModelOutputWithPooling(ModelOutput):
     attentions: Optional[Tuple[torch.FloatTensor]] = None
     cross_attentions: Optional[Tuple[torch.FloatTensor]] = None
     gate_loss: torch.FloatTensor = None
+    gate_loads: Optional[Tuple[torch.FloatTensor]] = None
+    beam_scores: Optional[Tuple[torch.FloatTensor]] = None
+    expert_route: Optional[Tuple[torch.FloatTensor]] = None

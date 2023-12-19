@@ -191,7 +191,7 @@ class RunnerBase:
         If train_dataset_ratio is provided, create a MultiIterLoader to sample
         each dataset by ratios during training.
 
-        Currently do not support multiple datasets for validation and test.
+        Currently do not support multiple datasets for validation and test.(Han Done)
 
         Returns:
             dict: {split_name: (tuples of) dataloader}
@@ -208,9 +208,12 @@ class RunnerBase:
 
             batch_sizes = {dataset_name: getattr(self.config.datasets_cfg, dataset_name).batch_size
                            for dataset_name in self.datasets.keys()}
+            print(batch_sizes)
+
             datasets, batch_sizes = reorg_datasets_by_split(self.datasets, batch_sizes)
             self.datasets = datasets
             # self.datasets = concat_datasets(datasets)
+            print(self.datasets.keys()) # dict_keys(['train', 'val', 'test'])
 
             # print dataset statistics after concatenation/chaining
             for split_name in self.datasets:
@@ -252,7 +255,9 @@ class RunnerBase:
             batch_sizes = [batch_sizes[split] for split in split_names]
             is_trains = [split in self.train_splits for split in split_names]
 
-            print("batch sizes", batch_sizes)
+            print("split_names: ",split_names)
+            print("is_trains: ",is_trains)
+            print("batch sizes: ", batch_sizes)
 
             collate_fns = []
             for dataset in datasets:
@@ -381,6 +386,8 @@ class RunnerBase:
             if len(self.valid_splits) > 0:
                 for split_name in self.valid_splits:
                     logging.info("Evaluating on {}.".format(split_name))
+                    
+                    self._save_checkpoint(cur_epoch, is_best=False)
 
                     val_log = self.eval_epoch(
                         split_name=split_name, cur_epoch=cur_epoch
@@ -396,7 +403,7 @@ class RunnerBase:
                                 best_epoch, best_agg_metric = cur_epoch, agg_metrics
 
                                 self._save_checkpoint(cur_epoch, is_best=True)
-
+                        
                             val_log.update({"best_epoch": best_epoch})
                             self.log_stats(val_log, split_name)
 
@@ -550,17 +557,26 @@ class RunnerBase:
             return loader
 
         loaders = []
-
-        for dataset, bsz, is_train, collate_fn in zip(
+        for dataset, bsz, is_train, collate_fn in zip( # 分别遍历 test valid train
             datasets, batch_sizes, is_trains, collate_fns
         ):
+            print("dataset:",dataset)
+            print("bsz:",bsz)
+            print("is_train:",is_train)
+            print("collate_fn:",collate_fn)
+            print("len(dataset[0]):",len(dataset[0]))
+            if not is_train:
+                dataset_ratios = None
+
             if isinstance(dataset, list) or isinstance(dataset, tuple):
                 if hasattr(dataset[0], 'sample_ratio') and dataset_ratios is None:
                     dataset_ratios = [d.sample_ratio for d in dataset]
+                print("dataset_ratios:", dataset_ratios)
+
                 loader = MultiIterLoader(
                     loaders=[
                         _create_loader(d, num_workers, bsz[i], is_train, collate_fn[i])
-                        for i, d in enumerate(dataset)
+                        for i, d in enumerate(dataset) # dataset相当于list(Dataset) 遍历里面不同类型的dataset [OKVQADataset, COCOVQADataset]
                     ],
                     ratios=dataset_ratios,
                 )

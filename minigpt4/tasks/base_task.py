@@ -10,7 +10,7 @@ import os
 
 import torch
 import torch.distributed as dist
-from minigpt4.common.dist_utils import get_rank, get_world_size, is_main_process, is_dist_avail_and_initialized
+from minigpt4.common.dist_utils import get_rank, get_world_size, is_main_process, is_dist_avail_and_initialized, main_process
 from minigpt4.common.logger import MetricLogger, SmoothedValue
 from minigpt4.common.registry import registry
 from minigpt4.datasets.data_utils import prepare_sample
@@ -258,7 +258,10 @@ class BaseTask:
                 #     wandb.log({"epoch": inner_epoch, "loss": loss})
             metric_logger.update(loss=loss.item())
             metric_logger.update(lr=optimizer.param_groups[0]["lr"])
-
+            
+            if (i + 1) % log_freq == 0:
+                self.update_writer(metric_logger, i+1)
+            
         # after train_epoch()
         # gather the stats from all processes
         metric_logger.synchronize_between_processes()
@@ -307,3 +310,9 @@ class BaseTask:
             print("result file saved to %s" % final_result_file)
 
         return final_result_file
+    
+    @main_process
+    def update_writer(self, metric_logger, iter_num):
+        for name, meter in metric_logger.meters.items():
+            # meter: Instance of class SmoothedValue 
+            self.writer.add_scalar(name, float(str(meter)), iter_num)

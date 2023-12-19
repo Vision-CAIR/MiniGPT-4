@@ -72,7 +72,8 @@ class PostPromptMoE(PromptMoEBase):
         gate_load = num_tokens.clone()
 
         # load balancing loss
-        balance_loss = self._balancing_loss(prob_gate, num_tokens)
+        # balance_loss = self._balancing_loss(prob_gate, num_tokens)
+        balance_loss = 0.0
 
         # importance loss
         importance_loss = self._importance_auxiliary_loss(prob_gate)

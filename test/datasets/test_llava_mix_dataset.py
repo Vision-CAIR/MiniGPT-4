@@ -37,7 +37,7 @@ def parse_args():
     # parser.add_argument("-f", help="jupyter notebook")
     parser.add_argument(
         "--cfg-path", 
-        default="/mnt/pfs-guan-ssai/nlu/wanghanzi/multimodal/PromptMoE/minigpt4/projects/qformer_moe_vicuna/train/mix_qformer_moe_blip2_vicuna7b.yaml",
+        default="/mnt/pfs-guan-ssai/nlu/wanghanzi/multimodal/PromptMoE/minigpt4/projects/qformer_moe_post_vicuna/train/mix_qformer_moe_post_blip2_vicuna7b_data_balance_finetuned.yaml",
         help="path to configuration file.")
     parser.add_argument(
         "--gpu-id", 
@@ -88,7 +88,7 @@ datasets = task.build_datasets(cfg)
 
 job_id = now()
 # model = task.build_model(cfg)
-model = None
+# model = None
 task.build_tensorboard(cfg)
 
 runner = get_runner_class(cfg)(

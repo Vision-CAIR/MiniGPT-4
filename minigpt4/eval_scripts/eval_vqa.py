@@ -19,7 +19,7 @@ sys.path.append("/mnt/pfs-guan-ssai/nlu/wanghanzi/multimodal/PromptMoE")
 from minigpt4.common.logger import setup_logger
 from minigpt4.common.dist_utils import get_rank
 from minigpt4.common.registry import registry
-from minigpt4.datasets.datasets.vqa_datasets import OKVQAEvalData,VizWizEvalData,IconQAEvalData,GQAEvalData,VSREvalData,HMEvalData
+from minigpt4.datasets.datasets.vqa_datasets import OKVQAEvalData,VizWizEvalData,IconQAEvalData,VSREvalData,HMEvalData
 from minigpt4.common.vqa_tools.vqa import VQA
 from minigpt4.common.vqa_tools.vqa_eval import VQAEval
 from minigpt4.common.config import Config
@@ -32,7 +32,7 @@ def eval_parser():
     parser = argparse.ArgumentParser(description="Demo")
     parser.add_argument(
         "--cfg-path", 
-        default="/mnt/pfs-guan-ssai/nlu/wanghanzi/multimodal/PromptMoE/minigpt4/projects/qformer_mode_vicuna/eval/vqa_benchmark_evaluation.yaml",
+        default="/mnt/pfs-guan-ssai/nlu/wanghanzi/multimodal/PromptMoE/minigpt4/projects/qformer_moe_vicuna/eval/vqa_benchmark_evaluation.yaml",
         help="path to configuration file.")
     parser.add_argument(
         "--options",
@@ -69,13 +69,13 @@ def init_model(cfg, device):
     return model, vis_processor, text_processor
 
 parser = eval_parser()
-parser.add_argument("--dataset", type=list_of_str, default=['vizwiz'], help="dataset to evaluate")
+parser.add_argument("--dataset", type=list_of_str, default=['vizwiz','hm'], help="dataset to evaluate")
 args = parser.parse_args()
 cfg = Config(args)
 setup_seeds(cfg)
 print(cfg._convert_node_to_json(cfg.config))
 setup_logger()
-device = torch.device("cuda:4" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:5" if torch.cuda.is_available() else "cpu")
 
 model, vis_processor, _ = init_model(cfg, device)
 model.eval()
@@ -256,10 +256,25 @@ if 'vsr' in args.dataset:
     total=0
 
     minigpt4_predict = []
+    
+    import pdb; pdb.set_trace()
+    for samples in tqdm(eval_dataloader):
 
-    for images, texts, labels in tqdm(eval_dataloader):
-        texts = prepare_texts(texts, conv_temp)  # warp the texts with conversation template
-        answers = model.generate(images, texts, max_new_tokens=max_new_tokens, do_sample=False)
+        texts = samples['q_input']
+        labels = samples['gt_ans']
+        image_ids = samples['image_id']
+
+        answers = model.predict_answers(
+            samples=samples,
+            inference_method=inference_method,
+            num_beams=num_beams,
+            max_len=max_len,
+            min_len=min_len,
+            num_ans_candidates=num_ans_candidates,
+            prompt=prompt,
+        )
+    
+        # answers = model.generate(images, texts, max_new_tokens=max_new_tokens, do_sample=False)
 
         for answer, label in zip(answers, labels):
             result = dict()
@@ -270,9 +285,9 @@ if 'vsr' in args.dataset:
                 count+=1
             total+=1
     print('vsr test:', count / total * 100, flush=True)
-    file_save_path = os.path.join(save_path,"vsr.json")
-    with open(file_save_path,'w') as f:
-        json.dump(minigpt4_predict, f)
+    # file_save_path = os.path.join(save_path,"vsr.json")
+    # with open(file_save_path,'w') as f:
+    #     json.dump(minigpt4_predict, f)
 
 if 'hm' in args.dataset:
 
@@ -288,16 +303,26 @@ if 'hm' in args.dataset:
             annotation.append(json_obj)
 
     data = HMEvalData(annotation, vis_processor, img_path)
-    eval_dataloader = DataLoader(data, batch_size=batch_size, shuffle=False)
+    eval_dataloader = DataLoader(data, batch_size=20, shuffle=False)
     count=0
     total=0
 
-    minigpt4_predict = []
+    predict = []
 
-    for images, texts, labels in tqdm(eval_dataloader):
-        texts = prepare_texts(texts, conv_temp)  # warp the texts with conversation template
-        
-        answers = model.generate(images, texts, max_new_tokens=max_new_tokens, do_sample=False)
+    for samples in tqdm(eval_dataloader):
+        samples['image'] = samples['image'].half().to(device)
+        texts = samples['q_input']
+        labels = samples['gt_ans']
+
+        answers = model.predict_answers(
+            samples=samples,
+            inference_method=inference_method,
+            num_beams=num_beams,
+            max_len=max_len,
+            min_len=min_len,
+            num_ans_candidates=num_ans_candidates,
+            prompt=prompt,
+        )
 
         for answer, label in zip(answers, labels):
             result = dict()
@@ -310,12 +335,13 @@ if 'hm' in args.dataset:
 
             result['pred'] = answer
             result['gt'] = int(label)
-            minigpt4_predict.append(result)
+            predict.append(result)
             if answer == label:
                 count+=1
             total+=1
+        print(answers)
 
     print('hm val:', count / total * 100, flush=True)
     file_save_path = os.path.join(save_path, "hm.json")
     with open(file_save_path,'w') as f:
-        json.dump(minigpt4_predict, f)
+        json.dump(predict, f)

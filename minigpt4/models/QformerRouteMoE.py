@@ -11,6 +11,7 @@
 import math
 import os
 import warnings
+import copy
 from dataclasses import dataclass
 from typing import Optional, Tuple, Dict, Any
 
@@ -49,8 +50,9 @@ from minigpt4.models.moe.utils import (
     MoEModelOutput,
     MoEModelOutputWithPooling,
     use_experts,
+    moe_layer_judge,
 )
-from minigpt4.models.moe.moe_layer import MoELayer
+from minigpt4.models.moe.route_moe_layer import RouteMoELayer
 
 logging.set_verbosity_error() # ignore warning : Some weights of BertLMHeadModel were not initialized from the model checkpoint...
 logger = logging.get_logger(__name__)
@@ -254,6 +256,7 @@ class BertSelfAttention(nn.Module):
         if attention_mask is not None:
             # Apply the attention mask is (precomputed for all layers in BertModel forward() function)
             # extended_attention_mask
+
             attention_scores = attention_scores + attention_mask
 
         # Normalize the attention scores to probabilities.
@@ -427,16 +430,18 @@ class BertLayer(nn.Module):
 
         # Add MoE FFN
         self.use_experts = use_experts(layer_num)
+        self.layer_judge = moe_layer_judge(layer_num)
+        self.num_beams = config.moebert_num_beams
         ffn = FeedForward(config)
+
         if self.use_experts:
-            self.experts = MoELayer(
+            self.experts = RouteMoELayer(
                 hidden_size=config.hidden_size,
                 expert=ffn,
                 num_experts=config.moebert_expert_num,
-                route_method=config.moebert_route_method,
-                topk=config.moe_topk,
-                use_balance_loss=config.use_balance_loss,
-                weight_type=config.moe_weight_type,
+                num_beams=config.moebert_num_beams,
+                layer_judge = self.layer_judge,
+                route_method=config.route_method,
             )
         else:
             self.experts = ffn
@@ -451,13 +456,34 @@ class BertLayer(nn.Module):
         past_key_value=None,
         output_attentions=False,
         query_length=0,
+        beam_scores=None,
+        expert_route=None,
     ):
         # decoder uni-directional self-attention cached key/values tuple is at positions 1,2
         self_attn_past_key_value = (
             past_key_value[:2] if past_key_value is not None else None
         )
+        # import pdb;pdb.set_trace()
+
+        # adjust the dimension of hidden_states, attention_mask, encoder_attention_mask and encoder_hidden_states to be the same 
+        if self.num_beams > 1:
+            if hidden_states.shape[0]== attention_mask.shape[0]*self.num_beams:
+                # attention_mask dimension to be bz*num_beams
+                attention_mask = self.adjust_attention_mask(attention_mask)
+                encoder_attention_mask = self.adjust_attention_mask(encoder_attention_mask)
+
+            if hidden_states.shape[0]*self.num_beams == attention_mask.shape[0]:
+                # attention_mask dimension back to bz
+                batch_size = attention_mask.shape[0]
+                attention_mask = attention_mask[[ i for i in range(0, batch_size, self.num_beams)]]
+
+            if hidden_states.shape[0] == encoder_hidden_states.shape[0]*self.num_beams:
+                batch_size, visual_tokens, vision_dim = encoder_hidden_states.shape
+                tmp = encoder_hidden_states.unsqueeze(1).expand(batch_size, self.num_beams, visual_tokens, vision_dim )
+                encoder_hidden_states = tmp.contiguous().view(batch_size* self.num_beams, visual_tokens, vision_dim) # torch.Size([bz, 257, 1408])
+        
         self_attention_outputs = self.attention(
-            hidden_states,
+            hidden_states,        
             attention_mask,
             head_mask,
             output_attentions=output_attentions,
@@ -468,13 +494,19 @@ class BertLayer(nn.Module):
 
         present_key_value = self_attention_outputs[-1]
 
+        # import pdb;pdb.set_trace()
+        # print(self.layer_num, hidden_states.shape, attention_mask.shape)
+
+
         if query_length > 0:
             query_attention_output = attention_output[:, :query_length, :]
 
             if self.has_cross_attention:
+
                 assert (
                     encoder_hidden_states is not None
                 ), "encoder_hidden_states must be given for cross-attention layers"
+
                 cross_attention_outputs = self.crossattention(
                     query_attention_output,
                     attention_mask,
@@ -493,7 +525,8 @@ class BertLayer(nn.Module):
             # attention_mask size: [bz, 1, 1, query_length+seq_len]
             moe_ffn_attention_input = query_attention_output[:, :query_length, :]
             moe_ffn_attention_mask = attention_mask.squeeze(dim=1).squeeze(dim=1)[:, :query_length]
-            layer_output = self.feed_forward_query_moe(moe_ffn_attention_input, moe_ffn_attention_mask) # layer_output, gate_loss, gate_load
+            layer_output = self.feed_forward_query_moe(moe_ffn_attention_input, moe_ffn_attention_mask, beam_scores, expert_route) 
+            # layer_output = (layer_output, beam_scores, expert_route, beam_idx)
 
             if attention_output.shape[1] > query_length: # have text input in Qformer
                 layer_output_text = apply_chunking_to_forward(
@@ -502,7 +535,23 @@ class BertLayer(nn.Module):
                     self.seq_len_dim,
                     attention_output[:, query_length:, :],
                 )
+                if layer_output[0].shape[0] == layer_output_text.shape[0]*self.num_beams and self.num_beams>1:
+                    # adjust the dimension of layer_output_text to bz*num_beams
+                    layer_output_text = self.adjust_layer_output_text(layer_output_text)
+
+                if self.layer_judge == 'mid' and self.num_beams > 1:
+                    # layer_output_text [bz*num_beams, len, hidden_size]
+                    beam_idx = layer_output[3]
+                    layer_output_text = layer_output_text[beam_idx]
+
+                if self.layer_judge == 'last' and self.num_beams>1:
+                    # select top1 for each sample among beams
+                    # layer_output = (hidden_states, beam_scores, expert_route)
+                    # layer_output & layer_output_text dimen_0 from bz*num_beams to bz
+                    layer_output, layer_output_text = self.route_moe_last_layer_top1(layer_output, layer_output_text)
+
                 layer_output = (torch.cat([layer_output[0], layer_output_text], dim=1), layer_output[1], layer_output[2])
+        
         else:
             layer_output = apply_chunking_to_forward(
                 self.feed_forward_chunk,
@@ -510,30 +559,59 @@ class BertLayer(nn.Module):
                 self.seq_len_dim,
                 attention_output,
             )
-            layer_output = (layer_output, 0.0, [])
+            layer_output = (layer_output, None, None)
+        
         outputs = (layer_output,) + outputs
 
         outputs = outputs + (present_key_value,)
 
         return outputs
 
+    def adjust_attention_mask(self, attention_mask):            
+        batch_size = attention_mask.shape[0]
+        tmp = attention_mask.unsqueeze(1).expand(batch_size, self.num_beams, 1, 1, attention_mask.shape[3])
+        attention_mask = tmp.contiguous().view(batch_size* self.num_beams, 1, 1, attention_mask.shape[3]) # torch.Size([bz*num_beams, 1, 1, 32+input_len])
+        return attention_mask
+    
+    def adjust_layer_output_text(self, layer_output_text):
+        batch_size, text_length, hidden_size = layer_output_text.shape
+        tmp_text = layer_output_text.unsqueeze(1).expand(batch_size, self.num_beams, text_length, hidden_size)
+        layer_output_text = tmp_text.contiguous().view(-1, text_length, hidden_size) # [bz*num_beams, text_length ,768]
+        return layer_output_text
+
+    def route_moe_last_layer_top1(self, layer_output, layer_output_text):
+        batch_size = layer_output[0].shape[0]
+        raw_batch_size = int(batch_size / self.num_beams)
+        hidden_states, beam_scores, expert_route, beam_idx = layer_output[0], layer_output[1], layer_output[2], layer_output[3]
+        layer_output_text = layer_output_text[beam_idx]
+        
+        scores = beam_scores.view(raw_batch_size, self.num_beams)
+        _, gate = torch.topk(scores, 1, dim=1)
+        selects = [ (bz_idx * self.num_beams + gate[bz_idx].item()) for bz_idx in range(raw_batch_size)]
+
+        layer_output_text = layer_output_text[selects]
+        hidden_states_new = hidden_states[selects]
+        beam_scores_new = beam_scores[selects]
+        expert_route_new = expert_route[selects]
+
+        return (hidden_states_new, beam_scores_new, expert_route_new), layer_output_text
+
+
     def feed_forward_chunk(self, attention_output):
         intermediate_output = self.intermediate(attention_output)
         layer_output = self.output(intermediate_output, attention_output)
         return layer_output
 
-    def feed_forward_query_moe(self, attention_output, expert_attention_mask):
+    def feed_forward_query_moe(self, attention_output, expert_attention_mask, beam_scores, expert_route):
+        
         if not self.use_experts:
             layer_output = self.experts(attention_output)
-            return layer_output, 0.0, []
+            return layer_output, None, None, None
 
-        # if not self.importance_processor.is_moe:
-        #     raise RuntimeError("Need to turn the model to a MoE first.")
-
-        layer_output, gate_loss, gate_load = self.experts(
-            attention_output, expert_attention_mask
+        layer_output, beam_scores, expert_route, beam_idx = self.experts(
+            attention_output, expert_attention_mask, beam_scores, expert_route
         )
-        return layer_output, gate_loss, gate_load
+        return layer_output, beam_scores, expert_route, beam_idx
 
 class BertEncoder(nn.Module):
     def __init__(self, config):
@@ -565,9 +643,10 @@ class BertEncoder(nn.Module):
         )
 
         next_decoder_cache = () if use_cache else None
-        gate_loss = 0.0
-        gate_loads = list()
+        beam_scores=None
+        expert_route=None
         for i in range(self.config.num_hidden_layers):
+
             layer_module = self.layer[i]
             if output_hidden_states:
                 all_hidden_states = all_hidden_states + (hidden_states,)
@@ -576,7 +655,6 @@ class BertEncoder(nn.Module):
             past_key_value = past_key_values[i] if past_key_values is not None else None
 
             if getattr(self.config, "gradient_checkpointing", False) and self.training:
-
                 if use_cache:
                     logger.warn(
                         "`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`..."
@@ -586,7 +664,7 @@ class BertEncoder(nn.Module):
                 def create_custom_forward(module):
                     def custom_forward(*inputs):
                         return module(
-                            *inputs, past_key_value, output_attentions, query_length
+                            *inputs, past_key_value, output_attentions, query_length, beam_scores, expert_route
                         )
 
                     return custom_forward
@@ -609,10 +687,13 @@ class BertEncoder(nn.Module):
                     past_key_value,
                     output_attentions, # False
                     query_length, # 32
+                    beam_scores, # None
+                    expert_route, # None
                 )
             hidden_states = layer_outputs[0][0]
-            gate_loss = gate_loss + layer_outputs[0][1]
-            gate_loads.append(layer_outputs[0][2])
+            beam_scores = beam_scores if layer_outputs[0][1] == None else layer_outputs[0][1]
+            expert_route = expert_route if layer_outputs[0][2] == None else layer_outputs[0][2]
+
             if use_cache:
                 next_decoder_cache += (layer_outputs[-1],)
             if output_attentions:
@@ -641,8 +722,8 @@ class BertEncoder(nn.Module):
             hidden_states=all_hidden_states,
             attentions=all_self_attentions,
             cross_attentions=all_cross_attentions,
-            gate_loss=gate_loss,
-            gate_loads=gate_loads,
+            beam_scores=beam_scores,
+            expert_route=expert_route,
         )
 
 
@@ -1020,12 +1101,12 @@ class BertModel(BertPreTrainedModel):
             hidden_states=encoder_outputs.hidden_states,
             attentions=encoder_outputs.attentions,
             cross_attentions=encoder_outputs.cross_attentions,
-            gate_loss=encoder_outputs.gate_loss,
-            gate_loads=encoder_outputs.gate_loads,
+            beam_scores=encoder_outputs.beam_scores,
+            expert_route=encoder_outputs.expert_route,
         )
 
 
-class BertMoELMHeadModel(BertPreTrainedModel):
+class BertMoERouteLMHeadModel(BertPreTrainedModel):
 
     _keys_to_ignore_on_load_unexpected = [r"pooler"]
     _keys_to_ignore_on_load_missing = [r"position_ids", r"predictions.decoder.bias"]
@@ -1033,7 +1114,6 @@ class BertMoELMHeadModel(BertPreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
 
-        self.load_balance_alpha = config.moebert_load_balance
         self.bert = BertModel(config, add_pooling_layer=False)
         self.cls = BertOnlyMLMHead(config)
 
@@ -1119,7 +1199,7 @@ class BertMoELMHeadModel(BertPreTrainedModel):
             return_dict=return_dict,
             is_decoder=is_decoder,
         )
-        gate_loss = outputs.gate_loss
+        # gate_loss = outputs.gate_loss
 
         sequence_output = outputs[0]
         if query_embeds is not None:
@@ -1143,7 +1223,7 @@ class BertMoELMHeadModel(BertPreTrainedModel):
             if reduction == "none":
                 lm_loss = lm_loss.view(prediction_scores.size(0), -1).sum(1)
 
-            total_loss = lm_loss + gate_loss * self.load_balance_alpha
+            total_loss = lm_loss
 
         if not return_dict:
             output = (prediction_scores,) + outputs[2:]

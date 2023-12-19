@@ -4,17 +4,23 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
 class MoELayer(nn.Module):
-    def __init__(self, hidden_size, expert, num_experts, route_method, topk=1):
+    def __init__(self, hidden_size, expert, num_experts, route_method, topk=1, use_balance_loss=True, weight_type='l2_norm'):
         # remove hash list
         nn.Module.__init__(self)
         self.num_experts = num_experts
         self.experts = nn.ModuleList([copy.deepcopy(expert) for i in range(num_experts)])
         self.route_method = route_method
         self.topk = topk
+        self.use_balance_loss = use_balance_loss
+        self.weight_type = weight_type
+
         if route_method in ["gate-token", "gate-sentence"]:
             self.gate = nn.Linear(hidden_size, num_experts, bias=False).float()
+        elif route_method in ["gate-sentence-post"]:
+            gate = nn.Linear(hidden_size, 1, bias=False).float()
+            # self.gates = nn.ModuleList([copy.deepcopy(gate) for i in range(num_experts)])
+            self.gate = gate
         else:
             raise KeyError("Routing method not supported.")
 
@@ -123,18 +129,66 @@ class MoELayer(nn.Module):
 
         return result, balance_loss, gate_load
 
-    def _weighted_select_expert(self, expert_ids, prob_gate_i, ):
-        # expert_ids: torch.Size([topk]) 为sample选出的topk个expert的idx
-        # prob_gate_i: torch.Size([topk]) 该sample对应expert的概率值
-        # 先对 prob_gate 归一化，加权平均 expert_qt 的值
+    def _forward_gate_sentence_post(self, x, attention_mask):
+        """
+            x: query_attention_output; torch.Size([bz, 32, 768])
+            attention_mask: torch.ones([bz, 32])
+            bz = 4
+            x = torch.randn(bz,32,768)
+            attention_mask = torch.ones([bz, 32])
 
-        weight = [prob_gate_i[expert_id].item() for expert_id in expert_ids]
-        weight_norm = torch.tensor(weight) / torch.tensor(weight).sum()
-        select_qts = [query_token_candidates[expert_id] for expert_id in expert_ids]
-        weighted_qt = [select_qts[i] * weight_norm[i] for i in range(weight_norm.shape[0])]
-        select = sum(weighted_qt).unsqueeze(0)
-        return select
-    
+        """
+        attention_mask = torch.ones(attention_mask.shape[0], attention_mask.shape[1]).to(x.device)
+        x_masked = x * attention_mask.unsqueeze(-1) # torch.Size([bz, 32, 768])
+        
+        def forward_expert(input_x, expert_idx):
+            # input_x += torch.randn(4,32,768)
+            # return input_x
+            output_x = self.experts[expert_idx].forward(input_x)
+            return output_x
+
+        outputs = list()
+        logits_gate_lst = list()
+        for expert_idx in range(self.num_experts):
+            output_x = forward_expert(x_masked, expert_idx)
+            outputs.append(output_x.unsqueeze(0))
+            
+            output_x_aver = output_x.sum(1) / attention_mask.unsqueeze(-1).sum(1) # torch.Size([bz, 768])
+            # gate_acore = self.gates[expert_idx](output_x_aver)
+            gate_score = self.gate(output_x_aver)
+            logits_gate_lst.append(gate_score)
+
+        candidate_output = torch.cat(outputs) # torch.Size([num_expert, bz, 32, 768])
+        logits_gate = torch.cat(logits_gate_lst,dim=1)# torch.Size([bz, num_expert])
+        prob_gate = F.softmax(logits_gate, dim=-1) # torch.Size([bz, num_experts])
+        topk_values, gate = torch.topk(prob_gate, self.topk, dim=1) # gate, 每个样本被分配的expert: torch.Size([bz, topk])
+        num_sentences = F.one_hot(gate, self.num_experts).sum(1).gt(0).sum(0) # 每个expert被分配的样本数 torch.Size([num_expert])
+        gate_load = num_sentences.clone()
+
+        # load balancing loss
+        if self.use_balance_loss:
+            balance_loss = self._balancing_loss(prob_gate, num_sentences)
+        else:
+            balance_loss = 0.0
+
+        # importance loss
+        importance_loss = self._importance_auxiliary_loss(prob_gate)
+
+        # output_average = candidate_output.sum(2) / candidate_attn_mask.unsqueeze(-1).sum(2) # torch.Size([num_expert, bz, 768])
+        # output_average = torch.permute(output_average, (1, 0, 2)) # torch.Size([bz, num_expert, 768])
+        # logits_gate = self.gate(output_average) # torch.Size([bz, num_experts, 1])
+
+        prob_gate_topk = torch.zeros_like(prob_gate)
+        prob_gate_topk.scatter_(1, gate, topk_values)
+        prob_gate_normalized = prob_gate_topk / prob_gate_topk.sum(dim=1, keepdim=True) # torch.Size([bz, num_expert])
+        candidate_output_ad = torch.permute(candidate_output, (1, 0, 2, 3)) # torch.Size([bz, num_expert, 32, 768])
+        results = prob_gate_normalized.unsqueeze(-1).unsqueeze(-1) * candidate_output_ad # torch.Size([bz, num_expert, 32, 768])
+        moe_result = torch.sum(results, dim=1) # torch.Size([bz, 32, 768])
+        # import pdb;pdb.set_trace()
+
+        return moe_result, (balance_loss+importance_loss), prob_gate_normalized
+
+
     def _forward_gate_sentence(self, x, attention_mask):
         """
             x: query_attention_output , torch.Size([bz, 32, 768])
@@ -152,13 +206,21 @@ class MoELayer(nn.Module):
         logits_gate = self.gate(x_average) # torch.Size([bz, num_experts])
         prob_gate = F.softmax(logits_gate, dim=-1) # torch.Size([bz, num_experts])
         select_prob_gate, gate = torch.topk(prob_gate, self.topk, dim=1) # gate, 每个样本被分配的expert: torch.Size([bz, topk])
-        normalized_tensor = torch.nn.functional.normalize(select_prob_gate, p=2, dim=0) # L2 Normalization  torch.Size([bz, topk])
+
+        # 这里用l2 norm 去加权
+        if self.weight_type == 'l2_norm':
+            normalized_tensor = torch.nn.functional.normalize(select_prob_gate, p=2, dim=0) # L2 Normalization  torch.Size([bz, topk])
+        elif self.weight_type == 'average':
+            normalized_tensor = select_prob_gate / select_prob_gate.sum(dim=1, keepdim=True)
 
         num_sentences = F.one_hot(gate, self.num_experts).sum(1).gt(0).sum(0) # 每个expert被分配的样本数 torch.Size([num_expert])
         gate_load = num_sentences.clone()
 
         # load balancing loss
-        balance_loss = self._balancing_loss(prob_gate, num_sentences)
+        if self.use_balance_loss:
+            balance_loss = self._balancing_loss(prob_gate, num_sentences)
+        else:
+            balance_loss = 0.0
 
         # importance loss
         importance_loss = self._importance_auxiliary_loss(prob_gate)
@@ -184,12 +246,12 @@ class MoELayer(nn.Module):
                     result.append(forward_expert(x1[i], i))
             result = torch.vstack(result)
             result = result[order.argsort(0)]  # restore original order
-            result_lst.append(result * tmp_prob) # result * prob
+            # result_lst.append(result * tmp_prob) # result * prob
+            result_lst.append(result) # result * prob # add_1212
 
         moe_result = sum(result_lst)
-
-        return moe_result, (balance_loss+importance_loss), gate_load
-
+        # import pdb;pdb.set_trace()
+        return moe_result, (balance_loss+importance_loss), gate
 
     def _forward_sentence_single_expert(self, x, attention_mask):
         x_masked = x * attention_mask.unsqueeze(-1)
@@ -210,6 +272,8 @@ class MoELayer(nn.Module):
                 x, balance_loss, gate_load = self._forward_sentence_single_expert(x, attention_mask)
             else:
                 x, balance_loss, gate_load = self._forward_gate_sentence(x, attention_mask)
+        elif self.route_method == "gate-sentence-post":
+            x, balance_loss, gate_load = self._forward_gate_sentence_post(x, attention_mask)
         else:
             raise KeyError("Routing method not supported.")
 

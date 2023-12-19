@@ -22,6 +22,7 @@ from minigpt4.common.logger import MetricLogger
 from minigpt4.models.base_model import BaseModel
 from minigpt4.models.Qformer import BertConfig, BertLMHeadModel
 from minigpt4.models.QformerMoE import BertMoELMHeadModel
+from minigpt4.models.QformerRouteMoE import BertMoERouteLMHeadModel
 from minigpt4.models.eva_vit import create_eva_vit_g
 from transformers import BertTokenizer
 
@@ -61,7 +62,32 @@ class Blip2Base(BaseModel):
         return Qformer, query_tokens
     
     @classmethod
-    def init_QformerMoE(cls, num_query_token, vision_width, moebert_expert_num, moebert_route_method, moebert_load_balance, moe_topk=1, cross_attention_freq=2):
+    def init_RouteMoEQformer(cls, num_query_token, vision_width, moebert_expert_num, moebert_num_beams, route_method, cross_attention_freq=2):
+        moe_encoder_config = BertConfig.from_pretrained("/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased")
+
+        moe_encoder_config.encoder_width = vision_width
+        # insert cross-attention layer every other block
+        moe_encoder_config.add_cross_attention = True
+        moe_encoder_config.cross_attention_freq = cross_attention_freq
+        moe_encoder_config.query_length = num_query_token
+
+        moe_encoder_config.moebert_expert_num = moebert_expert_num
+        moe_encoder_config.moebert_num_beams = moebert_num_beams
+        moe_encoder_config.route_method = route_method
+
+        RouteMoEQformer = BertMoERouteLMHeadModel.from_pretrained(
+            "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config
+        )
+        query_tokens = nn.Parameter(
+            torch.zeros(1, num_query_token, moe_encoder_config.hidden_size)
+        )
+        query_tokens.data.normal_(mean=0.0, std=moe_encoder_config.initializer_range)
+
+        return RouteMoEQformer, query_tokens
+
+
+    @classmethod
+    def init_QformerMoE(cls, num_query_token, vision_width, moebert_expert_num, moebert_route_method, moebert_load_balance, moe_topk=1, use_balance_loss=True, moe_weight_type='l2_norm', cross_attention_freq=2):
         moe_encoder_config = BertConfig.from_pretrained("/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased")
 
         moe_encoder_config.encoder_width = vision_width
@@ -74,6 +100,8 @@ class Blip2Base(BaseModel):
         moe_encoder_config.moebert_route_method = moebert_route_method
         moe_encoder_config.moebert_load_balance = moebert_load_balance
         moe_encoder_config.moe_topk = moe_topk
+        moe_encoder_config.use_balance_loss = use_balance_loss
+        moe_encoder_config.moe_weight_type = moe_weight_type
 
         MoEQformer = BertMoELMHeadModel.from_pretrained(
             "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config
@@ -110,7 +138,13 @@ class Blip2Base(BaseModel):
         print(f"{pytorch_total_params * 1e-9:.2} B")
         return visual_encoder, ln_vision
 
-    def load_from_pretrained(self, url_or_filename):
+    def mean_pool_adjust_query_tokens(self, state_dict, num_query_token):
+        group = 32 // num_query_token
+        query_tokens = state_dict['query_tokens'].view(1,num_query_token,group,768)
+        state_dict['query_tokens'] = torch.mean(query_tokens, dim=2)
+        return state_dict
+
+    def load_from_pretrained(self, url_or_filename, num_query_token=32):
         if is_url(url_or_filename):
             cached_file = download_cached_file(
                 url_or_filename, check_hash=False, progress=True
@@ -122,6 +156,7 @@ class Blip2Base(BaseModel):
             raise RuntimeError("checkpoint url or path is invalid")
 
         state_dict = checkpoint["model"]
+        # state_dict = self.mean_pool_adjust_query_tokens(state_dict, num_query_token)
 
         msg = self.load_state_dict(state_dict, strict=False)
 

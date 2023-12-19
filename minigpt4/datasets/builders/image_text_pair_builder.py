@@ -7,7 +7,7 @@ from minigpt4.datasets.builders.base_dataset_builder import BaseDatasetBuilder
 from minigpt4.datasets.datasets.laion_dataset import LaionDataset
 from minigpt4.datasets.datasets.cc_sbu_dataset import CCSBUDataset, CCSBUAlignDataset
 from minigpt4.datasets.datasets.text_caps import TextCapDataset
-from minigpt4.datasets.datasets.llava_dataset import LlavaDetailDataset, LlavaReasonDataset, LlavaConversationDataset, LlavaMixDataset
+from minigpt4.datasets.datasets.llava_dataset import LlavaDetailDataset, LlavaReasonDataset, LlavaConversationDataset, LlavaMixDataset, LlavaPretrainDataset
 from minigpt4.datasets.datasets.unnatural_instruction import UnnaturalDataset
 from minigpt4.datasets.datasets.multitask_conversation import MultiTaskConversationDataset
 from minigpt4.datasets.datasets.flickr import GroundedDetailDataset,CaptionToObjectDataset,PhraseToObjectDataset
@@ -124,6 +124,33 @@ class LlavaReasonBuilder(BaseDatasetBuilder):
         print("{} Length: {}".format(dataset_cls.__name__, len(datasets['train']))) # print class name
 
         return datasets
+
+@registry.register_builder("llava_pretrain")
+class LlavaPretrainBuilder(BaseDatasetBuilder):
+    train_dataset_cls = LlavaPretrainDataset
+    DATASET_CONFIG_DICT = {
+        "default": "configs/datasets/llava/pretrain_cap.yaml",
+    }
+
+    def build_datasets(self):
+        # at this point, all the annotations and image/videos should be all downloaded to the specified locations.
+        logging.info("[llava_pretrain]: Building datasets...")
+        self.build_processors()
+        build_info = self.config.build_info
+        datasets = dict()
+
+        # create datasets
+        dataset_cls = self.train_dataset_cls
+        datasets['train'] = dataset_cls(
+            vis_processor=self.vis_processors["train"],
+            text_processor=self.text_processors["train"],
+            ann_path=build_info.ann_path,
+            vis_root=build_info.image_path,
+        )
+        print("{} Length: {}".format(dataset_cls.__name__, len(datasets['train']))) # print class name
+
+        return datasets
+
 
 @registry.register_builder("llava_conversation")
 class LlavaReasonBuilder(BaseDatasetBuilder):

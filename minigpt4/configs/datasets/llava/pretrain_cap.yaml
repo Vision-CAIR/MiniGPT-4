@@ -1,0 +1,6 @@
+datasets:
+  llava_pretrain:
+    data_type: images
+    build_info:
+      image_path: /mnt/pfs-guan-ssai/nlu/dingyifeng/data/llava-cc3m-595k/images
+      ann_path: /mnt/pfs-guan-ssai/nlu/dingyifeng/data/llava-cc3m-595k/chat.json

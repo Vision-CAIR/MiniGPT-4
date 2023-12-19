@@ -4,22 +4,35 @@
  # For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
 
 model:
-  arch: pretrain
+  arch: blip2_vicuna_instruct
   load_finetuned: False
+  load_pretrained: True
 
-  # pretrained: "https://storage.googleapis.com/sfr-vision-language-research/LAVIS/models/BLIP2/blip2_pretrained.pth"
-  pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_pretrained/blip2_pretrained.pth"
+  pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
   finetuned: ""
+  q_former_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
 
   # vit encoder
   image_size: 224
   drop_path_rate: 0
   use_grad_checkpoint: False
   vit_precision: "fp16"
-  freeze_vit: True
 
   # Q-Former
   num_query_token: 32
+  qformer_text_input: True
+
+  # path to Vicuna checkpoint
+  llm_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/vicuna-7b-v1.1"
+  prompt: ""
+  max_txt_len: 256
+  max_output_txt_len: 256
+
+  # freeze
+  freeze_vit: True
+  freeze_llm: True
+  freeze_qformer: False
+  freeze_t5_proj: False
 
   # moe
   use_moeqformer: True
@@ -30,7 +43,7 @@ model:
 preprocess:
     vis_processor:
         train:
-          name: "blip_image_train"
+          name: "blip2_image_train"
           image_size: 224
         eval:
           name: "blip_image_eval"

@@ -36,9 +36,12 @@ class AOKVQADataset(VQADataset, __DisplMixin):
     def __init__(self, vis_processor, text_processor, vis_root, ann_paths):
         super().__init__(vis_processor, text_processor, vis_root, ann_paths)
 
-        self.instruction_pool =[
-            "[vqa] {}",
-            "[vqa] Based on the image, respond to this question with a short answer: {}"
+        self.instruction_pool =[   
+            '{}',
+            'Q: {} A: ',
+            'Based on the image, respond to this question with a short answer: {}',
+            '{} A short answer to the question is ',
+            'Question: {} Short answer:',
         ]
 
         exist_annotation = []
@@ -48,6 +51,7 @@ class AOKVQADataset(VQADataset, __DisplMixin):
             if os.path.exists(image_path):
                 exist_annotation.append(ann)
         self.annotation = exist_annotation
+        self.source = 'aokvqa'
 
     def get_data(self, index):
         ann = self.annotation[index]
@@ -75,6 +79,7 @@ class AOKVQADataset(VQADataset, __DisplMixin):
 
         return {
             "image": image,
+            "image_id": ann["image"],
             "question": question,
             "answer": answer,
         }
@@ -82,15 +87,20 @@ class AOKVQADataset(VQADataset, __DisplMixin):
     def __getitem__(self, index):
         data = self.get_data(index)
         question = self.text_processor(data["question"])
-        instruction = random.choice(self.instruction_pool).format(question)
 
-        instruction = "<Img><ImageHere></Img> {} ".format(instruction)
         answer = self.text_processor(data['answer'])
+        q_input = question
+        llm_input = random.choice(self.instruction_pool).format(question)
 
         return {
             "image": data['image'],
-            "instruction_input": instruction,
+            "image_id": data["image_id"],
+            "q_input": q_input,
+            "llm_input": llm_input,
+            "text_input": question,
+            "text_output": answer,
             "answer": answer,
+            "source": 'aokvqa',
         }
 
 
