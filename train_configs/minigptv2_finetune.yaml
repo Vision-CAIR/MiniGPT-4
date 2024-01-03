@@ -267,7 +267,7 @@ run:
   # optimizer
   lr_sched: "linear_warmup_cosine_lr"
   init_lr: 1e-5
-  min_lr: 8e-5
+  min_lr: 1e-6
   warmup_lr: 1e-6
 
   weight_decay: 0.05
