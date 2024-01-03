@@ -45,7 +45,6 @@ Deyao Zhu*, Jun Chen*, Xiaoqian Shen, Xiang Li, Mohamed Elhoseiny
 
 [Aug.28 2023] We now provide a llama 2 version of MiniGPT-4
 
-## Online Demo
 
 Click the image to chat with MiniGPT-v2 around your images
 [![demo](figs/minigpt2_demo.png)](https://minigpt-v2.github.io/)
