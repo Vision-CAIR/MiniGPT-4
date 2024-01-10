@@ -105,6 +105,8 @@ class COCOCaptionDataset(BaseDataset, __DisplMixin):
             'Using language, provide a short account of the image.',
             'Use a few words to illustrate what is happening in the picture.',
         ]
+        self.source = 'coco_cap'
+        
     def __getitem__(self, index):
 
         # TODO this assumes image input, not general enough
@@ -118,13 +120,20 @@ class COCOCaptionDataset(BaseDataset, __DisplMixin):
         image = self.vis_processor(image)
         caption = self.text_processor(ann["caption"])
 
-        instruction = random.choice(self.instruction_pool)
-        instruction = "<Img><ImageHere></Img> [caption] {} ".format(instruction)
+        # instruction = random.choice(self.instruction_pool)
+        # instruction = "<Img><ImageHere></Img> [caption] {} ".format(instruction)
+        q_input = ""
+        llm_input = random.choice(self.instruction_pool)
 
         return {
             "image": image,
+            "image_id": ann["image"],
             "answer": caption,
-            "instruction_input": instruction,
+            "q_input": q_input,
+            "llm_input": llm_input,
+            "text_input": llm_input,
+            "text_output": caption,
+            "source": 'coco_cap',
         }
 
 class CaptionEvalDataset(BaseDataset, __DisplMixin):

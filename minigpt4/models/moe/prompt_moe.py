@@ -92,7 +92,6 @@ class PrePromptMoE(PromptMoEBase):
         self.topk = topk
         if route_method in ["gate-token", "gate-single-token", "gate-sentence"]:
             self.gate = nn.Linear(hidden_size, num_experts, bias=False).float()
-            print(self.gate)
         else:
             raise KeyError("Routing method not supported.")
 

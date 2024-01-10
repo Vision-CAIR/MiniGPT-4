@@ -1,4 +1,4 @@
-name: minigptv
+name: promptmoe
 channels:
   - pytorch
   - defaults

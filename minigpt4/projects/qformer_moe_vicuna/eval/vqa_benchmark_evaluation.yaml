@@ -10,7 +10,7 @@ model:
   load_finetuned: True
   vit_model: eva_clip_g
   pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
-  finetuned: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/mix_1048k_raw_QformerMoE_Route_Post_NoNorm_5ex_2beam_1loss_top3layer_textinqf_epo6_1215/20231216161/checkpoint_best.pth"
+  finetuned: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/mix_coco_gqa_1610k_raw_QformerMoE_Route_Post_ffn_prob_linear_gate_2ex_2beam_1gate_1loss_5e5lr_top6layer_textinqf_epo8_0111/20240111145/checkpoint_best.pth"
   q_former_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
 
   # vit encoder
@@ -39,8 +39,11 @@ model:
   use_moeqformer: True
   use_route_moe: True
   moebert_route_method: "post-route"
-  moebert_expert_num: 5
+  moebert_load_balance: 0
+  moebert_expert_num: 2
   moebert_num_beams: 2
+  moe_weight_type: 'ffn_prob'
+  use_balance_loss: False
 
 datasets:
   ok_vqa: # train, valid (9009, 5046)
@@ -78,7 +81,7 @@ evaluation_datasets:
 run:
   task: instruction_tuning
   name: vqa_benchmark_evaluation
-  save_path: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe/eval/benchmarks/mix_1048k_raw_QformerMoE_Route_Post_NoNorm_5ex_2beam_1loss_top3layer_textinqf_epo6_1215/"
+  save_path: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/eval/benchmarks/mix_coco_gqa_1610k_raw_QformerMoE_Route_Post_ffn_prob_linear_gate_2ex_2beam_1gate_1loss_5e5lr_top6layer_textinqf_epo8_0111/"
   seed: 42
 
   

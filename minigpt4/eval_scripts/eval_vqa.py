@@ -12,7 +12,6 @@ from tqdm import tqdm
 import torch
 from torch.utils.data import DataLoader
 import torch.backends.cudnn as cudnn
-from datasets import load_dataset
 import sys
 sys.path.append("/mnt/pfs-guan-ssai/nlu/wanghanzi/multimodal/PromptMoE")
 
@@ -248,6 +247,7 @@ if 'vsr' in args.dataset:
     img_path = cfg.evaluation_datasets_cfg["vsr"]["img_path"]
     batch_size = cfg.evaluation_datasets_cfg["vsr"]["batch_size"]
     max_new_tokens = cfg.evaluation_datasets_cfg["vsr"]["max_new_tokens"]
+    from datasets import load_dataset
 
     annotation = load_dataset("cambridgeltl/vsr_zeroshot", split='test')
     data = VSREvalData(annotation, vis_processor, img_path)

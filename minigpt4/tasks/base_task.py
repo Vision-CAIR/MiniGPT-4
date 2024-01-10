@@ -238,13 +238,17 @@ class BaseTask:
 
             with torch.cuda.amp.autocast(enabled=use_amp):
                 loss = self.train_step(model=model, samples=samples)
-
+            
             # after_train_step()
             if use_amp:
+                # torch.autograd.set_detect_anomaly(True)
+                # 反向传播时检测是否有异常值，定位code
+                # with torch.autograd.detect_anomaly():
                 scaler.scale(loss).backward()
             else:
                 loss.backward()
 
+            # import pdb; pdb.set_trace() # 0107test
             # update gradients every accum_grad_iters iterations
             if (i + 1) % accum_grad_iters == 0:
                 if use_amp:
@@ -252,6 +256,9 @@ class BaseTask:
                     scaler.update()                     
                 else:    
                     optimizer.step()
+                
+                # import pdb; pdb.set_trace()# 0107test
+
                 optimizer.zero_grad()
                 # if self.cfg.wandb_log:
                 # if self.cfg.run_cfg.wandb_log:

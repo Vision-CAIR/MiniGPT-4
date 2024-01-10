@@ -99,6 +99,7 @@ class Blip2VicunaInstruct(Blip2Base):
                     moebert_expert_num=moebert_expert_num,
                     moebert_num_beams=moebert_num_beams,
                     route_method=moebert_route_method,
+                    moe_weight_type=moe_weight_type,
                     cross_attention_freq=2
                 )
             else:
@@ -118,7 +119,6 @@ class Blip2VicunaInstruct(Blip2Base):
                 num_query_token, self.visual_encoder.num_features
             )
 
-        # import pdb;pdb.set_trace()
         if not qformer_text_input:
             self.Qformer.bert.embeddings.word_embeddings = None
             self.Qformer.bert.embeddings.position_embeddings = None
@@ -178,6 +178,19 @@ class Blip2VicunaInstruct(Blip2Base):
                 if "_query" in name and "experts" not in name: # raw ffn_query not update
                     param.requires_grad = False
 
+                ln_pattern = r"bert\.encoder\.layer\.\d+\.expert_ln\.(weight|bias)"
+                if re.match(ln_pattern, name):
+                    key_orig = re.sub('expert_ln', 'output_query.LayerNorm', name)
+                    param.data.copy_(state_dict[key_orig])
+                d1_pattern = r"bert\.encoder\.layer\.(\d+)\.experts(\.|\.experts\.\d+\.)dense1\.(weight|bias)"
+                if re.match(d1_pattern, name):
+                    key_orig = re.sub(r'experts(\.|\.experts\.\d+\.)dense1', 'intermediate_query.dense', name)
+                    param.data.copy_(state_dict[key_orig])
+                d2_pattern = r"bert\.encoder\.layer\.(\d+)\.experts(\.|\.experts\.\d+\.)dense2\.(weight|bias)"
+                if re.match(d2_pattern, name):
+                    key_orig = re.sub(r'experts(\.|\.experts\.\d+\.)dense2', 'output_query.dense', name)
+                    param.data.copy_(state_dict[key_orig])
+
         # freeze qformer        
         if freeze_qformer:
             for name, param in self.Qformer.named_parameters():
@@ -205,6 +218,7 @@ class Blip2VicunaInstruct(Blip2Base):
         self.use_moeqformer = use_moeqformer
         self.use_route_moe = use_route_moe
         self.moebert_load_balance = moebert_load_balance
+        self.moebert_num_beams = moebert_num_beams
 
         self.gate_save_path = gate_save_path
         # if self.gate_save_path != None:
@@ -242,7 +256,7 @@ class Blip2VicunaInstruct(Blip2Base):
         # print(samples["text_input"])
         # print(samples["text_output"])
         # print('-----------------')
-        # import pdb;pdb.set_trace()
+        # import pdb;pdb.set_trace() # 0107test
         image = samples["image"]
         with self.maybe_autocast():
             image_embeds = self.ln_vision(self.visual_encoder(image))
@@ -278,10 +292,10 @@ class Blip2VicunaInstruct(Blip2Base):
                 return_dict=True,
                 output_hidden_states=True,
             )
-
+        # import pdb; pdb.set_trace()# 0107test
         query_output_to_linear = query_output.last_hidden_state[:,:query_tokens.size(1),:]
         
-        if self.use_moeqformer and not self.use_route_moe:
+        if self.use_moeqformer:
             gate_loss = query_output.gate_loss # only available in QformerMoE
         
         if self.gate_save_path != None:
@@ -312,7 +326,7 @@ class Blip2VicunaInstruct(Blip2Base):
                         # 'gate_route_1': prob_gate_normalized[0][i].tolist(),
                     })
                     # for layer in [6,8,10]:
-                    #     layer_data  = all_hidden_states[layer]
+                    #     layer_data  = all_hidden_states[layer]s
                     #     file_path = os.path.join(self.gate_save_path, f'{image_id}_{str(layer)}.npy')
                     #     x = layer_data.data.cpu().numpy()
                     #     np.save(file_path,x) 
@@ -322,7 +336,6 @@ class Blip2VicunaInstruct(Blip2Base):
             except Exception as e:
                 print("Gate Save Error....")
                 print(e)
-
 
         inputs_llm = self.llm_proj(query_output_to_linear)
         atts_llm = torch.ones(inputs_llm.size()[:-1], dtype=torch.long).to(image.device)
@@ -380,7 +393,7 @@ class Blip2VicunaInstruct(Blip2Base):
                 labels=targets,
             )
 
-        if self.use_moeqformer and not self.use_route_moe:
+        if self.use_moeqformer:
             loss = outputs.loss + self.moebert_load_balance * gate_loss
         else:
             loss = outputs.loss
@@ -441,6 +454,8 @@ class Blip2VicunaInstruct(Blip2Base):
                 output_hidden_states=True,
             )
 
+        # import pdb; pdb.set_trace()
+
         if self.gate_save_path != None:
             all_hidden_states = query_output.hidden_states
             # prob_gate_normalized = query_output.gate_loads
@@ -471,11 +486,11 @@ class Blip2VicunaInstruct(Blip2Base):
                         # 'gate_route_3': prob_gate_normalized[2][i].tolist(),
                         # 'gate_route_1': prob_gate_normalized[0][i].tolist(),
                     })
-                    for layer in [6,8,10]:
-                        if layer == 6:
-                            layer_data  = all_hidden_states[layer][i, :32, :]
+                    for layer in [6,7,8,9,10,11]:
+                        if layer in [6,11]:
+                            layer_data  = all_hidden_states[layer][i, :, :]
                         else:
-                            layer_data  = all_hidden_states[layer][i*3, :32, :]
+                            layer_data  = all_hidden_states[layer][i*self.moebert_num_beams, :, :]
                         file_path = os.path.join(self.gate_save_path, f'{image_id}_{str(layer)}.npy')
                         x = layer_data.data.cpu().numpy()
                         np.save(file_path,x) # 大功告成
@@ -683,5 +698,6 @@ class Blip2VicunaInstruct(Blip2Base):
         for name, param in model.named_parameters():
             if param.requires_grad == True:
                 print(name)
-
+        # [name for name, param in model.named_parameters() if (param.requires_grad == False and 'Qformer' in name and 'intermediate_query' in name)]
+        # import pdb; pdb.set_trace()# 0107test
         return model

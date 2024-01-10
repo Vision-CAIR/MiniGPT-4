@@ -10,7 +10,6 @@ model:
   load_finetuned: False
   vit_model: eva_clip_g
   pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
-  # finetuned: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe/mix_coco_gqa_balance_raw_QformerMoE_Post_train_qf_train_qt_aver_weight_5ex_top1_1loss_textinqf_epo3_s42_1201/20231201184/checkpoint_best.pth"
   finetuned: ""
   q_former_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
 
@@ -38,7 +37,7 @@ model:
 
   # moe
   use_moeqformer: True
-  moebert_expert_num: 5
+  moebert_expert_num: 3
   moebert_route_method: "gate-sentence-post"
   moebert_load_balance: 0
   moe_topk: 1
@@ -110,6 +109,7 @@ run:
   max_epoch: 1
   num_workers: 4
   warmup_steps: 600
+  iters_per_epoch: 1000
 
   seed: 42
   output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe/mix_coco_gqa_balance_raw_QformerMoE_Post_train_qf_train_qt_aver_weight_5ex_top1_1loss_textinqf_epo3_s42_1201/"

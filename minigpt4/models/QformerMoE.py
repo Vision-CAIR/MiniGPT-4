@@ -386,17 +386,23 @@ class BertOutput(nn.Module): # Add & Norm
 
 
 class FeedForward(nn.Module):
+    # remove LayerNorm
     def __init__(self, config):
-        nn.Module.__init__(self)
-        # first layer
-        self.intermediate_query = BertIntermediate(config)
-        # second layer
-        self.output_query = BertOutput(config)
+        super().__init__()
+        self.dense1 = nn.Linear(config.hidden_size, config.intermediate_size)
+        if isinstance(config.hidden_act, str):
+            self.intermediate_act_fn = ACT2FN[config.hidden_act]
+        else:
+            self.intermediate_act_fn = config.hidden_act
+        self.dense2 = nn.Linear(config.intermediate_size, config.hidden_size)
+        self.dropout = nn.Dropout(config.hidden_dropout_prob) # adjust dropout ratio 0.1->0.2
+        # self.dropout = nn.Dropout(0.2) # adjust dropout ratio 0.1->0.2
 
     def forward(self, hidden_states: Tensor):
-        input_tensor = hidden_states
-        intermediate_output = self.intermediate_query(hidden_states)
-        hidden_states = self.output_query(intermediate_output, input_tensor)
+        hidden_states = self.dense1(hidden_states)
+        hidden_states = self.intermediate_act_fn(hidden_states)
+        hidden_states = self.dense2(hidden_states)
+        hidden_states = self.dropout(hidden_states)
         return hidden_states
 
 
@@ -440,6 +446,7 @@ class BertLayer(nn.Module):
             )
         else:
             self.experts = ffn
+        self.expert_ln = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
 
     def forward(
         self,
@@ -494,7 +501,8 @@ class BertLayer(nn.Module):
             moe_ffn_attention_input = query_attention_output[:, :query_length, :]
             moe_ffn_attention_mask = attention_mask.squeeze(dim=1).squeeze(dim=1)[:, :query_length]
             layer_output = self.feed_forward_query_moe(moe_ffn_attention_input, moe_ffn_attention_mask) # layer_output, gate_loss, gate_load
-
+            # import pdb; pdb.set_trace() # test0107
+            
             if attention_output.shape[1] > query_length: # have text input in Qformer
                 layer_output_text = apply_chunking_to_forward(
                     self.feed_forward_chunk,
@@ -503,6 +511,7 @@ class BertLayer(nn.Module):
                     attention_output[:, query_length:, :],
                 )
                 layer_output = (torch.cat([layer_output[0], layer_output_text], dim=1), layer_output[1], layer_output[2])
+            
         else:
             layer_output = apply_chunking_to_forward(
                 self.feed_forward_chunk,
@@ -524,15 +533,14 @@ class BertLayer(nn.Module):
 
     def feed_forward_query_moe(self, attention_output, expert_attention_mask):
         if not self.use_experts:
-            layer_output = self.experts(attention_output)
+            hidden_states = self.experts(attention_output)
+            layer_output = self.expert_ln(hidden_states + attention_output)
             return layer_output, 0.0, []
 
-        # if not self.importance_processor.is_moe:
-        #     raise RuntimeError("Need to turn the model to a MoE first.")
-
-        layer_output, gate_loss, gate_load = self.experts(
+        hidden_states, gate_loss, gate_load = self.experts(
             attention_output, expert_attention_mask
         )
+        layer_output = self.expert_ln(hidden_states + attention_output)
         return layer_output, gate_loss, gate_load
 
 class BertEncoder(nn.Module):

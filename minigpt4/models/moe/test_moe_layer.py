@@ -4,8 +4,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+import copy
+import pickle
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
 class MoELayer(nn.Module):
-    def __init__(self, hidden_size, expert, num_experts, route_method, topk=1, use_balance_loss=True, weight_type='raw_prob'):
+    def __init__(self, hidden_size, expert, num_experts, route_method, topk=1, use_balance_loss=True, weight_type='raw_prob, topk(softmax)'):
         # remove hash list
         nn.Module.__init__(self)
         self.num_experts = num_experts
@@ -90,61 +96,59 @@ class MoELayer(nn.Module):
             attention_mask = torch.ones([bz, 32])
 
         """
+        # Prepare Input x
         attention_mask = torch.ones(attention_mask.shape[0], attention_mask.shape[1]).to(x.device)
         x_masked = x * attention_mask.unsqueeze(-1) # torch.Size([bz, 32, 768])
         
-        def forward_expert(input_x, expert_idx):
-            # input_x += torch.randn(4,32,768)
-            # return input_x
-            output_x = self.experts[expert_idx].forward(input_x)
-            return output_x
-
+        # FeedForward(x) & Forward Gate
         outputs = list()
         logits_gate_lst = list()
         for expert_idx in range(self.num_experts):
-            output_x = forward_expert(x_masked, expert_idx)
+            output_x = self.experts[expert_idx].forward(x_masked)
             outputs.append(output_x.unsqueeze(0))
             
-            output_x_aver = output_x.sum(1) / attention_mask.unsqueeze(-1).sum(1) # torch.Size([bz, 768])
+            output_x_aver = torch.mean(output_x, dim=1)
             # gate_acore = self.gates[expert_idx](output_x_aver)
             gate_score = self.gate(output_x_aver)
             logits_gate_lst.append(gate_score)
-
         candidate_output = torch.cat(outputs) # torch.Size([num_expert, bz, 32, 768])
         logits_gate = torch.cat(logits_gate_lst,dim=1)# torch.Size([bz, num_expert])
-        prob_gate = F.softmax(logits_gate, dim=-1) # torch.Size([bz, num_experts])
-        topk_values, gate = torch.topk(prob_gate, self.topk, dim=1) # gate, 每个样本被分配的expert: torch.Size([bz, topk])
-        num_sentences = F.one_hot(gate, self.num_experts).sum(1).gt(0).sum(0) # 每个expert被分配的样本数 torch.Size([num_expert])
-        gate_load = num_sentences.clone()
 
-        # load balancing loss
+        # Probabilities for each sample of what expert it should be sent to.
+        prob_gate = F.softmax(logits_gate, dim=-1) # torch.Size([bz, num_experts])
+        if 'softmax(topk)' in self.weight_type:
+            prob_gate1, gate = torch.topk(logits_gate, self.topk, dim=1)
+            select_prob_gate = F.softmax(prob_gate1, dim=-1)
+        else:
+            select_prob_gate, gate = torch.topk(prob_gate, self.topk, dim=1) # gate, 每个样本被分配的expert: torch.Size([bz, topk])
+
+        # Calculate Balancing Loss
         if self.use_balance_loss:
+            num_sentences = F.one_hot(gate, self.num_experts).sum(1).gt(0).sum(0) # 每个expert被分配的样本数 torch.Size([num_expert])
             balance_loss = self._balancing_loss(prob_gate, num_sentences)
         else:
             balance_loss = 0.0
-
-        # importance loss
+        # Calculate Importance Loss
         importance_loss = self._importance_auxiliary_loss(prob_gate)
 
-        prob_gate_topk = torch.zeros_like(prob_gate)
-        prob_gate_topk.scatter_(1, gate, topk_values)
-
-        if self.weight_type == 'average':
-            # torch.Size([bz, num_expert]) 未选中的expert prob_gate_norm为0
-            prob_gate_normalized = prob_gate_topk / prob_gate_topk.sum(dim=1, keepdim=True) 
-        elif self.weight_type == 'raw_prob':
-            prob_gate_normalized = prob_gate_topk
-        elif self.weight_type == 'softmax_norm':
-            prob_gate_normalized = F.softmax(prob_gate_topk, dim=-1) # torch.Size([bz, num_expert])
+        # Reshap Prob_gate & Gate
+        # expert_mask: [batch_size, topk, num_experts]
+        # expert_gate: [batch_size, topk, num_experts]
+        # combine_tensor: [batch_size, num_experts]
+        expert_mask = F.one_hot(gate, self.num_experts) 
+        expert_gate = select_prob_gate.unsqueeze(-1) * expert_mask
+        combine_tensor = torch.sum(expert_gate, dim=1) 
+        # combine_tensor = torch.zeros_like(prob_gate)
+        # combine_tensor.scatter_(1, gate, select_prob_gate) # 等价操作，但可能不可导
 
         candidate_output_ad = torch.permute(candidate_output, (1, 0, 2, 3)) # torch.Size([bz, num_expert, 32, 768])
-        results = prob_gate_normalized.unsqueeze(-1).unsqueeze(-1) * candidate_output_ad # torch.Size([bz, num_expert, 32, 768])
-        moe_result = torch.sum(results, dim=1) # torch.Size([bz, 32, 768])
-        # import pdb;pdb.set_trace()
+        results = candidate_output_ad * combine_tensor.unsqueeze(-1).unsqueeze(-1) # torch.Size([bz, num_expert, 32, 768])
+        outputs = torch.sum(results, dim=1) # torch.Size([bz, 32, 768])
+        import pdb;pdb.set_trace()
 
-        return moe_result, (balance_loss+importance_loss), prob_gate_normalized
+        return outputs, (balance_loss+importance_loss), combine_tensor
 
-    def router(self, x, attention_mask):
+    def pre_router(self, x, attention_mask):
         # Prepare input x
         attention_mask = torch.ones(attention_mask.shape[0], attention_mask.shape[1]).to(x.device)
         x_masked = x * attention_mask.unsqueeze(-1) # torch.Size([bz, 32, 768])
@@ -157,11 +161,16 @@ class MoELayer(nn.Module):
         # Probabilities for each sample of what expert it should be sent to.
         # prob_gate: [bz, num_experts]
         prob_gate = F.softmax(logits_gate, dim=-1)
-
-        # Get Top-K experts for each sample
-        # gate: [bz, topk]
-        # select_prob_gate: [bz, topk]
-        select_prob_gate, gate = torch.topk(prob_gate, self.topk, dim=1)
+        
+        if 'softmax(topk)' in self.weight_type:
+            prob_gate1, gate = torch.topk(logits_gate, self.topk, dim=1)
+            select_prob_gate = F.softmax(prob_gate1, dim=-1)
+        else:
+            # topk(softmax)
+            # Get Top-K experts for each sample
+            # gate: [bz, topk]
+            # select_prob_gate: [bz, topk]
+            select_prob_gate, gate = torch.topk(prob_gate, self.topk, dim=1)
 
         # Reshap Prob_gate & Gate
         # expert_mask: [batch_size, topk, num_experts]
@@ -181,7 +190,7 @@ class MoELayer(nn.Module):
         # Calculate Importance Loss
         importance_loss = self._importance_auxiliary_loss(prob_gate)
 
-        # import pdb; pdb.set_trace()
+        import pdb; pdb.set_trace()
 
         return expert_mask, combine_tensor, balance_loss, importance_loss
 
@@ -197,7 +206,7 @@ class MoELayer(nn.Module):
             it should be adjust to 1/0 version to be processed by experts
         """
         # Forward Router
-        expert_mask, combine_tensor, balance_loss, importance_loss = self.router(x, attention_mask)
+        expert_mask, combine_tensor, balance_loss, importance_loss = self.pre_router(x, attention_mask)
         
         # Forward Expert FFN
         result = []
@@ -207,17 +216,13 @@ class MoELayer(nn.Module):
         expert_output = torch.cat(result).permute(1,0,2,3) # torch.Size([batch_size, num_expert, num_tokens, hidden_states])
 
         # multiply outputs of experts by the routing probability
-        if self.weight_type == 'raw_prob':
-            expert_outputs_combined = expert_output * combine_tensor.unsqueeze(-1).unsqueeze(-1) # torch.Size([batch_size, num_expert, num_tokens, hidden_states])
-        elif self.weight_type == 'no_prob':
-            combine_index = torch.sum(expert_mask, dim=1)
-            expert_outputs_combined = expert_output * combine_index.unsqueeze(-1).unsqueeze(-1) # torch.Size([batch_size, num_expert, num_tokens, hidden_states])
-
+        expert_outputs_combined = expert_output * combine_tensor.unsqueeze(-1).unsqueeze(-1) # torch.Size([batch_size, num_expert, num_tokens, hidden_states])
         outputs = torch.sum(expert_outputs_combined, dim=1) # torch.Size([batch_size, num_tokens, hidden_states])
 
-        # import pdb; pdb.set_trace()
+        import pdb; pdb.set_trace()
 
         return outputs, (balance_loss+importance_loss), combine_tensor
+
 
     def forward(self, x, attention_mask):
         if self.route_method == "gate-token":
@@ -230,3 +235,60 @@ class MoELayer(nn.Module):
             raise KeyError("Routing method not supported.")
         # import pdb; pdb.set_trace()
         return x, balance_loss, gate_load
+
+if __name__ == '__main__':
+
+    import sys
+    sys.path.append("/mnt/pfs-guan-ssai/nlu/wanghanzi/multimodal/PromptMoE")
+    from minigpt4.models.QformerRouteMoE import BertConfig
+    from minigpt4.models.QformerRouteMoE import FeedForward
+    from minigpt4.models.moe.utils import (
+        moe_layer_judge,
+    )
+
+    vision_width = 1408
+    cross_attention_freq = 2
+    num_query_token = 32
+    # init_QformerMoE
+    config = BertConfig.from_pretrained("/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased")
+    config.encoder_width = vision_width
+    # insert cross-attention layer every other block
+    config.add_cross_attention = True
+    config.cross_attention_freq = cross_attention_freq
+    config.query_length = num_query_token
+    config.moebert_expert_num = 3
+    config.moebert_num_beams = 2
+    config.moebert_route_method = 'gate-sentence-post'
+    config.moe_topk = 1
+    config.use_balance_loss = False
+    # config.moe_weight_type = 'raw_prob, softmax(topk)'
+    config.moe_weight_type = 'raw_prob, topk(softmax)'
+
+    batch_size = 4
+    x2 = torch.randn(batch_size, 32, 768)
+    beam_scores, expert_route = None, None
+
+    for layer_num in [6, 8, 10]:
+        layer_judge = moe_layer_judge(layer_num)
+        ffn = FeedForward(config)
+        gate = nn.Linear(768, config.moebert_expert_num, bias=False).float()
+
+        experts_moe = MoELayer(
+                hidden_size=config.hidden_size,
+                expert=ffn,
+                num_experts=config.moebert_expert_num,
+                route_method=config.moebert_route_method,
+                topk=config.moe_topk,
+                use_balance_loss=config.use_balance_loss,
+                weight_type=config.moe_weight_type,
+            )
+        attn_mask = torch.ones([batch_size, 32])
+        layer_output = experts_moe(x2, attn_mask)
+        hidden_states3, aux_loss, combine_tensor = layer_output
+        
+        print(combine_tensor)
+        print(aux_loss)
+        x2 = hidden_states3
+
+        print("------------------------------------")
+        import pdb; pdb.set_trace()

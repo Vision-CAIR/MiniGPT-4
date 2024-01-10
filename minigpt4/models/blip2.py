@@ -62,7 +62,7 @@ class Blip2Base(BaseModel):
         return Qformer, query_tokens
     
     @classmethod
-    def init_RouteMoEQformer(cls, num_query_token, vision_width, moebert_expert_num, moebert_num_beams, route_method, cross_attention_freq=2):
+    def init_RouteMoEQformer(cls, num_query_token, vision_width, moebert_expert_num, moebert_num_beams, route_method, moe_weight_type, cross_attention_freq=2):
         moe_encoder_config = BertConfig.from_pretrained("/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased")
 
         moe_encoder_config.encoder_width = vision_width
@@ -74,6 +74,7 @@ class Blip2Base(BaseModel):
         moe_encoder_config.moebert_expert_num = moebert_expert_num
         moe_encoder_config.moebert_num_beams = moebert_num_beams
         moe_encoder_config.route_method = route_method
+        moe_encoder_config.moe_weight_type = moe_weight_type
 
         RouteMoEQformer = BertMoERouteLMHeadModel.from_pretrained(
             "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config

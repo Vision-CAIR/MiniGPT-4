@@ -31,6 +31,7 @@ class COCOCapEvalDataset(CaptionEvalDataset):
         split (string): val or test
         """
         super().__init__(vis_processor, text_processor, vis_root, ann_paths)
+        self.source = 'coco_cap'
 
     def __getitem__(self, index):
         ann = self.annotation[index]

@@ -45,3 +45,5 @@ visualizer
 tensorboard
 kmeans_pytorch
 visual_genome
+gpustat
+torchviz

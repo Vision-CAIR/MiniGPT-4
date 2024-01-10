@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class RouteMoELayer(nn.Module):
-    def __init__(self, hidden_size, expert, num_experts, num_beams=2, layer_judge=None, route_method="pre-route"):
+    def __init__(self, hidden_size, expert, num_experts, num_beams=2, layer_judge=None, route_method="pre-route", weight_type="ffn_prob"):
         # remove hash list
         nn.Module.__init__(self)
         self.num_experts = num_experts
@@ -13,6 +13,7 @@ class RouteMoELayer(nn.Module):
         self.num_beams = num_beams
         self.hidden_size = hidden_size
         self.layer_judge = layer_judge
+        self.weight_type = weight_type
 
         self.route_method = route_method
         if self.route_method == "pre-route":
@@ -22,6 +23,17 @@ class RouteMoELayer(nn.Module):
             self.gate = gate
             # self.gates = nn.ModuleList([copy.deepcopy(gate) for i in range(num_experts)])
 
+    def _importance_auxiliary_loss(self, prob_gate):
+        # From VMOE
+        # _importance_auxiliary_loss
+        axis = tuple(range(prob_gate.ndim - 1))  # All except last.
+        importance_per_expert = torch.sum(prob_gate, dim=axis)
+        std_importance_per_expert = torch.std(importance_per_expert)
+        mean_importance_per_expert = torch.mean(importance_per_expert)
+        # Compute coefficient of variation (i.e. std/mean) squared.
+        return (std_importance_per_expert / mean_importance_per_expert)**2
+
+
     def forward_gate(self, x):
         """
             x : torch.Size([bz*num_beams, 32, 768]) or torch.Size([bz, 32, 768]) 
@@ -29,7 +41,8 @@ class RouteMoELayer(nn.Module):
         """
         attention_mask = torch.ones(x.shape[0], x.shape[1]).to(x.device)
         x_masked = x * attention_mask.unsqueeze(-1) # torch.Size([bz*num_beams, 32, 768])
-        x_average = x_masked.sum(1) / attention_mask.unsqueeze(-1).sum(1) # torch.Size([bz*num_beams, 768])
+        # x_average = x_masked.sum(1) / attention_mask.unsqueeze(-1).sum(1) # torch.Size([bz*num_beams, 768])
+        x_average = torch.mean(x_masked, dim=1) # torch.Size([bz*num_beams, 768])
         logits_gate = self.gate(x_average) # torch.Size([bz*num_beams, num_experts])
         prob_gate = F.softmax(logits_gate, dim=-1) #  torch.Size([bz*num_beams, num_experts])
         return prob_gate
@@ -42,7 +55,7 @@ class RouteMoELayer(nn.Module):
             topk_values, gate = torch.topk(current_scores, self.num_beams, dim=1) # gate, 每个样本被分配的expert: torch.Size([bz, topk])
             beam_scores = topk_values.view(self.num_beams * batch_size) # torch.Size([bz * num_beams])
             expert_route = gate.view(self.num_beams * batch_size).unsqueeze(1) # torch.Size([bz * num_beams,1])
-            beam_idx = None
+            beam_idx = torch.tensor(range(self.num_beams * batch_size))
         else:
             if self.layer_judge=='first' and self.route_method == 'post-route':
                 batch_size = batch_size
@@ -89,54 +102,63 @@ class RouteMoELayer(nn.Module):
 
         return beam_scores, expert_route, beam_idx
     
-       
-    def forward_expert_ffn(self, x, expert_select, beam_scores):
+    def forward_expert_ffn(self, x, expert_select, current_scores):
         """
             x_repeat : [bz*num_beams, 32,768]
             expert_select : [bz*num_beams]
+            current_scores : [bz*num_beams, num_experts] / [bz, num_experts]
         """
-        # add_1212 l2_normalization
-        # normalized_tensor = torch.nn.functional.normalize(beam_scores, p=2, dim=0) # L2 Normalization  torch.Size([bz, topk])
+        # add_1228 l2_normalization
+        # normalized_tensor = torch.nn.functional.normalize(current_scores, p=2, dim=0) # L2 Normalization  torch.Size([bz, topk])
         # tmp_prob = normalized_tensor.unsqueeze(-1).unsqueeze(-1)
-
+        # import pdb;pdb.set_trace()
         outputs = list()
-        for i in range(x.shape[0]):
-            output_x = self.experts[expert_select[i]].forward(x[i])
-            outputs.append(output_x.unsqueeze(0))
-        candidate_output = torch.cat(outputs) 
-
-        # candidate_output = candidate_output * tmp_prob
-        return candidate_output # torch.Size([bz*num_beams, 32, 768])
-
+        for i  in range(self.num_experts):
+            output_x = self.experts[i].forward(x)
+            outputs.append(output_x.unsqueeze(1))
+        candidate_output = torch.cat(outputs, dim=1) 
+        expert_select_matrix = F.one_hot(expert_select, self.num_experts)
+        if self.weight_type == 'ffn_prob':
+            tmp_prob = current_scores * expert_select_matrix
+            candidate_output = candidate_output * tmp_prob.unsqueeze(-1).unsqueeze(-1)
+        else:
+            candidate_output = candidate_output * expert_select_matrix.unsqueeze(-1).unsqueeze(-1)
+        output = torch.sum(candidate_output, dim=1)
+        # import pdb;pdb.set_trace()
+        return output # torch.Size([bz*num_beams, 32, 768])
 
     def forward_pre_route(self, x, beam_scores, expert_route, use_log=True):
         
-        current_scores = self.forward_gate(x) # [bz*num_beams, 5]
+        current_scores = self.forward_gate(x) # [bz, num_beams] / [bz*num_beams, num_beams]
+
+        importance_loss = self._importance_auxiliary_loss(current_scores)
 
         if use_log:
             current_scores_log = torch.log(current_scores) # 取log之后可以直接相加
         else:
             current_scores_log = current_scores
-
+        # import pdb;pdb.set_trace()
         batch_size, num_tokens = x.shape[0], x.shape[1]
         beam_scores, expert_route, beam_idx = self.beam_search(current_scores_log, beam_scores, expert_route, batch_size)
-
         current_expert_select = expert_route[:,-1]
 
         if self.layer_judge=='first': # expand first dim to batch_size * num_beams
             replicated_tensor = x.unsqueeze(1).expand(batch_size, self.num_beams, num_tokens, self.hidden_size)
             x = replicated_tensor.contiguous().view(-1, num_tokens, self.hidden_size) # [bz*num_beams, 32,768]
+            current_scores_t = current_scores.unsqueeze(1).expand(batch_size, self.num_beams, self.num_experts)
+            current_scores = current_scores_t.contiguous().view(-1, self.num_experts) # [bz*num_beams, num_experts]
 
-        candidate_output = self.forward_expert_ffn(x, current_expert_select, beam_scores) # [bz*num_beams, 32,768]
-        
-        return candidate_output, beam_scores, expert_route, beam_idx
+        input_x = x[beam_idx]
+        candidate_output = self.forward_expert_ffn(input_x, current_expert_select, current_scores) # [bz*num_beams, 32,768]
+        # import pdb;pdb.set_trace()
+        return candidate_output, beam_scores, expert_route, beam_idx, importance_loss
 
 
     def forward_post_route(self, x, beam_scores, expert_route, use_log=True):
         
         attention_mask = torch.ones(x.shape[0], x.shape[1]).to(x.device)
         x_masked = x * attention_mask.unsqueeze(-1) # torch.Size([bz, 32, 768])
-        
+
         def forward_expert(input_x, expert_idx):
             output_x = self.experts[expert_idx].forward(input_x)
             return output_x
@@ -145,12 +167,14 @@ class RouteMoELayer(nn.Module):
         logits_gate_lst = list()
         for expert_idx in range(self.num_experts):
             output_x = forward_expert(x_masked, expert_idx)
-            outputs.append(output_x.unsqueeze(0))
-            output_x_aver = output_x.sum(1) / attention_mask.unsqueeze(-1).sum(1) # torch.Size([bz*num_beam, 768])
+            # output_x_aver = output_x.sum(1) / attention_mask.unsqueeze(-1).sum(1) # torch.Size([bz*num_beam, 768])
+            output_x_aver = torch.mean(output_x, dim=1)
             # gate_score = self.gates[expert_idx](output_x_aver)
             gate_score = self.gate(output_x_aver)
             logits_gate_lst.append(gate_score)
-        candidate_output = torch.cat(outputs) # torch.Size([num_expert, bz*num_beam, 32, 768])
+            outputs.append(output_x.unsqueeze(0))
+
+        candidate_output_raw = torch.cat(outputs) # torch.Size([num_expert, bz*num_beam, 32, 768])
         logits_gate = torch.cat(logits_gate_lst,dim=1)# torch.Size([bz*num_beam, num_expert])
         current_scores = F.softmax(logits_gate, dim=-1) # torch.Size([bz*num_beam, num_experts])
 
@@ -159,24 +183,33 @@ class RouteMoELayer(nn.Module):
         else:
             current_scores_log = current_scores
         
-        batch_size = x.shape[0] # bz*num_beam
+        # importance loss
+        importance_loss = self._importance_auxiliary_loss(current_scores)
+        
+        batch_size, num_tokens = x.shape[0], x.shape[1] # bz*num_beam
         beam_scores, expert_route, beam_idx = self.beam_search(current_scores_log, beam_scores, expert_route, batch_size)
         # beam_scores torch.Size([bz*num_beam])
         # expert_route torch.Size([bz*num_beam, layer_n])
         current_select_expert = expert_route[:,-1]
+        # current_select_expert torch.Size([bz*num_beam, 1])
         
-        output = list()
-        for i in range(beam_idx.shape[0]):
-            b_idx = beam_idx[i]
-            ex_idx = current_select_expert[i]
-            ex_out = candidate_output[ex_idx, b_idx, :,:]
-            output.append(ex_out.unsqueeze(0))
-
-        final_output = torch.concat(output, dim=0)
-
-        return final_output, beam_scores, expert_route, beam_idx
-
-
+        if self.layer_judge == 'first':
+            replicated_tensor = candidate_output_raw.unsqueeze(2).expand(self.num_experts, batch_size, self.num_beams, num_tokens, self.hidden_size)
+            candidate_output_raw = replicated_tensor.contiguous().view(self.num_experts, -1, num_tokens, self.hidden_size) # [bz*num_beams, 32,768]
+            current_scores_t = current_scores.unsqueeze(1).expand(batch_size, self.num_beams, self.num_experts)
+            current_scores = current_scores_t.contiguous().view(-1, self.num_experts) # [bz*num_beams, num_experts]
+        
+        candidate_output = candidate_output_raw.permute(1, 0, 2, 3)[beam_idx] # torch.Size([8, 2, 32, 768])
+        expert_select_matrix = F.one_hot(current_select_expert, self.num_experts)
+        if self.weight_type == 'ffn_prob':
+            tmp_prob = current_scores[beam_idx] * expert_select_matrix
+            output = candidate_output * tmp_prob.unsqueeze(-1).unsqueeze(-1)
+        else:
+            output = candidate_output * expert_select_matrix.unsqueeze(-1).unsqueeze(-1)
+        final_output = torch.sum(output, dim=1)
+        
+        return final_output, beam_scores, expert_route, beam_idx, importance_loss
+    
     def forward(self, x, attention_mask, beam_scores, expert_route, use_log=True):
         """
             if first_layer: x [bz, 32, 768]
@@ -184,11 +217,11 @@ class RouteMoELayer(nn.Module):
         
         """
         if self.route_method == 'pre-route':
-            candidate_output, beam_scores, expert_route, beam_idx = self.forward_pre_route(x, beam_scores, expert_route, use_log=True)
+            candidate_output, beam_scores, expert_route, beam_idx, importance_loss = self.forward_pre_route(x, beam_scores, expert_route, use_log=True)
         elif self.route_method == "post-route":
-            candidate_output, beam_scores, expert_route, beam_idx = self.forward_post_route(x, beam_scores, expert_route, use_log=True)
+            candidate_output, beam_scores, expert_route, beam_idx, importance_loss = self.forward_post_route(x, beam_scores, expert_route, use_log=True)
 
-        return candidate_output, beam_scores, expert_route, beam_idx
+        return candidate_output, beam_scores, expert_route, beam_idx, importance_loss
 
 
 

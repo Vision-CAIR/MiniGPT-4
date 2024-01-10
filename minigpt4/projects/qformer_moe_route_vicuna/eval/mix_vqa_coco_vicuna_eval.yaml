@@ -10,7 +10,7 @@ model:
   load_finetuned: True
   vit_model: eva_clip_g
   pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
-  finetuned: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/mix_coco_gqa_1610k_raw_QformerMoE_Route_Post_linear_gate_3ex_3beam_1loss_top3layer_log_textinqf_epo3_1216/20231216155/checkpoint_best.pth"
+  finetuned: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/mix_coco_gqa_1610k_raw_QformerMoE_Route_Post_ffn_prob_linear_gate_2ex_2beam_1gate_2loss_5e5lr_top6layer_textinqf_epo8_0112/20240112212/checkpoint_best.pth"
   q_former_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
 
   # vit encoder
@@ -38,10 +38,12 @@ model:
   # moe
   use_moeqformer: True
   use_route_moe: True
-  moebert_expert_num: 3
-  moebert_num_beams: 3
   moebert_route_method: "post-route"
-  gate_save_path: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/route_save/mix_coco_gqa_balance_raw_QformerMoE_Route_linear_gate_5ex_2beam_1loss_textinqf_epo5_toplayer3_1209_eval_latest1/"
+  moebert_load_balance: 0
+  moebert_expert_num: 2
+  moebert_num_beams: 2
+  moe_weight_type: 'ffn_prob'
+  gate_save_path: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/route_save/mix_coco_gqa_1610k_raw_QformerMoE_Route_Post_ffn_prob_linear_gate_2ex_2beam_1gate_2loss_5e5lr_top6layer_textinqf_epo8_0112/"
 
 datasets:
   gqa:
@@ -81,19 +83,20 @@ run:
   task: instruction_tuning
   # optimizer
   lr_sched: "linear_warmup_cosine_lr"
-  init_lr: 2e-5
+  init_lr: 5e-5
   min_lr: 1e-6
   warmup_lr: 1e-6
   log_freq: 5
   save_freq: 1500
 
   weight_decay: 0.05
-  max_epoch: 5
+  max_epoch: 10
   num_workers: 4
   warmup_steps: 600
+  iters_per_epoch: 3000
 
   seed: 42
-  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/eval/mix_coco_gqa_balance_raw_QformerMoE_Route_linear_gate_5ex_2beam_1loss_textinqf_epo5_toplayer3_1209/"
+  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/eval/mix_coco_gqa_1610k_raw_QformerMoE_Route_Post_ffn_prob_linear_gate_2ex_2beam_1gate_2loss_5e5lr_top6layer_textinqf_epo8_0112/"
   
   amp: True
   resume_ckpt_path: null

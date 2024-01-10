@@ -110,6 +110,7 @@ class RunnerBase:
                 else:
                     p_wd.append(p)
                 num_parameters += p.data.nelement()
+            # import pdb; pdb.set_trace() # 0107test
             logging.info("number of trainable parameters: %d" % num_parameters)
             optim_params = [
                 {

@@ -19,15 +19,33 @@ def use_experts(layer_idx):
     else:
         return False
 
+def use_experts_route(layer_idx):
+    # if layer_idx % 2 == 0:
+    # use moe_ffn after cross_attns
+    # if int(layer_idx) in [0,2,4,6,8,10]:
+    if int(layer_idx) in [6,7,8,9,10,11]:
+        return True
+    else:
+        return False
+
 def moe_layer_judge(layer_idx):
     if layer_idx == 6:
         return 'first'
-    elif layer_idx == 8:
+    elif layer_idx in [7,8,9,10]:
         return 'mid'
-    elif layer_idx == 10:
+    elif layer_idx == 11:
         return 'last'
     else:
         return None
+    
+    # if layer_idx == 0:
+    #     return 'first'
+    # elif layer_idx in [2,4,6,8]:
+    #     return 'mid'
+    # elif layer_idx == 10:
+    #     return 'last'
+    # else:
+    #     return None
 
 def process_ffn(model):
     if model.config.model_type == "bert":

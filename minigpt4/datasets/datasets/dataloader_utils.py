@@ -31,7 +31,6 @@ class MultiIterLoader:
         if ratios is None:
             ratios = [1.0] * len(loaders)
         else:
-            # import pdb; pdb.set_trace()
             assert len(ratios) == len(loaders)
             ratios = [float(ratio) / sum(ratios) for ratio in ratios]
 
