@@ -65,6 +65,8 @@ class Blip2VicunaInstruct(Blip2Base):
         use_balance_loss = True,
         moe_weight_type = "l2_norm",
         gate_save_path = None,
+        bal_loss_decay_epoch = 3,
+        ln_position = "out",
     ):
         super().__init__()
         transformers_version = version.parse(transformers.__version__)
@@ -112,7 +114,8 @@ class Blip2VicunaInstruct(Blip2Base):
                     moe_topk=moe_topk,
                     use_balance_loss=use_balance_loss,
                     moe_weight_type=moe_weight_type,
-                    cross_attention_freq=2
+                    cross_attention_freq=2,
+                    ln_position=ln_position,
                 )
         else:
             self.Qformer, self.query_tokens = self.init_Qformer(
@@ -221,6 +224,7 @@ class Blip2VicunaInstruct(Blip2Base):
         self.moebert_num_beams = moebert_num_beams
 
         self.gate_save_path = gate_save_path
+        self.bal_loss_decay_epoch = bal_loss_decay_epoch
         # if self.gate_save_path != None:
             # import os
             # if not os.path.exists(self.gate_save_path):
@@ -392,9 +396,12 @@ class Blip2VicunaInstruct(Blip2Base):
                 return_dict=True,
                 labels=targets,
             )
-
+            
         if self.use_moeqformer:
-            loss = outputs.loss + self.moebert_load_balance * gate_loss
+            if samples['epoch'] > self.bal_loss_decay_epoch:
+                loss = outputs.loss
+            else:
+                loss = outputs.loss + self.moebert_load_balance * gate_loss
         else:
             loss = outputs.loss
 
@@ -512,6 +519,16 @@ class Blip2VicunaInstruct(Blip2Base):
 
         with self.maybe_autocast():
             inputs_embeds = self.llm_model.get_input_embeddings()(llm_tokens.input_ids)
+
+            # path = "/mnt/pfs-guan-ssai/nlu/wanghanzi/multimodal/PromptMoE/embedding/"
+            # np.save(os.join(path, "inputs_llm.npy"), inputs_llm.cpu().numpy)
+            # np.save(os.join(path, "inputs_llm.npy"), self.llm_model.get_input_embeddings().weight.cpu().numpy)
+            # samples_copy = samples.copy()
+            # samples_copy.pop('image', None)
+            # with open(os.path.join(path, 'test_samples.json'),'a+') as f:
+            #     f.write(f"{json.dumps(samples_copy)}\n")
+
+
             inputs_embeds = torch.cat([inputs_llm, inputs_embeds], dim=1)
             attention_mask = torch.cat([atts_llm, llm_tokens.attention_mask], dim=1)
 
@@ -654,6 +671,8 @@ class Blip2VicunaInstruct(Blip2Base):
         use_balance_loss = cfg.get("use_balance_loss", True)
         moe_weight_type = cfg.get("moe_weight_type",'l2_norm')
         gate_save_path = cfg.get("gate_save_path", None)
+        bal_loss_decay_epoch = cfg.get("bal_loss_decay_epoch", 3)
+        ln_position = cfg.get("ln_position","out")
 
         model = cls(
             vit_model=vit_model,
@@ -683,6 +702,8 @@ class Blip2VicunaInstruct(Blip2Base):
             use_balance_loss=use_balance_loss,
             moe_weight_type=moe_weight_type,
             gate_save_path=gate_save_path,
+            bal_loss_decay_epoch=bal_loss_decay_epoch,
+            ln_position=ln_position,
         )
 
         # if qformer_text_input:

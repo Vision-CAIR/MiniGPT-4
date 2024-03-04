@@ -389,23 +389,17 @@ class BertOutput(nn.Module): # Add & Norm
 
 
 class FeedForward(nn.Module):
-    # remove LayerNorm
     def __init__(self, config):
-        super().__init__()
-        self.dense1 = nn.Linear(config.hidden_size, config.intermediate_size)
-        if isinstance(config.hidden_act, str):
-            self.intermediate_act_fn = ACT2FN[config.hidden_act]
-        else:
-            self.intermediate_act_fn = config.hidden_act
-        self.dense2 = nn.Linear(config.intermediate_size, config.hidden_size)
-        self.dropout = nn.Dropout(config.hidden_dropout_prob) # adjust dropout ratio 0.1->0.2
-        # self.dropout = nn.Dropout(0.2) # adjust dropout ratio 0.1->0.2
+        nn.Module.__init__(self)
+        # first layer
+        self.intermediate_query = BertIntermediate(config)
+        # second layer
+        self.output_query = BertOutput(config)
 
     def forward(self, hidden_states: Tensor):
-        hidden_states = self.dense1(hidden_states)
-        hidden_states = self.intermediate_act_fn(hidden_states)
-        hidden_states = self.dense2(hidden_states)
-        hidden_states = self.dropout(hidden_states)
+        input_tensor = hidden_states
+        intermediate_output = self.intermediate_query(hidden_states)
+        hidden_states = self.output_query(intermediate_output, input_tensor)
         return hidden_states
 
 
@@ -439,6 +433,7 @@ class BertLayer(nn.Module):
         self.layer_judge = moe_layer_judge(layer_num)
         self.num_beams = config.moebert_num_beams
         ffn = FeedForward(config)
+
         if self.use_experts:
             self.experts = RouteMoELayer(
                 hidden_size=config.hidden_size,
@@ -451,7 +446,6 @@ class BertLayer(nn.Module):
             )
         else:
             self.experts = ffn
-        self.expert_ln = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
 
     def forward(
         self,
@@ -542,7 +536,7 @@ class BertLayer(nn.Module):
                 if self.layer_judge == 'first' and self.num_beams>1:
                     # if layer_output[0].shape[0] == layer_output_text.shape[0]*self.num_beams and self.num_beams>1:
                     # adjust the dimension of layer_output_text to bz*num_beams
-                    layer_output_text = self.adjust_hidden_states_by_num_beams(layer_output_text)
+                    layer_output_text = self.adjust_layer_output_text(layer_output_text)
 
                 if self.layer_judge == 'mid' and self.num_beams > 1:
                     # layer_output_text [bz*num_beams, len, hidden_size]
@@ -579,11 +573,11 @@ class BertLayer(nn.Module):
         attention_mask = tmp.contiguous().view(batch_size* self.num_beams, 1, 1, attention_mask.shape[3]) # torch.Size([bz*num_beams, 1, 1, 32+input_len])
         return attention_mask
     
-    def adjust_hidden_states_by_num_beams(self, hidden_states):
-        batch_size, text_length, hidden_size = hidden_states.shape
-        tmp_text = hidden_states.unsqueeze(1).expand(batch_size, self.num_beams, text_length, hidden_size)
-        hidden_states = tmp_text.contiguous().view(-1, text_length, hidden_size) # [bz*num_beams, text_length ,768]
-        return hidden_states
+    def adjust_layer_output_text(self, layer_output_text):
+        batch_size, text_length, hidden_size = layer_output_text.shape
+        tmp_text = layer_output_text.unsqueeze(1).expand(batch_size, self.num_beams, text_length, hidden_size)
+        layer_output_text = tmp_text.contiguous().view(-1, text_length, hidden_size) # [bz*num_beams, text_length ,768]
+        return layer_output_text
 
     def route_moe_last_layer_top1(self, layer_output, layer_output_text):
         batch_size = layer_output[0].shape[0]
@@ -606,21 +600,20 @@ class BertLayer(nn.Module):
     def feed_forward_chunk(self, attention_output):
         intermediate_output = self.intermediate(attention_output)
         layer_output = self.output(intermediate_output, attention_output)
+        # layer_output = self.LayerNorm(layer_output + attention_output)
         return layer_output
 
     def feed_forward_query_moe(self, attention_output, expert_attention_mask, beam_scores, expert_route):
         if not self.use_experts:
-            hidden_states = self.experts(attention_output)
-            layer_output = self.expert_ln(hidden_states + attention_output)
+            layer_output = self.experts(attention_output)
+            # layer_output = self.LayerNorm(layer_output + attention_output)
             return layer_output, None, None, None, 0.0
 
-        hidden_states, beam_scores, expert_route, beam_idx, importance_loss = self.experts(
+        layer_output, beam_scores, expert_route, beam_idx, importance_loss = self.experts(
             attention_output, expert_attention_mask, beam_scores, expert_route
         )
-        if hidden_states.shape[0]==attention_output.shape[0]*self.num_beams and self.num_beams>1:
-            attention_output = self.adjust_hidden_states_by_num_beams(attention_output)
-        layer_output = self.expert_ln(hidden_states + attention_output)
 
+        # layer_output = self.LayerNorm(layer_output + attention_output)
         return layer_output, beam_scores, expert_route, beam_idx, importance_loss
 
 class BertEncoder(nn.Module):
@@ -727,7 +720,7 @@ class BertEncoder(nn.Module):
                 ]
                 if v is not None
             )
-
+        
         return MoEModelOutput(
             last_hidden_state=hidden_states,
             past_key_values=next_decoder_cache,

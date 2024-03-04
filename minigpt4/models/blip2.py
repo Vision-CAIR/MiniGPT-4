@@ -22,6 +22,7 @@ from minigpt4.common.logger import MetricLogger
 from minigpt4.models.base_model import BaseModel
 from minigpt4.models.Qformer import BertConfig, BertLMHeadModel
 from minigpt4.models.QformerMoE import BertMoELMHeadModel
+from minigpt4.models.QformerMoELN import BertMoELMHeadModelLNIn
 from minigpt4.models.QformerRouteMoE import BertMoERouteLMHeadModel
 from minigpt4.models.eva_vit import create_eva_vit_g
 from transformers import BertTokenizer
@@ -88,7 +89,7 @@ class Blip2Base(BaseModel):
 
 
     @classmethod
-    def init_QformerMoE(cls, num_query_token, vision_width, moebert_expert_num, moebert_route_method, moebert_load_balance, moe_topk=1, use_balance_loss=True, moe_weight_type='l2_norm', cross_attention_freq=2):
+    def init_QformerMoE(cls, num_query_token, vision_width, moebert_expert_num, moebert_route_method, moebert_load_balance, moe_topk=1, use_balance_loss=True, moe_weight_type='l2_norm', cross_attention_freq=2,ln_position="out"):
         moe_encoder_config = BertConfig.from_pretrained("/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased")
 
         moe_encoder_config.encoder_width = vision_width
@@ -104,9 +105,14 @@ class Blip2Base(BaseModel):
         moe_encoder_config.use_balance_loss = use_balance_loss
         moe_encoder_config.moe_weight_type = moe_weight_type
 
-        MoEQformer = BertMoELMHeadModel.from_pretrained(
-            "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config
-        )
+        if ln_position == "out":
+            MoEQformer = BertMoELMHeadModel.from_pretrained(
+                "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config
+            )
+        elif ln_position == "in":
+            MoEQformer = BertMoELMHeadModelLNIn.from_pretrained(
+                "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config
+            )
         query_tokens = nn.Parameter(
             torch.zeros(1, num_query_token, moe_encoder_config.hidden_size)
         )

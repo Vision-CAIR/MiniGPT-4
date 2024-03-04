@@ -45,7 +45,6 @@ from transformers.utils import logging
 from transformers.models.bert.configuration_bert import BertConfig
 
 from minigpt4.models.moe.utils import (
-    FeedForward,
     MoEModelOutput,
     MoEModelOutputWithPooling,
     use_experts,

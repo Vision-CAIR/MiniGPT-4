@@ -14,7 +14,7 @@ from minigpt4.datasets.datasets.flickr import GroundedDetailDataset,CaptionToObj
 from minigpt4.datasets.datasets.vg_dataset import ReferVisualGenomeDataset
 from minigpt4.datasets.datasets.coco_dataset import ReferCOCODataset, InvReferCOCODataset
 from minigpt4.datasets.datasets.gqa_datasets import GQADataset, GQAEvalDataset
-from minigpt4.datasets.datasets.aok_vqa_datasets import AOKVQADataset
+from minigpt4.datasets.datasets.aok_vqa_datasets import AOKVQADataset, AOKVQAEvalDataset
 from minigpt4.datasets.datasets.coco_vqa_datasets import COCOVQADataset, COCOVQAEvalDataset
 from minigpt4.datasets.datasets.ok_vqa_datasets import OKVQADataset, OKVQAEvalDataset
 from minigpt4.datasets.datasets.ocrvqa_dataset import OCRVQADataset
@@ -384,7 +384,7 @@ class OKVQABuilder(COCOVQABuilder):
 @registry.register_builder("aok_vqa")
 class AOKVQABuilder(BaseDatasetBuilder):
     train_dataset_cls = AOKVQADataset
-    eval_dataset_cls = AOKVQADataset
+    eval_dataset_cls = AOKVQAEvalDataset
 
     DATASET_CONFIG_DICT = {"default": "configs/datasets/aokvqa/defaults.yaml"}
 
@@ -584,6 +584,7 @@ class COCOCapBuilder(BaseDatasetBuilder):
     
     DATASET_CONFIG_DICT = {
         "default": "configs/datasets/coco/caption.yaml",
+        "coco_cap_eval": "configs/datasets/coco/caption_eval.yaml",
     }
 
 

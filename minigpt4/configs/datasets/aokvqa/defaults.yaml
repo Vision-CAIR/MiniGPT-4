@@ -16,11 +16,16 @@ datasets:
               - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/aokvqa/aokvqa_v1p0_train.json
           storage:
               - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/AOKVQA/aokvqa_v1p0_train.json
-        # val:
-        #   url:
-        #       - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/aokvqa/aokvqa_v1p0_val.json
-        #   storage:
-        #       - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/AOKVQA/aokvqa_v1p0_val.json
+        val:
+          url:
+              - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/aokvqa/aokvqa_v1p0_val.json
+          storage:
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/AOKVQA/aokvqa_v1p0_val.json
+        test:
+          url:
+              - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/aokvqa/aokvqa_v1p0_val.json
+          storage:
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/AOKVQA/aokvqa_v1p0_val.json
         # test:
         #   url:
         #       - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/aokvqa/aokvqa_v1p0_test.json

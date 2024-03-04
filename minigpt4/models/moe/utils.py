@@ -13,7 +13,7 @@ from typing import Optional, Tuple, List
 def use_experts(layer_idx):
     # if layer_idx % 2 == 0:
     # use moe_ffn after cross_attns
-    if int(layer_idx) in [6,8,10]:
+    if int(layer_idx) in [6,7,8,9,10,11]:
     # layer 6/8/10
         return True
     else:

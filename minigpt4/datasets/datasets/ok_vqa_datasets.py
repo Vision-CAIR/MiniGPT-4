@@ -149,7 +149,6 @@ class OKVQAEvalDataset(VQAEvalDataset, __DisplMixin):
 
         self.source = 'okvqa'
         self.annotation_add = self.get_data()
-        self._add_instance_ids()
 
     def get_data(self):
         ann_instruct = list()
@@ -180,7 +179,6 @@ class OKVQAEvalDataset(VQAEvalDataset, __DisplMixin):
             "image_id": ann["image"],
             'image_path': image_path,
             "question_id": ann["question_id"],
-            # "instance_id": ann["instance_id"],
             "question": question,
             "q_input": q_input,
             "llm_input": llm_input,

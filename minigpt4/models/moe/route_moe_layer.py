@@ -18,7 +18,7 @@ class RouteMoELayer(nn.Module):
         self.route_method = route_method
         if self.route_method == "pre-route":
             self.gate = nn.Linear(hidden_size, num_experts, bias=False).float()
-        elif self.route_method == "post-route":
+        elif self.route_method in ["post-route", "post-route-dp"]:
             gate = nn.Linear(hidden_size, 1, bias=False).float()
             self.gate = gate
             # self.gates = nn.ModuleList([copy.deepcopy(gate) for i in range(num_experts)])
@@ -47,26 +47,67 @@ class RouteMoELayer(nn.Module):
         prob_gate = F.softmax(logits_gate, dim=-1) #  torch.Size([bz*num_beams, num_experts])
         return prob_gate
 
-
-    def beam_search(self, current_scores_log, beam_scores, expert_route, batch_size):
-        if self.layer_judge=='first' and self.route_method=='pre-route':
+    def dp_search(self, current_scores_log, beam_scores, expert_route, batch_size):
+        if self.layer_judge=='first' and self.route_method in ['post-route-dp']:
+            # current_scores_log torch.Size([bz, num_experts])
             assert beam_scores==None and expert_route==None
             current_scores = torch.exp(current_scores_log)
             topk_values, gate = torch.topk(current_scores, self.num_beams, dim=1) # gate, 每个样本被分配的expert: torch.Size([bz, topk])
             beam_scores = topk_values.view(self.num_beams * batch_size) # torch.Size([bz * num_beams])
             expert_route = gate.view(self.num_beams * batch_size).unsqueeze(1) # torch.Size([bz * num_beams,1])
             beam_idx = torch.tensor(range(self.num_beams * batch_size))
+
         else:
-            if self.layer_judge=='first' and self.route_method == 'post-route':
-                batch_size = batch_size
-                next_scores_raw1 = torch.exp(current_scores_log) # torch.Size([bz, num_experts])
-            else:
-                batch_size = int(batch_size // self.num_beams)
-                next_scores_raw = current_scores_log + torch.log(beam_scores).unsqueeze(1)  # torch.Size([4*3, 5]) # 取log 之后，可以直接相加概率
-                next_scores_exp = torch.exp(next_scores_raw)
-                next_scores_raw1 = next_scores_exp.view(
-                    batch_size, self.num_beams * self.num_experts
-                )  # torch.Size([bz, num_beams*num_experts])
+            batch_size = int(batch_size // self.num_beams)
+            next_scores_raw = current_scores_log + torch.log(beam_scores).unsqueeze(1)  # torch.Size([4*3, 5]) # 取log 之后，可以直接相加概率
+            next_scores_exp = torch.exp(next_scores_raw)
+
+            next_scores_raw, next_experts_raw = torch.topk(next_scores_exp, 1, dim=1, largest=True, sorted=True)
+            next_scores = next_scores_raw.view(batch_size, self.num_beams)
+            next_experts = next_experts_raw.view(batch_size, self.num_beams)
+            # next_scores, next_experts = torch.topk(current_scores_log, 1, dim=1, largest=True, sorted=True) # equal 等价
+            # next_scores torch.Size([bz * num_beams, 1])
+            # next_tokens torch.Size([bz * num_beams, 1])
+
+            next_batch_beam = list()
+            for batch_idx in range(batch_size):
+                next_sent_beam = list()
+                expert_id = next_experts[batch_idx]
+                expert_score = next_scores[batch_idx]
+                values, index = torch.topk(expert_score, self.num_beams, dim=0, largest=True, sorted=True)
+                for i in range(self.num_beams):
+                    beam_id = index[i].item()
+                    ex_id = expert_id[beam_id].item()
+                    effective_beam_id = batch_idx*self.num_beams + beam_id
+                    next_sent_beam.append((values[i], ex_id, effective_beam_id))
+                next_batch_beam.extend(next_sent_beam)
+
+            beam_scores = beam_scores.new([x[0] for x in next_batch_beam])
+            beam_experts = expert_route[:,-1].new([x[1] for x in next_batch_beam])
+            beam_idx = expert_route[:,-1].new([x[2] for x in next_batch_beam])
+            pre_route = expert_route[beam_idx,:]
+            expert_route = torch.cat([pre_route, beam_experts.unsqueeze(1)], dim=-1)
+
+        return beam_scores, expert_route, beam_idx
+    
+    def beam_search(self, current_scores_log, beam_scores, expert_route, batch_size):
+        if self.layer_judge=='first' and self.route_method in ['pre-route', 'post-route']:
+            # current_scores_log torch.Size([bz, num_experts])
+            assert beam_scores==None and expert_route==None
+            current_scores = torch.exp(current_scores_log)
+            topk_values, gate = torch.topk(current_scores, self.num_beams, dim=1) # gate, 每个样本被分配的expert: torch.Size([bz, topk])
+            beam_scores = topk_values.view(self.num_beams * batch_size) # torch.Size([bz * num_beams])
+            expert_route = gate.view(self.num_beams * batch_size).unsqueeze(1) # torch.Size([bz * num_beams,1])
+            beam_idx = torch.tensor(range(self.num_beams * batch_size))
+            
+        else:
+            batch_size = int(batch_size // self.num_beams)
+            next_scores_raw = current_scores_log + torch.log(beam_scores).unsqueeze(1)  # torch.Size([4*3, 5]) # 取log 之后，可以直接相加概率
+            next_scores_exp = torch.exp(next_scores_raw)
+
+            next_scores_raw1 = next_scores_exp.view(
+                batch_size, self.num_beams * self.num_experts
+            )  # torch.Size([bz, num_beams*num_experts])
 
             next_scores, next_experts = torch.topk(next_scores_raw1, self.num_beams, dim=1, largest=True, sorted=True)
             # next_scores torch.Size([bz, num_beams])
@@ -86,19 +127,11 @@ class RouteMoELayer(nn.Module):
                     next_sent_beam.append((expert_score, ex_id, effective_beam_id))
                 next_batch_beam.extend(next_sent_beam)
 
-            if self.layer_judge=='first' and self.route_method == 'post-route':
-                beam_scores = next_scores.view(self.num_beams * batch_size) # torch.Size([bz * num_beams])
-                expert_route = next_experts.view(self.num_beams * batch_size)
-                beam_scores = beam_scores.new([x[0] for x in next_batch_beam])
-                beam_experts = expert_route.new([x[1] for x in next_batch_beam]).unsqueeze(-1)
-                beam_idx = expert_route.new([int(x[2]/self.num_beams) for x in next_batch_beam])
-                expert_route = beam_experts
-            else:
-                beam_scores = beam_scores.new([x[0] for x in next_batch_beam])
-                beam_experts = expert_route[:,-1].new([x[1] for x in next_batch_beam])
-                beam_idx = expert_route[:,-1].new([x[2] for x in next_batch_beam])
-                pre_route = expert_route[beam_idx,:]
-                expert_route = torch.cat([pre_route, beam_experts.unsqueeze(1)], dim=-1)
+            beam_scores = beam_scores.new([x[0] for x in next_batch_beam])
+            beam_experts = expert_route[:,-1].new([x[1] for x in next_batch_beam])
+            beam_idx = expert_route[:,-1].new([x[2] for x in next_batch_beam])
+            pre_route = expert_route[beam_idx,:]
+            expert_route = torch.cat([pre_route, beam_experts.unsqueeze(1)], dim=-1)
 
         return beam_scores, expert_route, beam_idx
     
@@ -153,7 +186,6 @@ class RouteMoELayer(nn.Module):
         # import pdb;pdb.set_trace()
         return candidate_output, beam_scores, expert_route, beam_idx, importance_loss
 
-
     def forward_post_route(self, x, beam_scores, expert_route, use_log=True):
         
         attention_mask = torch.ones(x.shape[0], x.shape[1]).to(x.device)
@@ -187,7 +219,12 @@ class RouteMoELayer(nn.Module):
         importance_loss = self._importance_auxiliary_loss(current_scores)
         
         batch_size, num_tokens = x.shape[0], x.shape[1] # bz*num_beam
-        beam_scores, expert_route, beam_idx = self.beam_search(current_scores_log, beam_scores, expert_route, batch_size)
+
+        if self.route_method == 'post-route':
+            beam_scores, expert_route, beam_idx = self.beam_search(current_scores_log, beam_scores, expert_route, batch_size)
+        elif self.route_method == 'post-route-dp':
+            beam_scores, expert_route, beam_idx = self.dp_search(current_scores_log, beam_scores, expert_route, batch_size)
+
         # beam_scores torch.Size([bz*num_beam])
         # expert_route torch.Size([bz*num_beam, layer_n])
         current_select_expert = expert_route[:,-1]
@@ -218,7 +255,7 @@ class RouteMoELayer(nn.Module):
         """
         if self.route_method == 'pre-route':
             candidate_output, beam_scores, expert_route, beam_idx, importance_loss = self.forward_pre_route(x, beam_scores, expert_route, use_log=True)
-        elif self.route_method == "post-route":
+        elif self.route_method in ['post-route', 'post-route-dp']:
             candidate_output, beam_scores, expert_route, beam_idx, importance_loss = self.forward_post_route(x, beam_scores, expert_route, use_log=True)
 
         return candidate_output, beam_scores, expert_route, beam_idx, importance_loss

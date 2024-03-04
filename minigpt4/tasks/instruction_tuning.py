@@ -53,7 +53,7 @@ class InstructionTask(BaseTask):
         run_cfg = cfg.run_cfg
 
         num_beams = run_cfg.get("num_beams", 3)
-        max_len = run_cfg.get("max_len", 20)
+        max_len = run_cfg.get("max_len", 30)
         min_len = run_cfg.get("min_len", 1)
 
         evaluate = run_cfg.get("evaluate", False)
@@ -112,22 +112,33 @@ class InstructionTask(BaseTask):
         )
         pred_qa_pairs = []
 
-        question_id = samples["question_id"]
-        question = samples["text_input"]
+        text_inputs = samples["text_input"]
+
         sources = samples["source"]
+        source = samples["source"][0]
+
+        if source in ['vqav2','okvqa','gqa']:
+            sample_ids = [int(sample_id.item()) for sample_id in samples["question_id"]]
+        elif source in ['aokvqa']:
+            sample_ids = [sample_id for sample_id in samples["question_id"]]
+        elif source in ['coco_cap']:
+            sample_ids = samples["image_id"]
 
         # For GQA
-        full_answers = samples.get("fullAnswer", ["" for i in range(len(question_id))])
-        gt_answers = samples.get("gt_answers", ["" for i in range(len(question_id))])
+        full_answers = samples.get("fullAnswer", ["" for i in range(len(sample_ids))])
+        gt_answers = samples.get("gt_answers", ["" for i in range(len(sample_ids))])
 
-        for answer, ques_id, ques, full_answer, gt_answer, source in zip(answers, question_id, question, full_answers, gt_answers, sources):
-            ques_id = int(ques_id.item())
+        # For AOKVQA
+        choices = samples.get("choices", ["" for i in range(len(sample_ids))])
+
+        for answer, sample_id, text_input, full_answer, gt_answer, choice, source in zip(answers, sample_ids, text_inputs, full_answers, gt_answers, choices, sources):
             pred_qa_pairs.append({
-                "question_id": ques_id,
-                "question": ques,
+                "question_id": sample_id,
+                "question": text_input,
                 "full_answer": full_answer,
                 "answer": answer,
                 "gt_ans": gt_answer,
+                "choice": choice,
                 "source": source})
         return pred_qa_pairs
 
@@ -140,9 +151,7 @@ class InstructionTask(BaseTask):
         total_results = list()
         for sub_data_loader in  data_loader.loaders:
             results = []
-            ques_ids = []
             for samples in metric_logger.log_every(sub_data_loader, print_freq, header):
-                ques_ids.extend(samples['question_id'].tolist())
 
                 samples = prepare_sample(samples, cuda_enabled=cuda_enabled)
                 eval_output = self.valid_step(model=model, samples=samples)
@@ -168,6 +177,7 @@ class InstructionTask(BaseTask):
                 filename=f"{split_name}_vqa_result_{source}",
                 remove_duplicate="question_id",
             )
+
             if source in ['vqav2','okvqa']:
                 try:
                     metrics = self._report_metrics_coco_vqa(result_file=result_file, split=split_name, source=source)
@@ -180,7 +190,18 @@ class InstructionTask(BaseTask):
                 except Exception as e:
                     metrics = None
                     print(f"Report Metrics {source} Error: {e}")
-
+            elif source in ['aokvqa']:
+                try:
+                    metrics = self._report_metrics_aokvqa(result_file=result_file, source=source)
+                except Exception as e:
+                    metrics = None
+                    print(f"Report Metrics {source} Error: {e}")
+            elif source in ['coco_cap']:
+                try:
+                    metrics = self._report_metrics_caption(result_file=result_file, split_name=split_name, source=source)
+                except Exception as e:
+                    metrics = None
+                    print(f"Report Metrics {source} Error: {e}")
             else:
                 metrics = None
             final_metrics[source] = metrics
@@ -235,9 +256,45 @@ class InstructionTask(BaseTask):
         return metrics
     
     @dist_utils.main_process
+    def _report_metrics_aokvqa(self, result_file, source='aokvqa'):
+        """
+        Validation of aokvqa
+        """
+        # measuring accuracy compared to answer
+        results = json.load(open(result_file, "r"))
+        acc = []
+        vqa_tool = VQAEval()
+
+        for res in results:
+
+            gt_ans = res["choice"]
+            pred = res["answer"]
+
+            pred = vqa_tool.processPunctuation(pred)
+            pred = vqa_tool.processDigitArticle(pred)
+
+            # vqa_acc = 1 if pred == gt_ans else 0
+            vqa_acc = 1 if pred in gt_ans else 0
+
+            acc.append(vqa_acc)
+
+        accuracy = sum(acc) / len(acc) * 100
+        metrics = {"agg_metrics": accuracy, "acc": accuracy}
+
+        with open(
+            os.path.join(registry.get_path("output_dir"), f"evaluate_{source}.txt"), "a"
+        ) as f:
+            f.write(json.dumps(metrics) + "\n")
+
+        logging.info(metrics)
+
+        return metrics
+
+
+    @dist_utils.main_process
     def _report_metrics_gqa(self, result_file, source='gqa'):
         """
-        Validation of GQA/VQAv2
+        Validation of GQA
         """
         # measuring accuracy compared to answer
         results = json.load(open(result_file, "r"))
@@ -274,3 +331,90 @@ class InstructionTask(BaseTask):
 
         return metrics
  
+    @dist_utils.main_process
+    def _report_metrics_caption(self, result_file, split_name, source='coco_cap'):
+        """
+        Use official COCO Cap evaluation script to report metrics.
+        """
+        coco_gt_root = os.path.join(registry.get_path("cache_root"), "coco_gt")
+        coco_val = coco_caption_eval(coco_gt_root, result_file, split_name)
+
+        agg_metrics = coco_val.eval["CIDEr"] + coco_val.eval["Bleu_4"]
+        log_stats = {split_name: {k: v for k, v in coco_val.eval.items()}}
+
+        with open(
+            os.path.join(registry.get_path("output_dir"), "evaluate.txt"), "a"
+        ) as f:
+            f.write(json.dumps(log_stats) + "\n")
+
+        coco_res = {k: v for k, v in coco_val.eval.items()}
+        coco_res["agg_metrics"] = agg_metrics
+
+        return coco_res
+
+from collections import defaultdict
+from pycocoevalcap.eval import COCOEvalCap
+class COCO_Annotation:
+    def __init__(self, annotation_file):
+        self.coco_cn_file = annotation_file
+        self.imgToAnns = self.build_imgToAnns()
+    
+    def build_imgToAnns(self):
+        imgToAnns = defaultdict(list)
+        with open(self.coco_cn_file, "r", encoding="UTF-8") as fin:
+            for line in fin:
+                line = line.strip()
+                temp = eval(line)
+                annotations = temp['annotations']
+                for ann in annotations:
+                    image_id = str(ann['image_id']).zfill(6)
+                    imgToAnns[image_id].append({'image_id':image_id,'caption':ann['caption'],'image': ann['image_id']})
+        return imgToAnns
+    
+    def getImgIds(self):
+        return self.imgToAnns.keys()  
+
+class COCO_Result:
+    def __init__(self,result_file):
+        self.coco_cn_file = result_file
+        self.imgToAnns = self.build_imgToAnns()
+    
+    def build_imgToAnns(self):
+        imgToAnns = dict()
+        data = json.load(open(self.coco_cn_file, "r"))
+        for d in data:
+            tmp = {
+                'image_id':d['question_id'][-6:],
+                'caption':d['answer']
+            }
+            imgToAnns[d['question_id'][-6:]] = [tmp]
+        return imgToAnns
+    
+def coco_caption_eval(coco_gt_root, results_file, split_name):
+    files = {
+        "val":"/mnt/pfs-guan-ssai/nlu/wanghanzi/data/COCO_Cap/coco_karpathy_val_gt.json",
+        "test":"/mnt/pfs-guan-ssai/nlu/wanghanzi/data/COCO_Cap/coco_karpathy_test_gt.json"
+    }
+
+    # create coco object and coco_result object
+    annotation_file = files[split_name]
+    coco = COCO_Annotation(annotation_file)
+    coco_result = COCO_Result(results_file)
+
+    # create coco_eval object by taking coco and coco_result
+    coco_eval = COCOEvalCap(coco, coco_result)
+
+    # evaluate on a subset of images by setting
+    # coco_eval.params['image_id'] = coco_result.getImgIds()
+    # please remove this line when evaluating the full validation set
+    # coco_eval.params['image_id'] = coco_result.getImgIds()
+
+    # evaluate results
+    # SPICE will take a few minutes the first time, but speeds up due to caching
+    coco_eval.evaluate()
+
+    # print output evaluation scores
+    for metric, score in coco_eval.eval.items():
+        print(f"{metric}: {score:.3f}")
+
+    return coco_eval

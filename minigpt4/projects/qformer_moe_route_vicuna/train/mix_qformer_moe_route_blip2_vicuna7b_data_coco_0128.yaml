@@ -38,15 +38,16 @@ model:
   # moe
   use_moeqformer: True
   use_route_moe: True
-  moebert_route_method: "post-route-dp"
-  moebert_load_balance: 0.05
+  moebert_route_method: "post-route"
+  moebert_load_balance: 0.01
   moebert_expert_num: 2
   moebert_num_beams: 2
   moe_weight_type: 'ffn_prob'
   use_balance_loss: False
+  bal_loss_decay_epoch: 3
 
 datasets:
-  gqa: # train: 943000, 12578, 12578)
+  gqa:  # train: 943000, 12578, 12578)
     type: balanced_sft_raw
     batch_size: 32
     vis_processor:
@@ -61,7 +62,7 @@ datasets:
         name: "blip_caption"
       eval:
         name: "blip_caption"
-    sample_ratio: 10
+    sample_ratio: 10 
   
   ok_vqa: # train, valid (9009, 5046)
     batch_size: 32
@@ -77,7 +78,7 @@ datasets:
         name: "blip_caption"
       eval:
         name: "blip_caption"
-    sample_ratio: 1
+    sample_ratio: 1  
   
   coco_vqa:    # 658104
     batch_size: 32
@@ -94,6 +95,22 @@ datasets:
       eval:
         name: "blip_caption"
     sample_ratio: 9
+
+  coco_caption: # 414113 train
+    batch_size: 32
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 224
+      eval:
+        name: "blip2_image_eval"
+        image_size: 224
+    text_processor:
+      train:
+        name: "blip_caption"
+      eval:
+        name: "blip_caption"
+    sample_ratio: 7
 
 run:
   task: instruction_tuning
@@ -112,7 +129,7 @@ run:
   iters_per_epoch: 5000
 
   seed: 42
-  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/mix_coco_gqa_1610k_raw_QformerMoE_DP_Route_Post_ffn_prob_lnout_linear_1gate_2ex_2beam_2loss_005_5e5lr_top6layer_textinqf_epo8_0121/"
+  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/mix_vqa_cococap_2024k_raw_QformerMoE_Route_Post_ffn_prob_lnout_linear_1gate_2ex_2beam_2loss_001_loss_decay_5e5lr_top6layer_textinqf_epo8_0129/"
   
   amp: True
   resume_ckpt_path: null

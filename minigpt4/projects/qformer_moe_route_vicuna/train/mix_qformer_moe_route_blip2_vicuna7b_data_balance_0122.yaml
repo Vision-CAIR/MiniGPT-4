@@ -38,8 +38,8 @@ model:
   # moe
   use_moeqformer: True
   use_route_moe: True
-  moebert_route_method: "post-route-dp"
-  moebert_load_balance: 0.05
+  moebert_route_method: "post-route"
+  moebert_load_balance: 0
   moebert_expert_num: 2
   moebert_num_beams: 2
   moe_weight_type: 'ffn_prob'
@@ -112,7 +112,7 @@ run:
   iters_per_epoch: 5000
 
   seed: 42
-  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/mix_coco_gqa_1610k_raw_QformerMoE_DP_Route_Post_ffn_prob_lnout_linear_1gate_2ex_2beam_2loss_005_5e5lr_top6layer_textinqf_epo8_0121/"
+  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/mix_coco_gqa_1610k_raw_QformerMoE_Route_Post_ffn_prob_lnout_linear_1gate_2ex_2beam_1loss_5e5lr_top6layer_textinqf_epo8_0123/"
   
   amp: True
   resume_ckpt_path: null

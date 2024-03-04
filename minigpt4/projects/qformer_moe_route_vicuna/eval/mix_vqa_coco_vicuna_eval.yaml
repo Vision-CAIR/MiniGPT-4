@@ -10,7 +10,7 @@ model:
   load_finetuned: True
   vit_model: eva_clip_g
   pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
-  finetuned: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/mix_coco_gqa_1610k_raw_QformerMoE_Route_Post_ffn_prob_linear_gate_2ex_2beam_1gate_2loss_5e5lr_top6layer_textinqf_epo8_0112/20240112212/checkpoint_best.pth"
+  finetuned: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/mix_vqa_cococap_2024k_raw_QformerMoE_Route_Post_ffn_prob_lnout_linear_1gate_2ex_2beam_2loss_001_5e5lr_top6layer_textinqf_epo8_0128/20240128142/checkpoint_best.pth"
   q_former_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
 
   # vit encoder
@@ -39,27 +39,18 @@ model:
   use_moeqformer: True
   use_route_moe: True
   moebert_route_method: "post-route"
-  moebert_load_balance: 0
+  moebert_load_balance: 0.01
   moebert_expert_num: 2
   moebert_num_beams: 2
   moe_weight_type: 'ffn_prob'
-  gate_save_path: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/route_save/mix_coco_gqa_1610k_raw_QformerMoE_Route_Post_ffn_prob_linear_gate_2ex_2beam_1gate_2loss_5e5lr_top6layer_textinqf_epo8_0112/"
+  use_balance_loss: False
+  bal_loss_decay_epoch: 8
+  gate_save_path: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/route_save/mix_vqa_cococap_2024k_raw_QformerMoE_Route_Post_ffn_prob_lnout_linear_1gate_2ex_2beam_2loss_001_5e5lr_top6layer_textinqf_epo8_0128/"
 
 datasets:
   gqa:
     type: balanced_sft_raw_eval
-    batch_size: 32
-    vis_processor:
-      eval:
-        name: "blip2_image_eval"
-        image_size: 224
-    text_processor:
-      eval:
-        name: "blip_caption"
-
-  ok_vqa: # train, valid (9009, 5046)
-    type: ok_vqa_eval
-    batch_size: 32
+    batch_size: 64
     vis_processor:
       eval:
         name: "blip2_image_eval"
@@ -70,6 +61,17 @@ datasets:
 
   coco_vqa:    # 658104
     type: vqa_v2_eval
+    batch_size: 64
+    vis_processor:
+      eval:
+        name: "blip2_image_eval"
+        image_size: 224
+    text_processor:
+      eval:
+        name: "blip_caption"
+
+  coco_caption: # 414113 train
+    type: coco_cap_eval
     batch_size: 32
     vis_processor:
       eval:
@@ -78,7 +80,18 @@ datasets:
     text_processor:
       eval:
         name: "blip_caption"
-    
+  
+  ok_vqa: # train, valid (9009, 5046)
+    type: ok_vqa_eval
+    batch_size: 64
+    vis_processor:
+      eval:
+        name: "blip2_image_eval"
+        image_size: 224
+    text_processor:
+      eval:
+        name: "blip_caption"
+
 run:
   task: instruction_tuning
   # optimizer
@@ -96,7 +109,7 @@ run:
   iters_per_epoch: 3000
 
   seed: 42
-  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/eval/mix_coco_gqa_1610k_raw_QformerMoE_Route_Post_ffn_prob_linear_gate_2ex_2beam_1gate_2loss_5e5lr_top6layer_textinqf_epo8_0112/"
+  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/eval/mix_vqa_cococap_2024k_raw_QformerMoE_Route_Post_ffn_prob_lnout_linear_1gate_2ex_2beam_2loss_001_5e5lr_top6layer_textinqf_epo8_0128/"
   
   amp: True
   resume_ckpt_path: null

@@ -38,7 +38,7 @@ model:
   # moe
   use_moeqformer: True
   use_route_moe: True
-  moebert_route_method: "post-route-dp"
+  moebert_route_method: "post-route"
   moebert_load_balance: 0.05
   moebert_expert_num: 2
   moebert_num_beams: 2
@@ -46,22 +46,16 @@ model:
   use_balance_loss: False
 
 datasets:
-  gqa: # train: 943000, 12578, 12578)
-    type: balanced_sft_raw
-    batch_size: 32
+  gqa:
+    type: balanced_sft_raw_eval
+    batch_size: 16
     vis_processor:
-      train:
-        name: "blip2_image_train"
-        image_size: 224
       eval:
         name: "blip2_image_eval"
         image_size: 224
     text_processor:
-      train:
-        name: "blip_caption"
       eval:
         name: "blip_caption"
-    sample_ratio: 10
   
   ok_vqa: # train, valid (9009, 5046)
     batch_size: 32
@@ -77,7 +71,7 @@ datasets:
         name: "blip_caption"
       eval:
         name: "blip_caption"
-    sample_ratio: 1
+    sample_ratio: 8  
   
   coco_vqa:    # 658104
     batch_size: 32
@@ -93,7 +87,73 @@ datasets:
         name: "blip_caption"
       eval:
         name: "blip_caption"
-    sample_ratio: 9
+    sample_ratio: 15
+
+  aok_vqa: # train: 17056, val: 1145
+    batch_size: 32
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 224
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 12
+
+  ocrvqa: # train 207572
+    batch_size: 32
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 224
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 30
+
+  llava_reason: # 76643
+    batch_size: 16
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 224
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 80
+
+  llava_conversation: # 56681
+    batch_size: 16
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 224
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 30
+  
+  llava_detail: # 23240
+    batch_size: 16
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 224
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 20
+
+  coco_caption: # 414113 train
+    batch_size: 16
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 224
+    text_processor:
+      train:
+        name: "blip_caption"
+    sample_ratio: 10  
 
 run:
   task: instruction_tuning
@@ -112,7 +172,7 @@ run:
   iters_per_epoch: 5000
 
   seed: 42
-  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/mix_coco_gqa_1610k_raw_QformerMoE_DP_Route_Post_ffn_prob_lnout_linear_1gate_2ex_2beam_2loss_005_5e5lr_top6layer_textinqf_epo8_0121/"
+  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/mix_1048k_raw_QformerMoE_Route_Post_ffn_prob_linear_1gate_2ex_2beam_2loss_5e5lr_top6layer_textinqf_epo8_0118/"
   
   amp: True
   resume_ckpt_path: null
