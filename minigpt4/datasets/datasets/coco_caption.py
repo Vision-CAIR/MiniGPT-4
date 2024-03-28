@@ -190,25 +190,6 @@ class NoCapsEvalDataset(CaptionEvalDataset):
         }
 
 
-class RefCOCOEvalData(torch.utils.data.Dataset):
-    def __init__(self, loaded_data, vis_processor, root_path):
-        self.loaded_data = loaded_data
-        self.root_path = root_path
-        self.vis_processor = vis_processor
-
-    def __len__(self):
-        return len(self.loaded_data)
-    
-    def __getitem__(self, idx):
-        data = self.loaded_data[idx]
-        img_id = data['img_id']
-        sent = data['sents']
-        image_path = os.path.join(self.root_path, f'{img_id[:27]}.jpg')
-        image = Image.open(image_path).convert('RGB')
-        image = self.vis_processor(image)
-        question = f"[refer] tell me the location of {sent}?"
-        return image, question, img_id
-
 class EvalCaptionData(torch.utils.data.Dataset):
     def __init__(self, loaded_data, vis_processor, root_path):
         self.loaded_data = loaded_data

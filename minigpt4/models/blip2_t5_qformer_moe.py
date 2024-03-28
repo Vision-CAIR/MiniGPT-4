@@ -24,8 +24,8 @@ from minigpt4.models.blip2 import Blip2Base, disabled_train
 from minigpt4.models.modeling_t5 import T5Config, T5ForConditionalGeneration
 from transformers.modeling_outputs import BaseModelOutput
 
-@registry.register_model("blip2_t5_qformer_moe")
-class Blip2T5InstructQformerMoE(Blip2Base):
+@registry.register_model("blip2_t5_qformer_moe_test")
+class Blip2T5InstructQformerMoETest(Blip2Base):
     """
     BLIP2 Instruct T5 model Qformer MoE
     Supported model types:
@@ -34,7 +34,7 @@ class Blip2T5InstructQformerMoE(Blip2Base):
         >>> from minigpt4.models import load_model
         >>> import torch
         >>> device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        >>> model = load_model("blip2_t5_qformer_moe", "flant5xxl", device=device)
+        >>> model = load_model("blip2_t5_qformer_moe_test", "flant5xxl", device=device)
     """
 
     PRETRAINED_MODEL_CONFIG_DICT = {

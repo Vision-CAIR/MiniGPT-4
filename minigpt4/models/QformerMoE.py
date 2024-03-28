@@ -499,7 +499,8 @@ class BertLayer(nn.Module):
             # attention_mask size: [bz, 1, 1, query_length+seq_len]
             moe_ffn_attention_input = query_attention_output[:, :query_length, :]
             moe_ffn_attention_mask = attention_mask.squeeze(dim=1).squeeze(dim=1)[:, :query_length]
-            layer_output = self.feed_forward_query_moe(moe_ffn_attention_input, moe_ffn_attention_mask) # layer_output, gate_loss, gate_load
+            cls_hidden=attention_output[:, query_length, :]
+            layer_output = self.feed_forward_query_moe(moe_ffn_attention_input, moe_ffn_attention_mask, cls_hidden) # layer_output, gate_loss, gate_load
             # import pdb; pdb.set_trace() # test0107
             
             if attention_output.shape[1] > query_length: # have text input in Qformer
@@ -530,14 +531,14 @@ class BertLayer(nn.Module):
         layer_output = self.output(intermediate_output, attention_output)
         return layer_output
 
-    def feed_forward_query_moe(self, attention_output, expert_attention_mask):
+    def feed_forward_query_moe(self, attention_output, expert_attention_mask, cls_hidden=None):
         if not self.use_experts:
             hidden_states = self.experts(attention_output)
             layer_output = self.expert_ln(hidden_states + attention_output)
             return layer_output, 0.0, []
 
         hidden_states, gate_loss, gate_load = self.experts(
-            attention_output, expert_attention_mask
+            attention_output, expert_attention_mask, cls_hidden
         )
         layer_output = self.expert_ln(hidden_states + attention_output)
         return layer_output, gate_loss, gate_load

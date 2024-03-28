@@ -15,7 +15,7 @@ from minigpt4.common.logger import MetricLogger, SmoothedValue
 from minigpt4.common.registry import registry
 from minigpt4.datasets.data_utils import prepare_sample
 from torch.utils.tensorboard import SummaryWriter
-# import wandb
+import wandb
 
 class BaseTask:
     def __init__(self, **kwargs):
@@ -260,9 +260,14 @@ class BaseTask:
                 # import pdb; pdb.set_trace()# 0107test
 
                 optimizer.zero_grad()
-                # if self.cfg.wandb_log:
-                # if self.cfg.run_cfg.wandb_log:
-                #     wandb.log({"epoch": inner_epoch, "loss": loss})
+                if self.cfg.run_cfg.wandb_log and i%100==0:
+                    wandb.log({"epoch": inner_epoch, "loss": loss.item()})
+                
+                if self.cfg.run_cfg.wandb_log and i%10==0:
+                    source = samples['source'][0]
+                    wandb.log({f"{source}_loss": loss.item()})
+                
+
             metric_logger.update(loss=loss.item())
             metric_logger.update(lr=optimizer.param_groups[0]["lr"])
             

@@ -467,7 +467,7 @@ class RunnerBase:
                 During testing, we will use provided weights and skip reloading the best checkpoint .
         """
         data_loader = self.dataloaders.get(split_name, None)
-        assert data_loader, "data_loader for split {} is None.".format(split_name)
+        # assert data_loader, "data_loader for split {} is None.".format(split_name)
 
         # TODO In validation, you need to compute loss as well as metrics
         # TODO consider moving to model.before_evaluation()

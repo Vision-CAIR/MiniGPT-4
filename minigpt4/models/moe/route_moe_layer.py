@@ -257,7 +257,8 @@ class RouteMoELayer(nn.Module):
             candidate_output, beam_scores, expert_route, beam_idx, importance_loss = self.forward_pre_route(x, beam_scores, expert_route, use_log=True)
         elif self.route_method in ['post-route', 'post-route-dp']:
             candidate_output, beam_scores, expert_route, beam_idx, importance_loss = self.forward_post_route(x, beam_scores, expert_route, use_log=True)
-
+        else:
+            assert("route method should in pre-route, post-route, post-route-dp")
         return candidate_output, beam_scores, expert_route, beam_idx, importance_loss
 
 

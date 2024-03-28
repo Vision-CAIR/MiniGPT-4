@@ -24,9 +24,16 @@ from minigpt4.models.Qformer import BertConfig, BertLMHeadModel
 from minigpt4.models.QformerMoE import BertMoELMHeadModel
 from minigpt4.models.QformerMoELN import BertMoELMHeadModelLNIn
 from minigpt4.models.QformerRouteMoE import BertMoERouteLMHeadModel
+from minigpt4.models.QformerRouteMoELN import BertMoERouteLMHeadModelLNIn
+from minigpt4.models.QformerRouteMoELNUni import BertMoERouteLMHeadModelLNInUniversal
+from minigpt4.models.QformerRouteMoEUni import BertMoERouteLMHeadModelUniversal
 from minigpt4.models.eva_vit import create_eva_vit_g
 from transformers import BertTokenizer
-
+from peft import (
+    LoraConfig,
+    get_peft_model,
+    prepare_model_for_int8_training,
+)
 
 class Blip2Base(BaseModel):
     @classmethod
@@ -63,7 +70,37 @@ class Blip2Base(BaseModel):
         return Qformer, query_tokens
     
     @classmethod
-    def init_RouteMoEQformer(cls, num_query_token, vision_width, moebert_expert_num, moebert_num_beams, route_method, moe_weight_type, cross_attention_freq=2):
+    def init_RouteMoEQformerUni(cls, num_query_token, vision_width, moebert_expert_num, moebert_num_beams, route_method, moe_weight_type, cross_attention_freq=2, ln_position="out"):
+        moe_encoder_config = BertConfig.from_pretrained("/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased")
+
+        moe_encoder_config.encoder_width = vision_width
+        moe_encoder_config.add_cross_attention = True
+        moe_encoder_config.cross_attention_freq = cross_attention_freq
+        moe_encoder_config.query_length = num_query_token
+
+        moe_encoder_config.moebert_expert_num = moebert_expert_num
+        moe_encoder_config.moebert_num_beams = moebert_num_beams
+        moe_encoder_config.route_method = route_method
+        moe_encoder_config.moe_weight_type = moe_weight_type
+
+        if ln_position == "out":
+            RouteMoEQformer = BertMoERouteLMHeadModelUniversal.from_pretrained(
+                "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config
+            )
+        elif ln_position == "in":
+            RouteMoEQformer = BertMoERouteLMHeadModelLNInUniversal.from_pretrained(
+                "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config
+            )
+        query_tokens = nn.Parameter(
+            torch.zeros(1, num_query_token, moe_encoder_config.hidden_size)
+        )
+        query_tokens.data.normal_(mean=0.0, std=moe_encoder_config.initializer_range)
+
+        return RouteMoEQformer, query_tokens
+
+
+    @classmethod
+    def init_RouteMoEQformer(cls, num_query_token, vision_width, moebert_expert_num, moebert_num_beams, route_method, moe_weight_type, cross_attention_freq=2, ln_position="out"):
         moe_encoder_config = BertConfig.from_pretrained("/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased")
 
         moe_encoder_config.encoder_width = vision_width
@@ -77,9 +114,14 @@ class Blip2Base(BaseModel):
         moe_encoder_config.route_method = route_method
         moe_encoder_config.moe_weight_type = moe_weight_type
 
-        RouteMoEQformer = BertMoERouteLMHeadModel.from_pretrained(
-            "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config
-        )
+        if ln_position == "out":
+            RouteMoEQformer = BertMoERouteLMHeadModel.from_pretrained(
+                "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config
+            )
+        elif ln_position == "in":
+            RouteMoEQformer = BertMoERouteLMHeadModelLNIn.from_pretrained(
+                "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config
+            )
         query_tokens = nn.Parameter(
             torch.zeros(1, num_query_token, moe_encoder_config.hidden_size)
         )
@@ -119,8 +161,51 @@ class Blip2Base(BaseModel):
         query_tokens.data.normal_(mean=0.0, std=moe_encoder_config.initializer_range)
         return MoEQformer, query_tokens
     
+    def init_llm(cls, llama_model_path, freeze_llm=True, lora_r=0,
+                 lora_target_modules=["q_proj","v_proj"], **lora_kargs):
+        logging.info('Loading LLAMA')
+        from transformers import LlamaTokenizer
+        from minigpt4.models.modeling_llama import LlamaForCausalLM
+
+        llama_tokenizer = LlamaTokenizer.from_pretrained(llama_model_path, use_fast=False)
+        # llama_tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+        # llama_tokenizer.add_special_tokens({'bos_token': '</s>'})
+        # llama_tokenizer.add_special_tokens({'eos_token': '</s>'})
+        # llama_tokenizer.add_special_tokens({'unk_token': '</s>'})
+
+        llama_tokenizer.pad_token = llama_tokenizer.unk_token
+
+        llama_model = LlamaForCausalLM.from_pretrained(
+            llama_model_path,
+            torch_dtype=torch.float16,
+        )
+        llama_model.resize_token_embeddings(len(llama_tokenizer))
+        # self.eos_token_id = self.llm_tokenizer(
+        #     self.llm_tokenizer.eos_token, add_special_tokens=False
+        # ).input_ids[0]
+
+        if freeze_llm==False and lora_r > 0:
+            llama_model = prepare_model_for_int8_training(llama_model)
+            loraconfig = LoraConfig(
+                r=lora_r,
+                bias="none",
+                task_type="CAUSAL_LM",
+                target_modules=lora_target_modules,
+                **lora_kargs
+            )
+            llama_model = get_peft_model(llama_model, loraconfig)
+
+            llama_model.print_trainable_parameters()
+
+        else:
+            for name, param in llama_model.named_parameters():
+                param.requires_grad = False
+        logging.info('Loading LLAMA Done')
+        return llama_model, llama_tokenizer
+
+
     def init_vision_encoder(
-        self, model_name, img_size, drop_path_rate, use_grad_checkpoint, precision
+        self, model_name, img_size, drop_path_rate, use_grad_checkpoint, precision, freeze_vit=True
     ):
         assert model_name in [
             "eva_clip_g",
@@ -143,6 +228,19 @@ class Blip2Base(BaseModel):
         pytorch_total_params = sum(p.numel() for p in visual_encoder.parameters())
         print(f'{model_name} clip vit params:')
         print(f"{pytorch_total_params * 1e-9:.2} B")
+
+        if freeze_vit:
+            for name, param in visual_encoder.named_parameters():
+                param.requires_grad = False
+            visual_encoder = visual_encoder.eval()
+            visual_encoder.train = disabled_train
+            # freeze ln vision
+            # for name, param in ln_vision.named_parameters():
+                # param.requires_grad = False
+            # ln_vision = ln_vision.eval()
+            # ln_vision.train = disabled_train
+            logging.info("freeze vision encoder but not ln_vision")
+        
         return visual_encoder, ln_vision
 
     def mean_pool_adjust_query_tokens(self, state_dict, num_query_token):

@@ -26,7 +26,7 @@ class Blip2VicunaInstruct(Blip2Base):
         >>> from minigpt4.models import load_model
         >>> import torch
         >>> device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        >>> model = load_model("blip2_vicuna_instruct", "vicuna7b_qfmoe_route", device=device)
+        >>> model = load_model("blip2_vicuna_instruct", "vicuna7b_qfmoe_route_uni", device=device)
     """
 
     PRETRAINED_MODEL_CONFIG_DICT = {
@@ -34,6 +34,7 @@ class Blip2VicunaInstruct(Blip2Base):
         "vicuna7b_pretrain": "configs/models/blip2/blip2_pretrain_vicuna7b.yaml",
         "vicuna7b_qfmoe_post": "configs/models/blip2/blip2_qformer_moe_post_vicuna7b.yaml",
         "vicuna7b_qfmoe_route": "configs/models/blip2/blip2_pretrain_vicuna7b_route_moe.yaml",
+        "vicuna7b_qfmoe_route_uni": "configs/models/blip2/blip2_pretrain_vicuna7b_route_moe_universal.yaml",
     }
 
     def __init__(
@@ -53,10 +54,12 @@ class Blip2VicunaInstruct(Blip2Base):
         prompt="",
         max_txt_len=128,
         max_output_txt_len=256,
-        apply_lemmatizer=False,
+        lora_r=0,  # lora_r means lora is not used
+        lora_target_modules=["q_proj", "v_proj"],
+        lora_alpha=16,
+        lora_dropout=0.05,
         qformer_text_input=True,
-        use_moeqformer=False,
-        use_route_moe=False,
+        general_version='base',
         moebert_num_beams=2,
         moebert_expert_num=5,
         moebert_route_method="gate-sentence",
@@ -78,33 +81,12 @@ class Blip2VicunaInstruct(Blip2Base):
 
         print('Initing & Loading VIT')
         self.visual_encoder, self.ln_vision = self.init_vision_encoder(
-            vit_model, img_size, drop_path_rate, use_grad_checkpoint, vit_precision
+            vit_model, img_size, drop_path_rate, use_grad_checkpoint, vit_precision, freeze_vit,
         )
-        if freeze_vit:
-            for name, param in self.visual_encoder.named_parameters():
-                param.requires_grad = False
-            self.visual_encoder = self.visual_encoder.eval()
-            self.visual_encoder.train = disabled_train
-            # freeze ln vision
-            # for name, param in self.ln_vision.named_parameters():
-                # param.requires_grad = False
-            # self.ln_vision = self.ln_vision.eval()
-            # self.ln_vision.train = disabled_train
-            logging.info("freeze vision encoder but not ln_vision")
-        print('Loading VIT Done')
 
-        if use_moeqformer:
-            if use_route_moe:
-                self.Qformer, self.query_tokens = self.init_RouteMoEQformer(
-                    num_query_token=num_query_token, 
-                    vision_width=self.visual_encoder.num_features,
-                    moebert_expert_num=moebert_expert_num,
-                    moebert_num_beams=moebert_num_beams,
-                    route_method=moebert_route_method,
-                    moe_weight_type=moe_weight_type,
-                    cross_attention_freq=2
-                )
-            else:
+        print('Initing & Loading Qformer')
+        if general_version in ['naive_moe', 'route_moe', 'uni_route_moe']:
+            if general_version == 'naive_moe':
                 self.Qformer, self.query_tokens = self.init_QformerMoE(
                     num_query_token=num_query_token, 
                     vision_width=self.visual_encoder.num_features,
@@ -117,7 +99,30 @@ class Blip2VicunaInstruct(Blip2Base):
                     cross_attention_freq=2,
                     ln_position=ln_position,
                 )
-        else:
+            elif general_version == 'route_moe':
+                self.Qformer, self.query_tokens = self.init_RouteMoEQformer(
+                    num_query_token=num_query_token, 
+                    vision_width=self.visual_encoder.num_features,
+                    moebert_expert_num=moebert_expert_num,
+                    moebert_num_beams=moebert_num_beams,
+                    route_method=moebert_route_method,
+                    moe_weight_type=moe_weight_type,
+                    cross_attention_freq=2,
+                    ln_position=ln_position,
+                )
+            elif general_version == 'uni_route_moe':
+                self.Qformer, self.query_tokens = self.init_RouteMoEQformerUni(
+                    num_query_token=num_query_token, 
+                    vision_width=self.visual_encoder.num_features,
+                    moebert_expert_num=moebert_expert_num,
+                    moebert_num_beams=moebert_num_beams,
+                    route_method=moebert_route_method,
+                    moe_weight_type=moe_weight_type,
+                    cross_attention_freq=2,
+                    ln_position=ln_position,
+                )
+
+        elif general_version == 'base':
             self.Qformer, self.query_tokens = self.init_Qformer(
                 num_query_token, self.visual_encoder.num_features
             )
@@ -133,22 +138,14 @@ class Blip2VicunaInstruct(Blip2Base):
         self.Qformer.cls = None
 
         print("Loading LLM")
-        self.llm_tokenizer = LlamaTokenizer.from_pretrained(llm_model, use_fast=False, truncation_side="left")
-        self.llm_model = LlamaForCausalLM.from_pretrained(
-            llm_model, torch_dtype=torch.float16
+        self.llm_model, self.llm_tokenizer = self.init_llm(
+            llama_model_path=llm_model,
+            freeze_llm=freeze_llm,
+            lora_r=lora_r,
+            lora_target_modules=lora_target_modules,
+            lora_alpha=lora_alpha,
+            lora_dropout=lora_dropout,
         )
-        # self.llm_tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-        # self.llm_tokenizer.add_special_tokens({'bos_token': '</s>'})
-        # self.llm_tokenizer.add_special_tokens({'eos_token': '</s>'})
-        # self.llm_tokenizer.add_special_tokens({'unk_token': '</s>'})
-        self.llm_tokenizer.pad_token = self.llm_tokenizer.unk_token
-        self.llm_model.resize_token_embeddings(len(self.llm_tokenizer))
-        # self.eos_token_id = self.llm_tokenizer(
-        #     self.llm_tokenizer.eos_token, add_special_tokens=False
-        # ).input_ids[0]
-        if freeze_llm:
-            for name, param in self.llm_model.named_parameters():
-                param.requires_grad = False
 
         self.llm_proj = nn.Linear(
             self.Qformer.config.hidden_size, self.llm_model.config.hidden_size
@@ -161,38 +158,15 @@ class Blip2VicunaInstruct(Blip2Base):
                 num_query_token=num_query_token
             )
         
-        if use_moeqformer:
+        if general_version not in ['base']:
             # load blip2_vicuna_pretrain to init query_ffn
             self.load_from_pretrained(
                 url_or_filename=q_former_model,
                 num_query_token=num_query_token
             )
-
             # init MoE Layer(init moe ffn by blip2 query ffn)
-            state_dict = self.Qformer.state_dict()
-            for name, param in self.Qformer.named_parameters():
-                if "_query" in name and "experts.experts" in name:
-                    pattern = r'\.experts\.experts\.\d+'
-                    key_orig = re.sub(pattern, '', name)
-                    param.data.copy_(state_dict[key_orig]) # copy state_dict[key_orig] to param
-                if "experts.intermediate_query" in name or "experts.output_query" in name:
-                    key_orig = re.sub(r'experts\.', '', name)
-                    param.data.copy_(state_dict[key_orig]) # copy state_dict[key_orig] to param
-                if "_query" in name and "experts" not in name: # raw ffn_query not update
-                    param.requires_grad = False
+            self.adjust_param_qformer()
 
-                ln_pattern = r"bert\.encoder\.layer\.\d+\.expert_ln\.(weight|bias)"
-                if re.match(ln_pattern, name):
-                    key_orig = re.sub('expert_ln', 'output_query.LayerNorm', name)
-                    param.data.copy_(state_dict[key_orig])
-                d1_pattern = r"bert\.encoder\.layer\.(\d+)\.experts(\.|\.experts\.\d+\.)dense1\.(weight|bias)"
-                if re.match(d1_pattern, name):
-                    key_orig = re.sub(r'experts(\.|\.experts\.\d+\.)dense1', 'intermediate_query.dense', name)
-                    param.data.copy_(state_dict[key_orig])
-                d2_pattern = r"bert\.encoder\.layer\.(\d+)\.experts(\.|\.experts\.\d+\.)dense2\.(weight|bias)"
-                if re.match(d2_pattern, name):
-                    key_orig = re.sub(r'experts(\.|\.experts\.\d+\.)dense2', 'output_query.dense', name)
-                    param.data.copy_(state_dict[key_orig])
 
         # freeze qformer        
         if freeze_qformer:
@@ -215,21 +189,40 @@ class Blip2VicunaInstruct(Blip2Base):
         prompt_tokens = self.llm_tokenizer(self.prompt, return_tensors="pt")
         self.prompt_length = prompt_tokens.attention_mask.sum(1)
 
-        self._lemmatizer = None
-
         self.qformer_text_input = qformer_text_input
-        self.use_moeqformer = use_moeqformer
-        self.use_route_moe = use_route_moe
+        self.general_version = general_version
         self.moebert_load_balance = moebert_load_balance
         self.moebert_num_beams = moebert_num_beams
 
         self.gate_save_path = gate_save_path
         self.bal_loss_decay_epoch = bal_loss_decay_epoch
-        # if self.gate_save_path != None:
-            # import os
-            # if not os.path.exists(self.gate_save_path):
-                # os.mkdir(self.gate_save_path)
 
+    def adjust_param_qformer(self):
+        # init MoE Layer(init moe ffn by blip2 query ffn)
+        state_dict = self.Qformer.state_dict()
+        for name, param in self.Qformer.named_parameters():
+            if "_query" in name and "experts.experts" in name:
+                pattern = r'\.experts\.experts\.\d+'
+                key_orig = re.sub(pattern, '', name)
+                param.data.copy_(state_dict[key_orig]) # copy state_dict[key_orig] to param
+            if "experts.intermediate_query" in name or "experts.output_query" in name:
+                key_orig = re.sub(r'experts\.', '', name)
+                param.data.copy_(state_dict[key_orig]) # copy state_dict[key_orig] to param
+            if "_query" in name and "experts" not in name: # raw ffn_query not update
+                param.requires_grad = False
+
+            ln_pattern = r"bert\.encoder\.layer\.\d+\.expert_ln\.(weight|bias)"
+            if re.match(ln_pattern, name):
+                key_orig = re.sub('expert_ln', 'output_query.LayerNorm', name)
+                param.data.copy_(state_dict[key_orig])
+            d1_pattern = r"bert\.encoder\.layer\.(\d+)\.experts(\.|\.experts\.\d+\.)dense1\.(weight|bias)"
+            if re.match(d1_pattern, name):
+                key_orig = re.sub(r'experts(\.|\.experts\.\d+\.)dense1', 'intermediate_query.dense', name)
+                param.data.copy_(state_dict[key_orig])
+            d2_pattern = r"bert\.encoder\.layer\.(\d+)\.experts(\.|\.experts\.\d+\.)dense2\.(weight|bias)"
+            if re.match(d2_pattern, name):
+                key_orig = re.sub(r'experts(\.|\.experts\.\d+\.)dense2', 'output_query.dense', name)
+                param.data.copy_(state_dict[key_orig])
 
     def concat_text_input_output(self, input_ids, input_atts, output_ids, output_atts):
         input_part_targets_len = []
@@ -299,7 +292,7 @@ class Blip2VicunaInstruct(Blip2Base):
         # import pdb; pdb.set_trace()# 0107test
         query_output_to_linear = query_output.last_hidden_state[:,:query_tokens.size(1),:]
         
-        if self.use_moeqformer:
+        if self.general_version not in ['base']:
             gate_loss = query_output.gate_loss # only available in QformerMoE
         
         if self.gate_save_path != None:
@@ -330,7 +323,7 @@ class Blip2VicunaInstruct(Blip2Base):
                         # 'gate_route_1': prob_gate_normalized[0][i].tolist(),
                     })
                     # for layer in [6,8,10]:
-                    #     layer_data  = all_hidden_states[layer]s
+                    #     layer_data  = all_hidden_states[layer]
                     #     file_path = os.path.join(self.gate_save_path, f'{image_id}_{str(layer)}.npy')
                     #     x = layer_data.data.cpu().numpy()
                     #     np.save(file_path,x) 
@@ -397,7 +390,7 @@ class Blip2VicunaInstruct(Blip2Base):
                 labels=targets,
             )
             
-        if self.use_moeqformer:
+        if self.general_version not in ['base']:
             if samples['epoch'] > self.bal_loss_decay_epoch:
                 loss = outputs.loss
             else:
@@ -464,49 +457,10 @@ class Blip2VicunaInstruct(Blip2Base):
         # import pdb; pdb.set_trace()
 
         if self.gate_save_path != None:
-            all_hidden_states = query_output.hidden_states
-            # prob_gate_normalized = query_output.gate_loads
-            beam_scores = query_output.beam_scores
-            expert_route = query_output.expert_route
-            
-            import numpy as np
-            import json
-            import os
-            gate_route = list()
-            try:
-                for i in range(len(samples['image_id'])):
-                    source = samples['source'][i]
-                    if source in ['gqa']:
-                        image_id =  samples['image_id'][i].split('.')[0]
-                    else:
-                        image_id = samples['image_id'][i].split('/')[-1].split('.')[0]
-                    gate_route.append({
-                        'source': source,
-                        'image_id':image_id,
-                        'q_input': samples['q_input'][i],
-                        'beam_scores': beam_scores[i].tolist(),
-                        'expert_route': expert_route[i].tolist(),
-                        # 'gate_route_11': prob_gate_normalized[10][i].tolist(),
-                        # 'gate_route_9': prob_gate_normalized[8][i].tolist(),
-                        # 'gate_route_7': prob_gate_normalized[6][i].tolist(),
-                        # 'gate_route_5': prob_gate_normalized[4][i].tolist(),
-                        # 'gate_route_3': prob_gate_normalized[2][i].tolist(),
-                        # 'gate_route_1': prob_gate_normalized[0][i].tolist(),
-                    })
-                    for layer in [6,7,8,9,10,11]:
-                        if layer in [6,11]:
-                            layer_data  = all_hidden_states[layer][i, :, :]
-                        else:
-                            layer_data  = all_hidden_states[layer][i*self.moebert_num_beams, :, :]
-                        file_path = os.path.join(self.gate_save_path, f'{image_id}_{str(layer)}.npy')
-                        x = layer_data.data.cpu().numpy()
-                        np.save(file_path,x) # 大功告成
-
-                with open(os.path.join(self.gate_save_path, 'generate_save_beam.json'),'a+') as f:
-                    f.write(f"{json.dumps(gate_route)}\n")
-            except Exception as e:
-                print("Gate Save Error....")
-                print(e)
+            if "qformer_moe_route" in self.gate_save_path:
+                self.gate_save(samples, query_output, mode="route")
+            else:
+                self.gate_save(samples, query_output, mode="naive")
 
         inputs_llm = self.llm_proj(query_output.last_hidden_state[:,:query_tokens.size(1),:])
         atts_llm = torch.ones(inputs_llm.size()[:-1], dtype=torch.long).to(image.device)
@@ -520,14 +474,8 @@ class Blip2VicunaInstruct(Blip2Base):
         with self.maybe_autocast():
             inputs_embeds = self.llm_model.get_input_embeddings()(llm_tokens.input_ids)
 
-            # path = "/mnt/pfs-guan-ssai/nlu/wanghanzi/multimodal/PromptMoE/embedding/"
-            # np.save(os.join(path, "inputs_llm.npy"), inputs_llm.cpu().numpy)
-            # np.save(os.join(path, "inputs_llm.npy"), self.llm_model.get_input_embeddings().weight.cpu().numpy)
-            # samples_copy = samples.copy()
-            # samples_copy.pop('image', None)
-            # with open(os.path.join(path, 'test_samples.json'),'a+') as f:
-            #     f.write(f"{json.dumps(samples_copy)}\n")
-
+            # if self.gate_save_path != None:
+            #     self.save_embeddings(samples, inputs_llm)
 
             inputs_embeds = torch.cat([inputs_llm, inputs_embeds], dim=1)
             attention_mask = torch.cat([atts_llm, llm_tokens.attention_mask], dim=1)
@@ -569,25 +517,6 @@ class Blip2VicunaInstruct(Blip2Base):
         if isinstance(samples["llm_input"], str):
             samples["llm_input"] = [samples["llm_input"]]
 
-        # if prompt:
-        #     if prompt.count("{}") == 2:
-        #         if 'ocr_tokens' in samples:
-        #             text_input = [
-        #                 prompt.format(', '.join(samples['ocr_tokens'][i][:30]), samples["llm_input"][i])
-        #             for i in range(len(samples["llm_input"]))]
-        #         elif 'choices' in samples:
-        #             text_input = []
-        #             for i in range(len(samples["llm_input"])):
-        #                 this_choices = [f"({string.ascii_lowercase[j]}) {ch}" for j, ch in enumerate(samples["choices"][i])]
-        #                 this_choices = " ".join(this_choices)
-        #                 text_input.append(prompt.format(samples["llm_input"][i], this_choices))
-        #     else:
-        #         text_input = [prompt.format(question) for question in samples["llm_input"]]
-        # else:
-        #     text_input = samples["llm_input"]
-
-        # samples["prompt"] = text_input
-
         output_text = self.generate(
             samples,
             num_beams=num_beams,
@@ -595,48 +524,113 @@ class Blip2VicunaInstruct(Blip2Base):
             min_length=min_len,
             length_penalty=length_penalty
         )
-
-        if "apply_lemmatizer" in samples.keys() and samples["apply_lemmatizer"]:
-            output_text = self._lemmatize(output_text)
-
         return output_text
 
-    def _lemmatize(self, answers):
-        def apply(answer):
-            doc = self.lemmatizer(answer)
+    def save_embeddings(self, samples, inputs_llm):
+        import numpy as np
+        import os
+        import json
+        try:
+            path = os.path.join(self.gate_save_path, "embedding")
+            for i in range(len(samples['image_id'])):
+                np.save(os.path.join(path, f"{samples['image_id'][i]}inputs_llm.npy"), inputs_llm[i].cpu().numpy)
+            np.save(os.path.join(path, "llm_embedding.npy"), self.llm_model.get_input_embeddings().weight.cpu().numpy)
+            samples_copy = samples.copy()
+            samples_copy.pop('image', None)
+            with open(os.path.join(path, '{}_test_samples.json'.format(samples['image_id'][0])),'a+') as f:
+                f.write(f"{json.dumps(samples_copy)}\n")
+        except Exception as e:
+            print("Embedding Save Error....")
+            print(e)
 
-            words = []
-            for token in doc:
-                if token.pos_ in ["NOUN", "VERB"]:
-                    words.append(token.lemma_)
-                else:
-                    words.append(token.text)
-            answer = " ".join(words)
+    def gate_save(self, samples, query_output, mode="naive"):
+        """
+            mode: naive/route
+        """
+        import numpy as np
+        import json
+        import os
 
-            return answer
-
-        return [apply(answer) for answer in answers]
-
-    @property
-    def lemmatizer(self):
-        if self._lemmatizer is None:
+        if mode == "naive":
+            all_hidden_states = query_output.hidden_states
+            prob_gate_normalized = query_output.gate_loads
+        
+            gate_route = list()
             try:
-                import spacy
+                for i in range(len(samples['image_id'])):
+                    source = samples['source'][i]
+                    if source in ['gqa']:
+                        image_id =  samples['image_id'][i].split('.')[0]
+                    else:
+                        image_id = samples['image_id'][i].split('/')[-1].split('.')[0]
+                    gate_route.append({
+                        'source': source,
+                        'image_id':image_id,
+                        'q_input': samples['q_input'][i],
+                        'gate_route_11': prob_gate_normalized[11][i].tolist(),
+                        'gate_route_10': prob_gate_normalized[10][i].tolist(),
+                        'gate_route_9': prob_gate_normalized[9][i].tolist(),
+                        'gate_route_8': prob_gate_normalized[8][i].tolist(),
+                        'gate_route_7': prob_gate_normalized[7][i].tolist(),
+                        'gate_route_6': prob_gate_normalized[6][i].tolist(),
+                    })
+                    # Naive
+                    for layer in [6,7,8,9,10,11]:
+                        layer_data  = all_hidden_states[layer][i, :, :]
+                        file_path = os.path.join(self.gate_save_path, f'{image_id}_{str(layer)}.npy')
+                        x = layer_data.data.cpu().numpy()
+                        np.save(file_path,x) # 大功告成
+            except Exception as e:
+                print("Naive Gate Save Error....")
+                print(e)
 
-                self._lemmatizer = spacy.load("en_core_web_sm")
-            except ImportError:
-                logging.error(
-                    """
-                    Please install spacy and en_core_web_sm model to apply lemmatization.
-                    python -m spacy download en_core_web_sm
-                    OR
-                    import spacy.cli
-                    spacy.cli.download("en_core_web_sm")
-                    """
-                )
-                exit(1)
+        elif mode == "route":
+            all_hidden_states = query_output.hidden_states
+            beam_scores = query_output.beam_scores
+            expert_route = query_output.expert_route
 
-        return self._lemmatizer
+            gate_route = list()
+            try:
+                for i in range(len(samples['image_id'])):
+                    source = samples['source'][i]
+                    if source in ['gqa']:
+                        image_id =  samples['image_id'][i].split('.')[0]
+                    else:
+                        image_id = samples['image_id'][i].split('/')[-1].split('.')[0]
+                    gate_route.append({
+                        'source': source,
+                        'image_id':image_id,
+                        'q_input': samples['q_input'][i],
+                        'beam_scores': beam_scores[i].tolist(),
+                        'expert_route': expert_route[i].tolist(),
+                    })
+                    if self.general_version=='route_moe':
+                        # Route
+                        for layer in [6,7,8,9,10,11]:
+                            if layer in [6,11]:
+                                layer_data  = all_hidden_states[layer][i, :, :]
+                            else:
+                                layer_data  = all_hidden_states[layer][i*self.moebert_num_beams, :, :]
+                            file_path = os.path.join(self.gate_save_path, f'{image_id}_{str(layer)}.npy')
+                            x = layer_data.data.cpu().numpy()
+                            np.save(file_path,x) # 大功告成
+                    elif self.general_version=='uni_route_moe':
+                        import pdb;pdb.set_trace()
+                        for layer in [6,7,8,9,10,11]:
+                            if layer in [6,11]:
+                                layer_data  = all_hidden_states[layer][i, :, :]
+                            else:
+                                layer_data  = all_hidden_states[layer][i*self.moebert_num_beams, :, :]
+                            file_path = os.path.join(self.gate_save_path, f'{image_id}_{str(layer)}.npy')
+                            x = layer_data.data.cpu().numpy()
+                            np.save(file_path,x) # 大功告成
+            except Exception as e:
+                print("Route Gate Save Error....")
+                print(e)
+            
+            with open(os.path.join(self.gate_save_path, 'generate_save_beam.json'),'a+') as f:
+                f.write(f"{json.dumps(gate_route)}\n")
+
 
     @classmethod
     def from_config(cls, cfg):
@@ -657,12 +651,13 @@ class Blip2VicunaInstruct(Blip2Base):
         prompt = cfg.get("prompt", "")
         max_txt_len = cfg.get("max_txt_len", 128)
         max_output_txt_len = cfg.get("max_output_txt_len", 256)
-        apply_lemmatizer = cfg.get("apply_lemmatizer", False)
+
+        lora_r = cfg.get("lora_r", 64)
+        lora_alpha = cfg.get("lora_alpha", 16)
 
         qformer_text_input = cfg.get("qformer_text_input", True)
 
-        use_moeqformer = cfg.get("use_moeqformer", False)
-        use_route_moe = cfg.get("use_route_moe", False)
+        general_version = cfg.get("general_version", False)
         moebert_num_beams = cfg.get("moebert_num_beams", 2)
         moebert_expert_num = cfg.get("moebert_expert_num", 5)
         moebert_route_method = cfg.get("moebert_route_method", "gate-sentence")
@@ -690,10 +685,10 @@ class Blip2VicunaInstruct(Blip2Base):
             prompt=prompt,
             max_txt_len=max_txt_len,
             max_output_txt_len=max_output_txt_len,
-            apply_lemmatizer=apply_lemmatizer,
+            lora_r=lora_r,  # lora_r means lora is not used
+            lora_alpha=lora_alpha,
             qformer_text_input=qformer_text_input,
-            use_moeqformer=use_moeqformer,
-            use_route_moe=use_route_moe,
+            general_version=general_version,
             moebert_num_beams=moebert_num_beams,
             moebert_expert_num=moebert_expert_num,
             moebert_route_method=moebert_route_method,

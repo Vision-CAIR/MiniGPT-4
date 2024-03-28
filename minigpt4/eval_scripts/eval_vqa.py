@@ -257,7 +257,6 @@ if 'vsr' in args.dataset:
 
     minigpt4_predict = []
     
-    import pdb; pdb.set_trace()
     for samples in tqdm(eval_dataloader):
 
         texts = samples['q_input']

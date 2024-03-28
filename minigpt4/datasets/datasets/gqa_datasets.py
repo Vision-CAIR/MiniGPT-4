@@ -75,9 +75,11 @@ class GQADataset(VQADataset, __DisplMixin):
             # "text_output": ann["fullAnswer"],
             "text_output": answers,
             # "instruction_input": instruction,
-            "q_input": q_input,
+            "q_input": llm_input,
+            # "q_input": q_input,
             "llm_input": llm_input,
             "gt_answers": answers,
+            "source": "gqa",
         }
 
 class GQAEvalDataset(VQAEvalDataset, __DisplMixin):
@@ -147,9 +149,9 @@ class GQAEvalDataset(VQAEvalDataset, __DisplMixin):
             "text_input": question,
             "gt_answers": answer,
             "fullAnswer": fullAnswer,
-            # "text_output": fullAnswer,
             "text_output": answer,
-            "q_input": q_input,
+            # "q_input": q_input,
+            "q_input": llm_input,
             "llm_input": llm_input,
             "question_id": ann["question_id"],
             # "instance_id": ann["instance_id"],

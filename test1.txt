@@ -1,7 +1,7 @@
 from torchviz import make_dot
 dot = make_dot(query_output.last_hidden_state, params=dict(self.Qformer.bert.named_parameters()))
 log_dir = '/mnt/pfs-guan-ssai/nlu/wanghanzi/multimodal/PromptMoE/'
-dot.render(filename="Pre_PromptMoE_RawProb_backward_graph", directory=log_dir, format="pdf")
+dot.render(filename="Post_Route_Universal_PromptMoE_RawProb_backward_graph", directory=log_dir, format="pdf")
 
 
 # Pre-Prompt-MoE

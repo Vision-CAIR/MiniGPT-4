@@ -1113,7 +1113,7 @@ class BertModel(BertPreTrainedModel):
         )
 
 
-class BertMoERouteLMHeadModel(BertPreTrainedModel):
+class BertMoERouteLMHeadModelLNIn(BertPreTrainedModel):
 
     _keys_to_ignore_on_load_unexpected = [r"pooler"]
     _keys_to_ignore_on_load_missing = [r"position_ids", r"predictions.decoder.bias"]

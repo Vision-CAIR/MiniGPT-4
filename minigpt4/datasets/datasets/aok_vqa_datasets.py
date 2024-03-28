@@ -89,7 +89,8 @@ class AOKVQADataset(VQADataset, __DisplMixin):
         return {
             "image": data['image'],
             "image_id": data["image_id"],
-            "q_input": q_input,
+            # "q_input": q_input,
+            "q_input": llm_input,
             "llm_input": llm_input,
             "text_input": question,
             "text_output": answer,
@@ -127,6 +128,7 @@ class AOKVQAEvalDataset(VQAEvalDataset, __DisplMixin):
         self.vis_processor = vis_processor
         self.text_processor = text_processor
         self.source = 'aokvqa'
+        self.annotation_add = self.get_data()
 
     def collater(self, samples):
         (
@@ -138,8 +140,9 @@ class AOKVQAEvalDataset(VQAEvalDataset, __DisplMixin):
             direct_answers_list,
             llm_input_list,
             q_input_list,
+            gt_answers_list,
             source_list,
-        ) = ([], [], [], [], [], [], [], [], [])
+        ) = ([], [], [], [], [], [], [], [], [], [])
 
         for sample in samples:
             image_list.append(sample["image"])
@@ -150,6 +153,7 @@ class AOKVQAEvalDataset(VQAEvalDataset, __DisplMixin):
             direct_answers_list.append(sample["direct_answers"])
             llm_input_list.append(sample["llm_input"])
             q_input_list.append(sample["q_input"])
+            gt_answers_list.append(sample["gt_answers"])
             source_list.append(sample["source"])
 
         return {
@@ -160,12 +164,30 @@ class AOKVQAEvalDataset(VQAEvalDataset, __DisplMixin):
             "correct_choice_idx": correct_choice_idx_list,
             "direct_answers": direct_answers_list,
             "llm_input": llm_input_list,
-            "q_input": q_input_list,
+            "q_input": llm_input_list,
+            # "q_input": q_input_list,
+            "gt_answers": gt_answers_list,
             "source": source_list,
         }
-
+    
+    def get_data(self):
+        import numpy as np
+        ann_instruct = list()
+        for i in range(len(self.annotation)):
+            ann = self.annotation[i].copy()
+            j = i % len(self.instruction_pool)
+            question = self.text_processor(ann["question"])
+            choices = ann["choices"]
+            llm_input = self.instruction_pool[j].format(question, ", ".join(choices))
+            ann['llm_input'] = llm_input
+            ann_instruct.append(ann)
+        np.random.seed(10)
+        np.random.shuffle(ann_instruct)
+        return ann_instruct
+    
     def __getitem__(self, index):
-        ann = self.annotation[index]
+        # ann = self.annotation[index]
+        ann = self.annotation_add[index]
 
         image_path = os.path.join(self.vis_root, ann["image"])
         image = Image.open(image_path).convert("RGB")
@@ -173,27 +195,32 @@ class AOKVQAEvalDataset(VQAEvalDataset, __DisplMixin):
         image = self.vis_processor(image)
         question = self.text_processor(ann["question"])
 
-        choices = ann["choices"]
-        if "correct_choice_idx" in ann:
-            correct_choice_idx = ann["correct_choice_idx"]
-        else:
-            correct_choice_idx = None
-
         if "direct_answers" in ann:
             direct_answers = ann["direct_answers"]
         else:
             direct_answers = None
 
-        llm_input = random.choice(self.instruction_pool).format(question, ", ".join(choices))
+        choices = ann["choices"]
+        if "correct_choice_idx" in ann:
+            correct_choice_idx = ann["correct_choice_idx"]
+            correct_answer = choices[correct_choice_idx]
+        else:
+            correct_choice_idx = None
+            correct_answer = direct_answers
+
+        llm_input = ann.get("llm_input",random.choice(self.instruction_pool).format(question))
+        # llm_input = random.choice(self.instruction_pool).format(question, ", ".join(choices))
 
         return {
             "image": image,
-            "q_input": question,
+            # "q_input": question,
+            "q_input": llm_input,
             "llm_input": llm_input,
             "text_input": question,
             "question_id": ann["question_id"],
             "choices": choices,
             "correct_choice_idx": correct_choice_idx,
+            "gt_answers": correct_answer,
             "direct_answers": direct_answers,
             "source": 'aokvqa',
         }

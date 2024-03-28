@@ -35,7 +35,7 @@ model:
   freeze_t5_proj: False
 
   # moe
-  use_moeqformer: True
+  general_version: "naive_moe"
   moebert_expert_num: 5
   moebert_route_method: "gate-sentence-post"
   moebert_load_balance: 0

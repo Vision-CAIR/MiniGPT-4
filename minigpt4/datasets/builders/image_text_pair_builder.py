@@ -6,20 +6,18 @@ from minigpt4.common.registry import registry
 from minigpt4.datasets.builders.base_dataset_builder import BaseDatasetBuilder
 from minigpt4.datasets.datasets.laion_dataset import LaionDataset
 from minigpt4.datasets.datasets.cc_sbu_dataset import CCSBUDataset, CCSBUAlignDataset
-from minigpt4.datasets.datasets.text_caps import TextCapDataset
+from minigpt4.datasets.datasets.text_caps import TextCapDataset, TextCapEvalDataset
+from minigpt4.datasets.datasets.text_vqa_dataset import TextVQADataset, TextVQAEvalDataset
 from minigpt4.datasets.datasets.llava_dataset import LlavaDetailDataset, LlavaReasonDataset, LlavaConversationDataset, LlavaMixDataset, LlavaPretrainDataset
 from minigpt4.datasets.datasets.unnatural_instruction import UnnaturalDataset
 from minigpt4.datasets.datasets.multitask_conversation import MultiTaskConversationDataset
 from minigpt4.datasets.datasets.flickr import GroundedDetailDataset,CaptionToObjectDataset,PhraseToObjectDataset
-from minigpt4.datasets.datasets.vg_dataset import ReferVisualGenomeDataset
-from minigpt4.datasets.datasets.coco_dataset import ReferCOCODataset, InvReferCOCODataset
 from minigpt4.datasets.datasets.gqa_datasets import GQADataset, GQAEvalDataset
 from minigpt4.datasets.datasets.aok_vqa_datasets import AOKVQADataset, AOKVQAEvalDataset
 from minigpt4.datasets.datasets.coco_vqa_datasets import COCOVQADataset, COCOVQAEvalDataset
 from minigpt4.datasets.datasets.ok_vqa_datasets import OKVQADataset, OKVQAEvalDataset
 from minigpt4.datasets.datasets.ocrvqa_dataset import OCRVQADataset
 from minigpt4.datasets.datasets.coco_caption import COCOCapDataset, COCOCapEvalDataset
-
 
 @registry.register_builder("multitask_conversation")
 class MultitaskConversationBuilder(BaseDatasetBuilder):
@@ -253,82 +251,10 @@ class AllRefCOCOBuilder(BaseDatasetBuilder):
         return datasets
     
 
-@registry.register_builder("refcoco")
-class RefCOCOBuilder(AllRefCOCOBuilder):
-    train_dataset_cls = ReferCOCODataset
-    DATASET_CONFIG_DICT = {
-        "default": "configs/datasets/coco_bbox/refcoco.yaml",
-    }
-
-@registry.register_builder("refcocop")
-class RefCOCOPBuilder(AllRefCOCOBuilder):
-    train_dataset_cls = ReferCOCODataset
-    DATASET_CONFIG_DICT = {
-        "default": "configs/datasets/coco_bbox/refcocop.yaml",
-    }
-
-
-@registry.register_builder("refcocog")
-class RefCOCOGBuilder(AllRefCOCOBuilder):
-    train_dataset_cls = ReferCOCODataset
-    DATASET_CONFIG_DICT = {
-        "default": "configs/datasets/coco_bbox/refcocog.yaml",
-    }
-
-@registry.register_builder("invrefcoco")
-class RefCOCOBuilder(AllRefCOCOBuilder):
-    train_dataset_cls = InvReferCOCODataset
-    DATASET_CONFIG_DICT = {
-        "default": "configs/datasets/coco_bbox/invrefcoco.yaml",
-    }
-
-
-@registry.register_builder("invrefcocop")
-class RefCOCOPBuilder(AllRefCOCOBuilder):
-    train_dataset_cls = InvReferCOCODataset
-    DATASET_CONFIG_DICT = {
-        "default": "configs/datasets/coco_bbox/invrefcocop.yaml",
-    }
-
-
-@registry.register_builder("invrefcocog")
-class RefCOCOGBuilder(AllRefCOCOBuilder):
-    train_dataset_cls = InvReferCOCODataset
-    DATASET_CONFIG_DICT = {
-        "default": "configs/datasets/coco_bbox/invrefcocog.yaml",
-    }
-
-@registry.register_builder("refvg")
-class RefVisualGenomeBuilder(BaseDatasetBuilder):
-    train_dataset_cls = ReferVisualGenomeDataset
-    DATASET_CONFIG_DICT = {
-        "default": "configs/datasets/vg/ref.yaml",
-    }
-
-    def build_datasets(self):
-        # at this point, all the annotations and image/videos should be all downloaded to the specified locations.
-        logging.info("Building datasets...")
-        self.build_processors()
-
-        build_info = self.config.build_info
-        data_dir = build_info.data_dir
-        datasets = dict()
-
-        # create datasets
-        dataset_cls = self.train_dataset_cls
-        datasets['train'] = dataset_cls(
-            vis_processor=self.vis_processors["train"],
-            text_processor=self.text_processors["train"],
-            data_dir=data_dir,
-        )
-
-        return datasets
-
-
 @registry.register_builder("textcaps_caption")
 class TextcapCaptionBuilder(BaseDatasetBuilder):
     train_dataset_cls = TextCapDataset
-    eval_dataset_cls = TextCapDataset
+    eval_dataset_cls = TextCapEvalDataset
 
     DATASET_CONFIG_DICT = {"default": "configs/datasets/textcaps/caption.yaml"}
 
@@ -338,27 +264,19 @@ class TextcapCaptionBuilder(BaseDatasetBuilder):
     def _download_vis(self):
         pass
 
-    # def build(self):
-    #     logging.info("[textcaps_caption]: Building datasets...")
-    #     self.build_processors()
+@registry.register_builder("text_vqa")
+class TextVQABuilder(BaseDatasetBuilder):
+    train_dataset_cls = TextVQADataset
+    eval_dataset_cls = TextVQAEvalDataset
 
-    #     build_info = self.config.build_info
-
-    #     datasets = dict()
-    #     split = "train"
-
-    #     # create datasets
-    #     # [NOTE] return inner_datasets (wds.DataPipeline)
-    #     dataset_cls = self.train_dataset_cls
-    #     datasets[split] = dataset_cls(
-    #         vis_processor=self.vis_processors[split],
-    #         text_processor=self.text_processors[split],
-    #         ann_path=build_info.ann_path,
-    #         vis_root=build_info.image_path,
-    #     )
-
-    #     return datasets
+    DATASET_CONFIG_DICT = {"default": "configs/datasets/textvqa/vqa.yaml"}
     
+    def _download_ann(self):
+        pass
+
+    def _download_vis(self):
+        pass
+
 @registry.register_builder("coco_vqa")
 class COCOVQABuilder(BaseDatasetBuilder):
     train_dataset_cls = COCOVQADataset
@@ -478,8 +396,6 @@ class CaptionToPhraseBuilder(BaseDatasetBuilder):
         return datasets
 
 
-
-
 class DocumentVQABuilder(BaseDatasetBuilder):
     def _download_ann(self):
         pass
@@ -502,7 +418,7 @@ class DocumentVQABuilder(BaseDatasetBuilder):
             ann_path=build_info.ann_path
         )
         print("{} Length: {}".format(dataset_cls.__name__, len(datasets['train']))) # print class name
-
+        
         return datasets
     
 

@@ -35,10 +35,14 @@ model:
   freeze_t5_proj: False
 
   # moe
-  use_moeqformer: True
-  use_route_moe: True
-  moebert_expert_num: 5
-  moebert_num_beams: 2
+  general_version: 'route_moe'
+  moebert_route_method: "post-route"
+  moebert_load_balance: 0.05
+  moebert_expert_num: 3
+  moebert_num_beams: 3
+  moe_weight_type: 'ffn_prob'
+  use_balance_loss: False
+  ln_position: "out"
 
 preprocess:
     vis_processor:

@@ -26,10 +26,5 @@ datasets:
               - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/aokvqa/aokvqa_v1p0_val.json
           storage:
               - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/AOKVQA/aokvqa_v1p0_val.json
-        # test:
-        #   url:
-        #       - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/aokvqa/aokvqa_v1p0_test.json
-        #   storage:
-        #       - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/AOKVQA/aokvqa_v1p0_test.json
       images:
           storage: /mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO
