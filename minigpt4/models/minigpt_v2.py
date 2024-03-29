@@ -18,7 +18,7 @@ class MiniGPTv2(MiniGPTBase):
     """
 
     PRETRAINED_MODEL_CONFIG_DICT = {
-        "pretrain": "configs/models/minigpt_v2.yaml",
+        "pretrain": "configs/models/minigpt/minigpt_v2.yaml",
     }
 
     def __init__(

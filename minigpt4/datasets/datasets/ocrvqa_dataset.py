@@ -30,10 +30,14 @@ class OCRVQADataset(Dataset):
         self.text_processor = text_processor
         self.data = self.create_data(ann_path)
 
-        self.instruction_pool =[
-            "[vqa] {}",
-            "[vqa] Based on the image, respond to this question with a short answer: {}"
+        self.instruction_pool =[   
+            '{}',
+            'Q: {} A: ',
+            'Based on the image, respond to this question with a short answer: {}',
+            '{} A short answer to the question is ',
+            'Question: {} Short answer:',
         ]
+        self.source = 'ocrvqa'
 
     def create_data(self, ann_path):
         processed_data = []
@@ -41,19 +45,21 @@ class OCRVQADataset(Dataset):
             data = json.load(f)
         for k in data.keys():
             if data[k]['split'] != 1: continue  # 1 for training, 2 for validation, 3 for test
-            ext = os.path.splitext(data[k]['imageURL'])[1]
+            # ext = os.path.splitext(data[k]['imageURL'])[1]
+            ext = '.jpg'
             imageFile = k + ext
-            assert len(data[k]['questions']) == len(data[k]['answers'])
-            for q, a in zip(data[k]['questions'], data[k]['answers']):
-                processed_data.append(
-                    {'question': q,
-                     'answer': a,
-                     'image_path': imageFile,
-                     'image_id': k,
-                     'title': data[k]['title'],
-                     'genre': data[k]['genre'],
-                     }
-                )
+            if os.path.exists(os.path.join(self.vis_root, imageFile)):
+                assert len(data[k]['questions']) == len(data[k]['answers'])
+                for q, a in zip(data[k]['questions'], data[k]['answers']):
+                    processed_data.append(
+                        {'question': q,
+                        'answer': a,
+                        'image_path': imageFile,
+                        'image_id': k,
+                        'title': data[k]['title'],
+                        'genre': data[k]['genre'],
+                        }
+                    )
         return processed_data
 
     def __len__(self):
@@ -66,12 +72,17 @@ class OCRVQADataset(Dataset):
         question = self.text_processor(sample["question"])
         answer = self.text_processor(sample["answer"])
 
-        instruction = random.choice(self.instruction_pool).format(question)
-        instruction = "<Img><ImageHere></Img> {} ".format(instruction)
+        q_input = question
+        llm_input = random.choice(self.instruction_pool).format(question)
+
         return {
             "image": image,
-            "instruction_input": instruction,
+            "image_id": sample["image_id"],
+            "q_input": q_input,
+            "llm_input": llm_input,
+            "text_input": question,
+            "text_output": answer,
             "answer": answer,
-            "image_id": sample['image_id']
+            "source": 'ocrvqa',
         }
     

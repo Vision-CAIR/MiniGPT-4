@@ -30,7 +30,10 @@ class BaseDataset(Dataset):
             # print("ann_path", ann_path)
             ann = json.load(open(ann_path, "r"))
             if isinstance(ann, dict):
-                self.annotation.extend(json.load(open(ann_path, "r"))['annotations'])
+                if 'annotations' in ann.keys():
+                    self.annotation.extend(json.load(open(ann_path, "r"))['annotations'])
+                elif 'data' in ann.keys():
+                    self.annotation.extend(json.load(open(ann_path, "r"))['data'])
                 # self.annotation.extend(json.load(open(ann_path, "r")))
             else:
                 self.annotation.extend(json.load(open(ann_path, "r")))

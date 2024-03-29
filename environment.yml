@@ -1,4 +1,4 @@
-name: minigptv
+name: promptmoe
 channels:
   - pytorch
   - defaults
@@ -31,3 +31,5 @@ dependencies:
     - accelerate==0.20.3
     - bitsandbytes==0.37.0
     - wandb
+    - visual_genome
+    - scikit-image

@@ -1,0 +1,2 @@
+chmod +x *.sh
+tensorboard --bind_all --logdir 

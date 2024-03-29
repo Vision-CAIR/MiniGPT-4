@@ -2,5 +2,5 @@ datasets:
   llava_detail:
     data_type: images
     build_info:
-      image_path: /path/to/coco/images
-      ann_path: /path/to/llava/detail_23k.json
+      image_path: /mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/train2014
+      ann_path: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/multimodal-sft/llava_150k/en/detail_23k.json

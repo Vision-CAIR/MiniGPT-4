@@ -3,5 +3,5 @@ datasets:
     data_type: images
     build_info:
     
-      image_path: /path/to/coco/images
-      ann_path: /path/to/multitask_conversation/multi_task_conversation.json
+      image_path: /mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/train2014
+      ann_path: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/minigptv2_llava_multitask_conv/multitask_conversation.json

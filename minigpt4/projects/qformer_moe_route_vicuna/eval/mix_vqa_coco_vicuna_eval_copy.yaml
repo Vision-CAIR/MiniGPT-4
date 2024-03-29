@@ -1,0 +1,154 @@
+ # Copyright (c) 2022, salesforce.com, inc.
+ # All rights reserved.
+ # SPDX-License-Identifier: BSD-3-Clause
+ # For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+
+model:
+  arch: blip2_vicuna_instruct
+  model_type: vicuna7b_pretrain
+  load_pretrained: True
+  load_finetuned: True
+  vit_model: eva_clip_g
+  pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
+  finetuned: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/mix_coco_gqa_ao_cocap_tcap_raw_QformerMoE_Post_Route_lnout_lr5e5_3ex3b_2loss_005_top6layer_textinqf_15epo_0314/20240314230/checkpoint_10.pth"
+  q_former_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
+
+  # vit encoder
+  image_size: 224
+  drop_path_rate: 0
+  use_grad_checkpoint: False
+  vit_precision: "fp16"
+
+  # Q-Former
+  num_query_token: 32
+  qformer_text_input: True
+
+  # vicuna
+  llm_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/vicuna-7b-v1.1"
+  prompt: ""
+  max_txt_len: 256
+  max_output_txt_len: 256
+
+  # freeze
+  freeze_vit: True
+  freeze_llm: True
+  freeze_qformer: False
+  freeze_t5_proj: False
+
+  # moe
+  # use_moeqformer: True
+  # use_route_moe: False
+  # moebert_expert_num: 3
+  # moebert_route_method: "gate-sentence-post"
+  # moe_weight_type: "raw_prob"
+  # moebert_load_balance: 0.05
+  # moe_topk: 1
+  # use_balance_loss: False
+  # ln_position: "out"
+
+  use_moeqformer: True
+  use_route_moe: True
+  moebert_route_method: "post-route"
+  moebert_load_balance: 0.05
+  moebert_expert_num: 3
+  moebert_num_beams: 3
+  moe_weight_type: 'ffn_prob'
+  use_balance_loss: False
+  # gate_save_path: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/route_save/mix_coco_gqa_ao_cocap_tcap_raw_QformerMoE_Post_Route_lnout_lr5e5_3ex3b_2loss_005_top6layer_textinqf_15epo_0314_epoch10/"
+
+datasets:
+  # gqa:
+  #   type: balanced_sft_raw_eval
+  #   batch_size: 32
+  #   vis_processor:
+  #     eval:
+  #       name: "blip2_image_eval"
+  #       image_size: 224
+  #   text_processor:
+  #     eval:
+  #       name: "blip_caption"
+
+  # coco_vqa:    # 658104
+  #   type: vqa_v2_eval
+  #   batch_size: 32
+  #   vis_processor:
+  #     eval:
+  #       name: "blip2_image_eval"
+  #       image_size: 224
+  #   text_processor:
+  #     eval:
+  #       name: "blip_caption"
+
+  coco_caption: # 414113 train
+    type: coco_cap_eval
+    batch_size: 32
+    vis_processor:
+      eval:
+        name: "blip2_image_eval"
+        image_size: 224
+    text_processor:
+      eval:
+        name: "blip_caption"
+  
+  # ok_vqa: # train, valid (9009, 5046)
+  #   type: ok_vqa_eval
+  #   batch_size: 32
+  #   vis_processor:
+  #     eval:
+  #       name: "blip2_image_eval"
+  #       image_size: 224
+  #   text_processor:
+  #     eval:
+  #       name: "blip_caption"
+
+  # aok_vqa: # train: 17056, val: 1145
+  #   batch_size: 32
+  #   vis_processor:
+  #     eval:
+  #       name: "blip2_image_eval"
+  #       image_size: 224
+  #   text_processor:
+  #     eval:
+  #       name: "blip_caption"
+
+  textcaps_caption: # train: 109765, val: 15830
+    batch_size: 32
+    vis_processor:
+      eval:
+        name: "blip2_image_eval"
+        image_size: 224
+    text_processor:
+      eval:
+        name: "blip_caption"
+
+run:
+  task: instruction_tuning
+  # optimizer
+  lr_sched: "linear_warmup_cosine_lr"
+  init_lr: 5e-5
+  min_lr: 1e-6
+  warmup_lr: 1e-6
+  log_freq: 5
+  save_freq: 1500
+
+  weight_decay: 0.05
+  max_epoch: 10
+  num_workers: 4
+  warmup_steps: 600
+  iters_per_epoch: 3000
+
+  seed: 42
+  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/eval/mix_coco_gqa_ao_cocap_tcap_raw_QformerMoE_Post_Route_lnout_lr5e5_3ex3b_2loss_005_top6layer_textinqf_15epo_0314_epoch10/"
+  
+  amp: True
+  resume_ckpt_path: null
+
+  evaluate: True
+  # test_splits: ["val"]
+  test_splits: ["test"]
+
+  device: "cuda"
+  world_size: 1
+  dist_url: "env://"
+  distributed: True
+  

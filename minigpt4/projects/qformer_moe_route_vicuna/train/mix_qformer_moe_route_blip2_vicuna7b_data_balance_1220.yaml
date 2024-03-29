@@ -1,0 +1,129 @@
+ # Copyright (c) 2022, salesforce.com, inc.
+ # All rights reserved.
+ # SPDX-License-Identifier: BSD-3-Clause
+ # For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+# 0107test
+
+model:
+  arch: blip2_vicuna_instruct
+  model_type: vicuna7b_pretrain
+  load_pretrained: True
+  load_finetuned: False
+  vit_model: eva_clip_g
+  pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
+  # finetuned: ""
+  q_former_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
+
+  # vit encoder
+  image_size: 224
+  drop_path_rate: 0
+  use_grad_checkpoint: False
+  vit_precision: "fp16"
+
+  # Q-Former
+  num_query_token: 32
+  qformer_text_input: True
+
+  # vicuna
+  llm_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/vicuna-7b-v1.1"
+  prompt: ""
+  max_txt_len: 256
+  max_output_txt_len: 256
+
+  # freeze
+  freeze_vit: True
+  freeze_llm: True
+  freeze_qformer: False
+  freeze_t5_proj: False
+
+  # moe
+  use_moeqformer: True
+  use_route_moe: True
+  moebert_route_method: "post-route"
+  moebert_load_balance: 0
+  moebert_expert_num: 2
+  moebert_num_beams: 2
+  moe_weight_type: 'ffn_prob'
+  use_balance_loss: False
+  # gate_save_path: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe/route_save/mix_coco_gqa_balance_raw_QformerMoE_Route_linear_gate_5ex_2beam_1loss_textinqf_epo5_toplayer3_1209/"
+
+datasets:
+  # gqa: # train: 943000, 12578, 12578)
+  #   type: balanced_sft_raw
+  #   batch_size: 1
+  #   vis_processor:
+  #     train:
+  #       name: "blip2_image_train"
+  #       image_size: 224
+  #     eval:
+  #       name: "blip2_image_eval"
+  #       image_size: 224
+  #   text_processor:
+  #     train:
+  #       name: "blip_caption"
+  #     eval:
+  #       name: "blip_caption"
+  #   sample_ratio: 10
+  
+  ok_vqa: # train, valid (9009, 5046)
+    batch_size: 1
+    vis_processor:
+      train:
+        name: "blip2_image_train"
+        image_size: 224
+      eval:
+        name: "blip2_image_eval"
+        image_size: 224
+    text_processor:
+      train:
+        name: "blip_caption"
+      eval:
+        name: "blip_caption"
+    sample_ratio: 1
+  
+  # coco_vqa:    # 658104
+  #   batch_size: 1
+  #   vis_processor:
+  #     train:
+  #       name: "blip2_image_train"
+  #       image_size: 224
+  #     eval:
+  #       name: "blip2_image_eval"
+  #       image_size: 224
+  #   text_processor:
+  #     train:
+  #       name: "blip_caption"
+  #     eval:
+  #       name: "blip_caption"
+  #   sample_ratio: 9
+
+run:
+  task: instruction_tuning
+  # optimizer
+  lr_sched: "linear_warmup_cosine_lr"
+  init_lr: 2e-5
+  min_lr: 1e-6
+  warmup_lr: 1e-6
+  log_freq: 5
+  save_freq: 1500
+
+  weight_decay: 0.05
+  max_epoch: 5
+  num_workers: 4
+  warmup_steps: 600
+
+  seed: 42
+  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/mix_coco_gqa_balance_raw_QformerMoE_Route_linear_gate_5ex_2beam_1loss_textinqf_epo5_toplayer3_1209/"
+  
+  amp: True
+  resume_ckpt_path: null
+
+  evaluate: False 
+  train_splits: ["train"]
+  valid_splits: ["val"]
+  # test_splits: ["val"]
+
+  device: "cuda"
+  world_size: 1
+  dist_url: "env://"
+  distributed: True

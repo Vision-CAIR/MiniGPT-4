@@ -1,0 +1,83 @@
+ # Copyright (c) 2022, salesforce.com, inc.
+ # All rights reserved.
+ # SPDX-License-Identifier: BSD-3-Clause
+ # For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+
+model:
+  arch: blip2_t5_instruct_pro_moe
+  model_type: flant5xxl
+  load_pretrained: True
+  load_finetuned: False
+  vit_model: eva_clip_g
+  pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/flant5xxl/prompt_moe/llava_st_257k_raw_freeze_qf_train_qt_gate_textt5_textinqf_epo3_1009/20231009234/checkpoint_best.pth"
+
+  # vit encoder
+  image_size: 224
+  drop_path_rate: 0
+  use_grad_checkpoint: False
+  vit_precision: "fp16"
+
+  # Q-Former
+  num_query_token: 32
+  qformer_text_input: True
+
+  # T5
+  t5_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/google-flan-t5-xxl"
+  prompt: ""
+  max_txt_len: 256
+  max_output_txt_len: 256
+
+  # freeze
+  freeze_vit: True
+  freeze_llm: True
+  freeze_qformer: True
+  freeze_t5_proj: True
+
+  # moe
+  repeat_to_init_qt_candidates: True
+  num_qt_candidates: 5
+
+  gate_save_file: "/mnt/pfs-guan-ssai/nlu/wanghanzi/evaluation/BLIP2/GQA/llava_st_257k_raw_freeze_qf_train_qt_gate_textt5_textinf_epo3_1010/gate.txt"
+
+
+datasets:
+  gqa: # name of the dataset builder
+    type: balanced_testdev
+    vis_processor:
+        eval:
+          name: "blip_image_eval"
+          image_size: 224
+    text_processor:
+        eval:
+          name: "blip_question"
+    build_info:
+        images:
+            storage: "/mnt/pfs-guan-ssai/nlu/wanghanzi/data/GQA/images/"
+
+run:
+  task: gqa
+  batch_size_train: 4
+  batch_size_eval: 16
+  num_workers: 4
+
+  max_len: 20
+  min_len: 1
+  num_beams: 5
+  inference_method: "generate"
+  # prompt: "Question: {} Short answer:"
+  prompt: ""
+
+  seed: 42
+  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/evaluation/BLIP2/GQA/llava_st_257k_raw_freeze_qf_train_qt_gate_textt5_textinf_epo3_1010/"
+
+  amp: True
+  resume_ckpt_path: null
+
+  evaluate: True
+  test_splits: ["val"]
+
+  device: "cuda"
+  world_size: 1
+  dist_url: "env://"
+  distributed: True
+  

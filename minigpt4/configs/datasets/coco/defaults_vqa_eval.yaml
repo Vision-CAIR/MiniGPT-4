@@ -1,0 +1,39 @@
+ # Copyright (c) 2022, salesforce.com, inc.
+ # All rights reserved.
+ # SPDX-License-Identifier: BSD-3-Clause
+ # For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+
+datasets:
+  coco_vqa:
+    # data_dir: ${env.data_dir}/datasets
+    data_type: images # [images|videos|features]
+
+    build_info:
+
+      annotations:
+        val:
+          url:
+              # TODO make this order insensitive
+              - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/vqa_val_eval.json
+              - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/answer_list.json
+              - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/v2_OpenEnded_mscoco_val2014_questions.json
+              - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/v2_mscoco_val2014_annotations.json
+          storage:
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/VQAv2/vqa_val_eval.json
+              # - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/VQAv2/vqa_train.json
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/VQAv2/answer_list.json
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/VQAv2/v2_OpenEnded_mscoco_val2014_questions.json
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/VQAv2/v2_mscoco_val2014_annotations.json
+        test:
+          url:
+              - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/vqa_test.json
+              - https://storage.googleapis.com/sfr-vision-language-research/LAVIS/datasets/vqav2/answer_list.json
+          storage:
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/VQAv2/vqa_test.json
+              # - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/VQAv2/vqa_train.json
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/VQAv2/answer_list.json
+        
+      images:
+          storage: /mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO
+
+  

@@ -2,13 +2,14 @@
  Copyright (c) 2022, salesforce.com, inc.
  All rights reserved.
  SPDX-License-Identifier: BSD-3-Clause
- For full license text, see the LICENSE_Lavis file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
 """
 
 import datetime
 import logging
 import time
 from collections import defaultdict, deque
+from torch.utils.tensorboard import SummaryWriter
 
 import torch
 import torch.distributed as dist
@@ -80,9 +81,10 @@ class SmoothedValue(object):
 
 
 class MetricLogger(object):
-    def __init__(self, delimiter="\t"):
+    def __init__(self, delimiter="\t",writer: SummaryWriter=None):
         self.meters = defaultdict(SmoothedValue)
         self.delimiter = delimiter
+        self.writer = writer
 
     def update(self, **kwargs):
         for k, v in kwargs.items():
@@ -90,6 +92,10 @@ class MetricLogger(object):
                 v = v.item()
             assert isinstance(v, (float, int))
             self.meters[k].update(v)
+    
+    def update_writer(self, it):
+        for name, meter in self.meters.items():
+            self.writer.add_scalar(name, meter, )
 
     def __getattr__(self, attr):
         if attr in self.meters:

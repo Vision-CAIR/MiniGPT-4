@@ -1,0 +1,17 @@
+datasets:
+  text_vqa:
+    data_type: images
+    
+    build_info:
+      annotations:
+        train:
+          storage:
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/TextVQA/TextVQA_0.5.1_train.json
+        val:
+          storage:
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/TextVQA/TextVQA_0.5.1_val.json
+        test:
+          storage:
+              - /mnt/pfs-guan-ssai/nlu/wanghanzi/data/TextVQA/TextVQA_0.5.1_test.json
+      images:
+          storage: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/TextVQA

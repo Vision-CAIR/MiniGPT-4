@@ -1,0 +1,92 @@
+datasets:
+  multitask_conversation:
+    batch_size: 2
+    sample_ratio: 50
+
+  llava_conversation: 
+    batch_size: 2
+    sample_ratio: 30
+
+  unnatural_instruction:
+    batch_size: 1
+    sample_ratio: 10
+
+  refvg:
+    batch_size: 6
+    sample_ratio: 40
+
+  llava_detail:
+    batch_size: 4
+    sample_ratio: 20
+
+  llava_reason: 
+    batch_size: 4
+    sample_ratio: 80
+    
+
+  flickr_grounded_caption:
+    batch_size: 2
+    sample_ratio: 80
+
+  flickr_CaptionToPhrase:
+    batch_size: 2
+    sample_ratio: 80
+
+  flickr_ObjectToPhrase:
+    batch_size: 2
+    sample_ratio: 80
+
+  coco_caption:
+    batch_size: 6
+    sample_ratio: 10  
+
+    
+  textcaps_caption:  
+    batch_size: 6
+    sample_ratio: 30
+
+  refcoco: 
+    batch_size: 6
+    sample_ratio: 25
+
+
+  refcocop:
+    batch_size: 6
+    sample_ratio: 25
+
+  refcocog:
+    batch_size: 6
+    sample_ratio: 25
+
+  invrefcoco:
+    batch_size: 6
+    sample_ratio: 10
+
+  invrefcocop:
+    batch_size: 6
+    sample_ratio: 10
+
+  invrefcocog:
+    batch_size: 6
+    sample_ratio: 10
+
+
+  coco_vqa:    
+    batch_size: 6
+    sample_ratio: 15
+
+  ok_vqa:   
+    batch_size: 6
+    sample_ratio: 8
+
+  aok_vqa: 
+    batch_size: 6
+    sample_ratio: 12
+
+  gqa:  
+    batch_size: 6
+    sample_ratio: 50
+
+  ocrvqa: 
+    batch_size: 6
+    sample_ratio: 30

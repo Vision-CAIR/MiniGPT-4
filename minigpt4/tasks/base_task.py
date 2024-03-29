@@ -10,10 +10,11 @@ import os
 
 import torch
 import torch.distributed as dist
-from minigpt4.common.dist_utils import get_rank, get_world_size, is_main_process, is_dist_avail_and_initialized
+from minigpt4.common.dist_utils import get_rank, get_world_size, is_main_process, is_dist_avail_and_initialized, main_process
 from minigpt4.common.logger import MetricLogger, SmoothedValue
 from minigpt4.common.registry import registry
 from minigpt4.datasets.data_utils import prepare_sample
+from torch.utils.tensorboard import SummaryWriter
 import wandb
 
 class BaseTask:
@@ -34,6 +35,20 @@ class BaseTask:
         model_cls = registry.get_model_class(model_config.arch)
         return model_cls.from_config(model_config)
 
+    def build_tensorboard(self, cfg):
+        """
+        Build a tensorboard monitoring the global training process.
+        """
+        setattr(self, 'writer', None)
+        if is_main_process():
+            writer = SummaryWriter(log_dir=cfg.run_cfg.output_dir)
+            setattr(self, 'writer', writer)
+
+        if is_dist_avail_and_initialized():
+            dist.barrier()
+        
+        return None
+    
     def build_datasets(self, cfg):
         """
         Build a dictionary of datasets, keyed by split 'train', 'valid', 'test'.
@@ -57,8 +72,12 @@ class BaseTask:
 
             builder = registry.get_builder_class(name)(dataset_config)
             dataset = builder.build_datasets()
+            try:
+                dataset['train'].name = name
+            except Exception as e:
+                print(e,'\n No train dataset')
+                dataset['val'].name = name
 
-            dataset['train'].name = name
             if 'sample_ratio' in dataset_config:
                 dataset['train'].sample_ratio = dataset_config.sample_ratio
 
@@ -219,13 +238,17 @@ class BaseTask:
 
             with torch.cuda.amp.autocast(enabled=use_amp):
                 loss = self.train_step(model=model, samples=samples)
-
+            
             # after_train_step()
             if use_amp:
+                # torch.autograd.set_detect_anomaly(True)
+                # 反向传播时检测是否有异常值，定位code
+                # with torch.autograd.detect_anomaly():
                 scaler.scale(loss).backward()
             else:
                 loss.backward()
 
+            # import pdb; pdb.set_trace() # 0107test
             # update gradients every accum_grad_iters iterations
             if (i + 1) % accum_grad_iters == 0:
                 if use_amp:
@@ -233,13 +256,24 @@ class BaseTask:
                     scaler.update()                     
                 else:    
                     optimizer.step()
+                
+                # import pdb; pdb.set_trace()# 0107test
+
                 optimizer.zero_grad()
-                # if self.cfg.wandb_log:
-                if self.cfg.run_cfg.wandb_log:
-                    wandb.log({"epoch": inner_epoch, "loss": loss})
+                if self.cfg.run_cfg.wandb_log and i%100==0:
+                    wandb.log({"epoch": inner_epoch, "loss": loss.item()})
+                
+                if self.cfg.run_cfg.wandb_log and i%10==0:
+                    source = samples['source'][0]
+                    wandb.log({f"{source}_loss": loss.item()})
+                
+
             metric_logger.update(loss=loss.item())
             metric_logger.update(lr=optimizer.param_groups[0]["lr"])
-
+            
+            if (i + 1) % log_freq == 0:
+                self.update_writer(metric_logger, i+1)
+            
         # after train_epoch()
         # gather the stats from all processes
         metric_logger.synchronize_between_processes()
@@ -288,3 +322,9 @@ class BaseTask:
             print("result file saved to %s" % final_result_file)
 
         return final_result_file
+    
+    @main_process
+    def update_writer(self, metric_logger, iter_num):
+        for name, meter in metric_logger.meters.items():
+            # meter: Instance of class SmoothedValue 
+            self.writer.add_scalar(name, float(str(meter)), iter_num)

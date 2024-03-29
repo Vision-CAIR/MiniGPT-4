@@ -18,14 +18,14 @@ class MiniGPT4(MiniGPTBase):
     """
 
     PRETRAINED_MODEL_CONFIG_DICT = {
-        "pretrain_vicuna0": "configs/models/minigpt4_vicuna0.yaml",
-        "pretrain_llama2": "configs/models/minigpt4_llama2.yaml",
+        "pretrain_vicuna0": "configs/models/minigpt/minigpt4_vicuna0.yaml",
+        "pretrain_llama2": "configs/models/minigpt/minigpt4_llama2.yaml",
     }
 
     def __init__(
             self,
             vit_model="eva_clip_g",
-            q_former_model="https://storage.googleapis.com/sfr-vision-language-research/LAVIS/models/BLIP2/blip2_pretrained_flant5xxl.pth",
+            q_former_model="/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2-flant5-xxl/blip2_pretrained_flant5xxl.pth",
             img_size=224,
             drop_path_rate=0,
             use_grad_checkpoint=False,
@@ -86,7 +86,7 @@ class MiniGPT4(MiniGPTBase):
 
     @classmethod
     def init_Qformer(cls, num_query_token, vision_width, freeze):
-        encoder_config = BertConfig.from_pretrained("bert-base-uncased")
+        encoder_config = BertConfig.from_pretrained("/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased")
         encoder_config.encoder_width = vision_width
         # insert cross-attention layer every other block
         encoder_config.add_cross_attention = True
@@ -147,7 +147,7 @@ class MiniGPT4(MiniGPTBase):
     @classmethod
     def from_config(cls, cfg):
         vit_model = cfg.get("vit_model", "eva_clip_g")
-        q_former_model = cfg.get("q_former_model", "https://storage.googleapis.com/sfr-vision-language-research/LAVIS/models/BLIP2/blip2_pretrained_flant5xxl.pth")
+        q_former_model = cfg.get("q_former_model", "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2-flant5-xxl/blip2_pretrained_flant5xxl.pth")
         img_size = cfg.get("image_size")
         num_query_token = cfg.get("num_query_token")
         llama_model = cfg.get("llama_model")

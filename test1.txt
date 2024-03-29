@@ -1,0 +1,109 @@
+from torchviz import make_dot
+dot = make_dot(query_output.last_hidden_state, params=dict(self.Qformer.bert.named_parameters()))
+log_dir = '/mnt/pfs-guan-ssai/nlu/wanghanzi/multimodal/PromptMoE/'
+dot.render(filename="Post_Route_Universal_PromptMoE_RawProb_backward_graph", directory=log_dir, format="pdf")
+
+
+# Pre-Prompt-MoE
+model.Qformer.bert.encoder.layer[6].experts.gate.weight.grad
+model.Qformer.bert.encoder.layer[8].experts.gate.weight.grad
+model.Qformer.bert.encoder.layer[10].experts.gate.weight.grad
+model.Qformer.bert.encoder.layer[6].experts.experts[0].dense1.weight.grad
+model.Qformer.bert.encoder.layer[10].experts.experts[0].dense1.weight.grad
+model.Qformer.bert.encoder.layer[8].experts.experts[0].dense1.weight.grad
+model.Qformer.bert.encoder.layer[8].experts.experts[1].dense1.weight.grad
+model.Qformer.bert.encoder.layer[8].experts.experts[2].dense1.weight.grad
+
+
+model.Qformer.bert.encoder.layer[8].experts.gate.weight.grad
+model.Qformer.bert.encoder.layer[9].intermediate_query.dense.weight
+model.Qformer.bert.encoder.layer[9].intermediate_query.dense.weight.grad
+model.Qformer.bert.encoder.layer[10].intermediate.dense.weight.grad
+model.Qformer.bert.encoder.layer[11].intermediate.dense.weight.grad
+
+model.Qformer.bert.encoder.layer[10].intermediate_query.dense.weight
+model.Qformer.bert.encoder.layer[10].experts.experts[2].dense1.weight
+model.Qformer.bert.encoder.layer[10].experts.experts[1].dense1.weight
+model.Qformer.bert.encoder.layer[10].experts.experts[0].dense1.weight
+model.Qformer.bert.encoder.layer[10].intermediate_query.dense.weight == model.Qformer.bert.encoder.layer[10].experts.experts[0].dense1.weight
+
+# Pre-MoE gate-sentence
+# model.Qformer.bert.encoder.layer[8].experts.gate.weight.grad 不更新
+
+# Pre-MoE gate-token
+# 正常更新
+
+# Post-MoE gate-sentence
+model.Qformer.bert.encoder.layer[8].experts.gate.weight.grad
+# model.Qformer.bert.encoder.layer[8].experts.gate.weight.grad 正常更新
+# model.Qformer.bert.encoder.layer[6].experts.gate.weight.grad 全是0/-0
+# model.Qformer.bert.encoder.layer[10].experts.gate.weight.grad 全是0/-0
+
+# Route-MoE 
+# Pre-MoE 算的beam_scores有问题
+
+# Post-Route 会更新多个expert的参数；会更新gate的参数
+# Layer 6 更新了两个expert的参数 (layer 6 layer 8)
+# model.Qformer.bert.encoder.layer[11].intermediate.dense.weight.grad 是0？都是0
+# model.Qformer.bert.encoder.layer[11].output.dense.weight.grad
+
+model.Qformer.bert.encoder.layer[6].experts.gate.weight.grad
+model.Qformer.bert.encoder.layer[6].experts.experts[0].intermediate_query.dense.weight.grad
+model.Qformer.bert.encoder.layer[6].experts.experts[1].intermediate_query.dense.weight.grad
+
+model.Qformer.bert.encoder.layer[7].experts.gate.weight.grad
+model.Qformer.bert.encoder.layer[7].experts.experts[0].intermediate_query.dense.weight.grad
+model.Qformer.bert.encoder.layer[7].experts.experts[1].intermediate_query.dense.weight.grad
+
+model.Qformer.bert.encoder.layer[8].experts.gate.weight.grad
+model.Qformer.bert.encoder.layer[8].experts.experts[0].intermediate_query.dense.weight.grad
+model.Qformer.bert.encoder.layer[8].experts.experts[1].intermediate_query.dense.weight.grad
+
+model.Qformer.bert.encoder.layer[9].experts.gate.weight.grad
+model.Qformer.bert.encoder.layer[9].experts.experts[0].intermediate_query.dense.weight.grad
+model.Qformer.bert.encoder.layer[9].experts.experts[1].intermediate_query.dense.weight.grad
+
+model.Qformer.bert.encoder.layer[10].experts.gate.weight.grad
+model.Qformer.bert.encoder.layer[10].experts.experts[0].intermediate_query.dense.weight.grad
+model.Qformer.bert.encoder.layer[10].experts.experts[1].intermediate_query.dense.weight.grad
+
+model.Qformer.bert.encoder.layer[11].experts.gate.weight.grad
+model.Qformer.bert.encoder.layer[11].experts.experts[0].intermediate_query.dense.weight.grad
+model.Qformer.bert.encoder.layer[11].experts.experts[1].intermediate_query.dense.weight.grad
+
+
+(Pdb) [p for n, p in self.model.named_parameters() if n == 'Qformer.bert.encoder.layer.10.experts.experts.0.dense1.weight']
+[Parameter containing:
+tensor([[-0.0328,  0.0414,  0.0010,  ..., -0.0068,  0.0244,  0.0587],
+        [ 0.0120,  0.0458,  0.0171,  ..., -0.0439, -0.0107, -0.0397],
+        [ 0.0239,  0.0191, -0.0145,  ...,  0.0008, -0.0067,  0.0090],
+        ...,
+        [ 0.0174, -0.0465, -0.0106,  ..., -0.0095,  0.0153, -0.0195],
+        [-0.0151, -0.0082, -0.0320,  ..., -0.0016, -0.0232, -0.0147],
+        [ 0.0142, -0.0286,  0.0161,  ..., -0.0160, -0.0306, -0.0272]],
+       device='cuda:0', requires_grad=True)]
+(Pdb) [p for n, p in self.model.named_parameters() if n == 'Qformer.bert.encoder.layer.8.experts.experts.0.dense1.weight']
+[Parameter containing:
+tensor([[ 0.0024,  0.0218, -0.0186,  ..., -0.0178, -0.0067,  0.0820],
+        [-0.0759, -0.0002, -0.0548,  ...,  0.0292,  0.0531,  0.0779],
+        [-0.0220, -0.0037, -0.0520,  ..., -0.0426, -0.0261, -0.0357],
+        ...,
+        [-0.0448,  0.0471,  0.0133,  ..., -0.0062, -0.0217, -0.0203],
+        [ 0.0532,  0.0197,  0.0320,  ..., -0.0010, -0.0838,  0.0682],
+        [ 0.0284,  0.0038, -0.0007,  ..., -0.0305,  0.0296,  0.0056]],
+       device='cuda:0', requires_grad=True)]
+(Pdb) [p for n, p in self.model.named_parameters() if n == 'Qformer.bert.encoder.layer.6.experts.experts.0.dense1.weight']
+[Parameter containing:
+tensor([[ 6.5176e-02, -4.6473e-02, -2.7396e-02,  ...,  2.1774e-03,
+          6.1457e-02,  1.9180e-03],
+        [ 7.3707e-03,  6.1392e-02, -2.7108e-02,  ...,  4.0778e-02,
+         -1.9791e-02, -1.1612e-02],
+        [ 2.1193e-02, -3.8323e-02, -6.0238e-02,  ..., -1.4539e-02,
+          9.2965e-02,  3.9153e-02],
+        ...,
+        [ 5.3203e-03, -1.7276e-02, -3.2191e-02,  ..., -1.6435e-02,
+         -1.8553e-02, -2.8158e-02],
+        [-6.9853e-02,  9.2719e-03, -1.8895e-03,  ..., -2.6425e-02,
+          1.4880e-03,  3.4505e-02],
+        [-1.2168e-03,  3.7038e-02,  4.8047e-02,  ..., -3.4523e-03,
+         -1.3030e-05, -1.4778e-02]], device='cuda:0', requires_grad=True)]
