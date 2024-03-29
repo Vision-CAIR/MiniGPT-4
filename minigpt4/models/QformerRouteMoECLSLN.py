@@ -51,7 +51,7 @@ from minigpt4.models.moe.utils import (
     use_experts_route,
     moe_layer_judge,
 )
-from minigpt4.models.moe.uniroute_moe_layer import UniRouteMoELayer
+from minigpt4.models.moe.route_moe_layer import RouteMoELayer
 
 logging.set_verbosity_error() # ignore warning : Some weights of BertLMHeadModel were not initialized from the model checkpoint...
 logger = logging.get_logger(__name__)
@@ -435,7 +435,7 @@ class BertLayer(nn.Module):
         ffn = FeedForward(config)
 
         if self.use_experts:
-            self.experts = UniRouteMoELayer(
+            self.experts = RouteMoELayer(
                 hidden_size=config.hidden_size,
                 expert=ffn,
                 num_experts=config.moebert_expert_num,
@@ -527,43 +527,31 @@ class BertLayer(nn.Module):
                 cls_hidden = layer_output_text[0][:, 0, :] # [bz, hidden_size]
 
             # add moe query ffn
-            # query_attention_output size: [bz, query_length+seq_len, 768]
-            # attention_mask size: [bz, 1, 1, query_length+seq_len]
-            moe_ffn_attention_input = query_attention_output[:, :query_length, :]
-            moe_ffn_attention_mask = attention_mask.squeeze(dim=1).squeeze(dim=1)[:, :query_length]
+            moe_ffn_attention_input = query_attention_output[:, :query_length, :] # [bz, query_length+seq_len, 768]
+            moe_ffn_attention_mask = attention_mask.squeeze(dim=1).squeeze(dim=1)[:, :query_length] # [bz, 1, 1, query_length+seq_len]
             layer_output = self.feed_forward_query_moe(moe_ffn_attention_input, moe_ffn_attention_mask, beam_scores, expert_route, cls_hidden) 
             # layer_output = (layer_output, beam_scores, expert_route, beam_idx, importance_loss)
             # import pdb; pdb.set_trace() # 0107test
 
-            if attention_output.shape[1] > query_length: # have text input in Qformer
-
+            if attention_output.shape[1] > query_length:
                 if self.layer_judge == 'first' and self.num_beams>1:
                     # if layer_output[0].shape[0] == layer_output_text.shape[0]*self.num_beams and self.num_beams>1:
                     # adjust the dimension of layer_output_text to bz*num_beams
-                    layer_output_text = self.adjust_layer_output_text(layer_output_text)
+                    layer_output_text = self.adjust_hidden_states_by_num_beams(layer_output_text)
 
                 if self.layer_judge == 'mid' and self.num_beams > 1:
                     # layer_output_text [bz*num_beams, len, hidden_size]
                     beam_idx = layer_output[3]
-                    bz = layer_output[0].shape[0] / self.num_beams
-                    num_expert_beam = self.num_beams-1
-                    select_idx = list()
-                    for i in range(bz):
-                        for k in range(num_expert_beam):
-                            raw_beam_idx = beam_idx[i*num_expert_beam+k].item()
-                            select_idx += [raw_beam_idx+i]
-                        select_idx += [(i*self.num_beams)+num_expert_beam]
-                    layer_output_text = layer_output_text[select_idx]
+                    layer_output_text = layer_output_text[beam_idx]
 
                 if self.layer_judge == 'last' and self.num_beams>1:
-                    # combine output of universal expert and route experts
+                    # select top1 for each sample among beams
                     # layer_output = (hidden_states, beam_scores, expert_route)
                     # layer_output & layer_output_text dimen_0 from bz*num_beams to bz
                     layer_output, layer_output_text = self.route_moe_last_layer_top1(layer_output, layer_output_text)
 
                 layer_output = (torch.cat([layer_output[0], layer_output_text], dim=1), layer_output[1], layer_output[2], layer_output[3],layer_output[4])
-                # import pdb; pdb.set_trace() # 0107test
-        
+
         else:
             layer_output = apply_chunking_to_forward(
                 self.feed_forward_chunk,
@@ -592,38 +580,27 @@ class BertLayer(nn.Module):
         return layer_output_text
 
     def route_moe_last_layer_top1(self, layer_output, layer_output_text):
-        batch_size = int(layer_output[0].shape[0] / self.num_beams)
+        batch_size = layer_output[0].shape[0]
+        raw_batch_size = int(batch_size / self.num_beams)
         hidden_states, beam_scores, expert_route, beam_idx = layer_output[0], layer_output[1], layer_output[2], layer_output[3]
-        num_route_experts = self.num_beams-1
-
-        ### universal expert
-        select_universal = [i*self.num_beams+num_route_experts for i in range(batch_size)]
-        universal_output = hidden_states[select_universal] # [bz, 32, 768]
-        layer_output_text_universal = layer_output_text[select_universal] # [bz, 32, 768]
-
-        ## route expert
-        select_expert = [ x for x in range(batch_size*self.num_beams) if x not in select_universal] # length = bz * num_route_experts
-        route_expert_output = hidden_states[select_expert] # [bz*num_route_experts, 32, 768]
-        scores = beam_scores.view(batch_size, num_route_experts)
+        layer_output_text = layer_output_text[beam_idx]
+        
+        scores = beam_scores.view(raw_batch_size, self.num_beams)
         _, gate = torch.topk(scores, 1, dim=1)
-        selects = [ (bz_idx * num_route_experts + gate[bz_idx].item()) for bz_idx in range(batch_size)]
-        layer_output_text_route = layer_output_text[select_expert][beam_idx]
-    
-        layer_output_text_route = layer_output_text_route[selects]
-        route_expert_hidden = route_expert_output[selects]
+        selects = [ (bz_idx * self.num_beams + gate[bz_idx].item()) for bz_idx in range(raw_batch_size)]
+
+        layer_output_text = layer_output_text[selects]
+        hidden_states_new = hidden_states[selects]
         beam_scores_new = beam_scores[selects]
         expert_route_new = expert_route[selects]
 
-        # combine universal & route experts
-        final_hidden_states = universal_output + route_expert_hidden
-        final_layer_text = layer_output_text_universal + layer_output_text_route
-
-        return (final_hidden_states, beam_scores_new, expert_route_new, beam_idx, layer_output[4]), final_layer_text
+        return (hidden_states_new, beam_scores_new, expert_route_new, layer_output[3], layer_output[4]), layer_output_text
 
 
     def feed_forward_chunk(self, attention_output):
         intermediate_output = self.intermediate(attention_output)
         layer_output = self.output(intermediate_output, attention_output)
+        # layer_output = self.LayerNorm(layer_output + attention_output)
         return layer_output
 
     def feed_forward_query_moe(self, attention_output, expert_attention_mask, beam_scores, expert_route, cls_hidden):
@@ -634,6 +611,7 @@ class BertLayer(nn.Module):
         layer_output, beam_scores, expert_route, beam_idx, importance_loss = self.experts(
             attention_output, expert_attention_mask, beam_scores, expert_route, cls_hidden
         )
+
         return layer_output, beam_scores, expert_route, beam_idx, importance_loss
 
 class BertEncoder(nn.Module):
@@ -1133,7 +1111,7 @@ class BertModel(BertPreTrainedModel):
         )
 
 
-class BertMoERouteLMHeadModelLNInUniversal(BertPreTrainedModel):
+class BertMoECLSRouteLMHeadModelLNIn(BertPreTrainedModel):
 
     _keys_to_ignore_on_load_unexpected = [r"pooler"]
     _keys_to_ignore_on_load_missing = [r"position_ids", r"predictions.decoder.bias"]

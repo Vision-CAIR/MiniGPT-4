@@ -523,12 +523,22 @@ class BertLayer(nn.Module):
                     outputs + cross_attention_outputs[1:-1]
                 )  # add cross attentions if we output attention weights
 
+
+            if attention_output.shape[1] > query_length: # have text input in Qformer
+                layer_output_text = apply_chunking_to_forward(
+                    self.feed_forward_chunk,
+                    self.chunk_size_feed_forward,
+                    self.seq_len_dim,
+                    attention_output[:, query_length:, :],
+                )
+                cls_hidden = layer_output_text[0][:, 0, :] # [bz, hidden_size]
+
             # add moe query ffn
             # query_attention_output size: [bz, query_length+seq_len, 768]
             # attention_mask size: [bz, 1, 1, query_length+seq_len]
             moe_ffn_attention_input = query_attention_output[:, :query_length, :]
             moe_ffn_attention_mask = attention_mask.squeeze(dim=1).squeeze(dim=1)[:, :query_length]
-            layer_output = self.feed_forward_query_moe(moe_ffn_attention_input, moe_ffn_attention_mask, beam_scores, expert_route) 
+            layer_output = self.feed_forward_query_moe(moe_ffn_attention_input, moe_ffn_attention_mask, beam_scores, expert_route, cls_hidden) 
             # layer_output = (layer_output, beam_scores, expert_route, beam_idx, importance_loss)
             # import pdb; pdb.set_trace() # 0107test
 
@@ -628,14 +638,14 @@ class BertLayer(nn.Module):
         layer_output = self.output(intermediate_output, attention_output)
         return layer_output
 
-    def feed_forward_query_moe(self, attention_output, expert_attention_mask, beam_scores, expert_route):
+    def feed_forward_query_moe(self, attention_output, expert_attention_mask, beam_scores, expert_route, cls_hidden):
         if not self.use_experts:
             hidden_states = self.experts(attention_output)
             layer_output = self.expert_ln(hidden_states + attention_output)
             return layer_output, None, None, None, 0.0
 
         hidden_states, beam_scores, expert_route, beam_idx, importance_loss = self.experts(
-            attention_output, expert_attention_mask, beam_scores, expert_route
+            attention_output, expert_attention_mask, beam_scores, expert_route, cls_hidden
         )
         if hidden_states.shape[0]==attention_output.shape[0]*self.num_beams and self.num_beams>1:
             attention_output = self.adjust_hidden_states_by_num_beams(attention_output)

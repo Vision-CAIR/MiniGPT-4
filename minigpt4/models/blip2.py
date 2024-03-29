@@ -27,6 +27,8 @@ from minigpt4.models.QformerRouteMoE import BertMoERouteLMHeadModel
 from minigpt4.models.QformerRouteMoELN import BertMoERouteLMHeadModelLNIn
 from minigpt4.models.QformerRouteMoELNUni import BertMoERouteLMHeadModelLNInUniversal
 from minigpt4.models.QformerRouteMoEUni import BertMoERouteLMHeadModelUniversal
+from minigpt4.models.QformerRouteMoECLS import BertMoECLSRouteLMHeadModel
+from minigpt4.models.QformerRouteMoECLSLN import BertMoECLSRouteLMHeadModelLNIn
 from minigpt4.models.eva_vit import create_eva_vit_g
 from transformers import BertTokenizer
 from peft import (
@@ -89,6 +91,38 @@ class Blip2Base(BaseModel):
             )
         elif ln_position == "in":
             RouteMoEQformer = BertMoERouteLMHeadModelLNInUniversal.from_pretrained(
+                "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config
+            )
+        query_tokens = nn.Parameter(
+            torch.zeros(1, num_query_token, moe_encoder_config.hidden_size)
+        )
+        query_tokens.data.normal_(mean=0.0, std=moe_encoder_config.initializer_range)
+
+        return RouteMoEQformer, query_tokens
+
+
+    @classmethod
+    def init_RouteCLSMoEQformer(cls, num_query_token, vision_width, moebert_expert_num, moebert_num_beams, route_method, moe_weight_type, cross_attention_freq=2, ln_position="out"):
+        moe_encoder_config = BertConfig.from_pretrained("/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased")
+
+        moe_encoder_config.encoder_width = vision_width
+        # insert cross-attention layer every other block
+        moe_encoder_config.add_cross_attention = True
+        moe_encoder_config.cross_attention_freq = cross_attention_freq
+        moe_encoder_config.query_length = num_query_token
+
+        moe_encoder_config.moebert_expert_num = moebert_expert_num
+        moe_encoder_config.moebert_num_beams = moebert_num_beams
+        moe_encoder_config.route_method = route_method
+        moe_encoder_config.moe_weight_type = moe_weight_type
+
+        if ln_position == "out":
+            RouteMoEQformer = BertMoECLSRouteLMHeadModel.from_pretrained(
+                "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config
+            )
+        elif ln_position == "in":
+            # need to adjust
+            RouteMoEQformer = BertMoECLSRouteLMHeadModelLNIn.from_pretrained(
                 "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/bert-base-uncased", config=moe_encoder_config
             )
         query_tokens = nn.Parameter(

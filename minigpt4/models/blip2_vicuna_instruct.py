@@ -85,7 +85,7 @@ class Blip2VicunaInstruct(Blip2Base):
         )
 
         print('Initing & Loading Qformer')
-        if general_version in ['naive_moe', 'route_moe', 'uni_route_moe']:
+        if general_version in ['naive_moe', 'route_moe', 'uni_route_moe', 'cls_route_moe']:
             if general_version == 'naive_moe':
                 self.Qformer, self.query_tokens = self.init_QformerMoE(
                     num_query_token=num_query_token, 
@@ -112,6 +112,17 @@ class Blip2VicunaInstruct(Blip2Base):
                 )
             elif general_version == 'uni_route_moe':
                 self.Qformer, self.query_tokens = self.init_RouteMoEQformerUni(
+                    num_query_token=num_query_token, 
+                    vision_width=self.visual_encoder.num_features,
+                    moebert_expert_num=moebert_expert_num,
+                    moebert_num_beams=moebert_num_beams,
+                    route_method=moebert_route_method,
+                    moe_weight_type=moe_weight_type,
+                    cross_attention_freq=2,
+                    ln_position=ln_position,
+                )
+            elif general_version == 'cls_route_moe':
+                self.Qformer, self.query_tokens = self.init_RouteCLSMoEQformer(
                     num_query_token=num_query_token, 
                     vision_width=self.visual_encoder.num_features,
                     moebert_expert_num=moebert_expert_num,
