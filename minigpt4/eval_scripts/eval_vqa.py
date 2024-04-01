@@ -30,9 +30,20 @@ def list_of_str(arg):
 def eval_parser():
     parser = argparse.ArgumentParser(description="Demo")
     parser.add_argument(
+        "--device",
+        default=0,
+        help="device to run the model",
+    )
+    parser.add_argument(
         "--cfg-path", 
         default="/mnt/pfs-guan-ssai/nlu/wanghanzi/multimodal/PromptMoE/minigpt4/projects/qformer_moe_vicuna/eval/vqa_benchmark_evaluation.yaml",
         help="path to configuration file.")
+    parser.add_argument(
+        "--dataset",
+        default=['vizwiz','hm'],
+        type=list_of_str,
+        help="dataset to evaluate",
+    )
     parser.add_argument(
         "--options",
         nargs="+",
@@ -58,7 +69,6 @@ def init_model(cfg, device):
     model_cls = registry.get_model_class(model_config.arch)
     model = model_cls.from_config(model_config).to(device)
 
-#     import pudb; pudb.set_trace()
     key = list(cfg.datasets_cfg.keys())[0]
     vis_processor_cfg = cfg.datasets_cfg.get(key).vis_processor.train
     vis_processor = registry.get_processor_class(vis_processor_cfg.name).from_config(vis_processor_cfg)
@@ -68,13 +78,12 @@ def init_model(cfg, device):
     return model, vis_processor, text_processor
 
 parser = eval_parser()
-parser.add_argument("--dataset", type=list_of_str, default=['vizwiz','hm'], help="dataset to evaluate")
 args = parser.parse_args()
 cfg = Config(args)
 setup_seeds(cfg)
 print(cfg._convert_node_to_json(cfg.config))
 setup_logger()
-device = torch.device("cuda:5" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:{}".format(args.device) if torch.cuda.is_available() else "cpu")
 
 model, vis_processor, _ = init_model(cfg, device)
 model.eval()

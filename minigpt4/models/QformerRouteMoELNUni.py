@@ -524,7 +524,7 @@ class BertLayer(nn.Module):
                     self.seq_len_dim,
                     attention_output[:, query_length:, :],
                 )
-                cls_hidden = layer_output_text[0][:, 0, :] # [bz, hidden_size]
+                cls_hidden = layer_output_text[:, 0, :] # [bz, hidden_size]
 
             # add moe query ffn
             # query_attention_output size: [bz, query_length+seq_len, 768]

@@ -89,8 +89,8 @@ class AOKVQADataset(VQADataset, __DisplMixin):
         return {
             "image": data['image'],
             "image_id": data["image_id"],
-            # "q_input": q_input,
-            "q_input": llm_input,
+            "q_input": q_input,
+            # "q_input": llm_input,
             "llm_input": llm_input,
             "text_input": question,
             "text_output": answer,
@@ -164,8 +164,8 @@ class AOKVQAEvalDataset(VQAEvalDataset, __DisplMixin):
             "correct_choice_idx": correct_choice_idx_list,
             "direct_answers": direct_answers_list,
             "llm_input": llm_input_list,
-            "q_input": llm_input_list,
-            # "q_input": q_input_list,
+            # "q_input": llm_input_list,
+            "q_input": q_input_list,
             "gt_answers": gt_answers_list,
             "source": source_list,
         }
@@ -208,13 +208,13 @@ class AOKVQAEvalDataset(VQAEvalDataset, __DisplMixin):
             correct_choice_idx = None
             correct_answer = direct_answers
 
-        llm_input = ann.get("llm_input",random.choice(self.instruction_pool).format(question))
+        llm_input = ann.get("llm_input",random.choice(self.instruction_pool).format(question, ", ".join(choices)))
         # llm_input = random.choice(self.instruction_pool).format(question, ", ".join(choices))
 
         return {
             "image": image,
-            # "q_input": question,
-            "q_input": llm_input,
+            "q_input": question,
+            # "q_input": llm_input,
             "llm_input": llm_input,
             "text_input": question,
             "question_id": ann["question_id"],

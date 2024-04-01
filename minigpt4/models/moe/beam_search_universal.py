@@ -22,7 +22,7 @@ class UniRouteMoELayer(nn.Module):
         self.route_method = route_method
         if self.route_method == "pre-route-uni":
             self.gate = nn.Linear(hidden_size, num_experts, bias=False).float()
-        elif self.route_method in ["post-route-uni"]:
+        elif self.route_method in ["post-route-uni",'uni-cls-route', 'uni-cls-query-route', 'uni-cls-cross-route']:
             gate = nn.Linear(hidden_size, 1, bias=False).float()
             self.gate = gate
 
@@ -38,7 +38,7 @@ class UniRouteMoELayer(nn.Module):
 
 
     def beam_search(self, current_scores_log, beam_scores, expert_route, batch_size):
-        if self.layer_judge=='first' and self.route_method in ['pre-route-uni', 'post-route-uni']:
+        if self.layer_judge=='first' and self.route_method in ['pre-route-uni', 'post-route-uni','uni-cls-route', 'uni-cls-query-route', 'uni-cls-cross-route']:
             # current_scores_log torch.Size([bz, num_experts-1])
             assert beam_scores==None and expert_route==None
             current_scores = torch.exp(current_scores_log)
@@ -143,7 +143,32 @@ class UniRouteMoELayer(nn.Module):
         # import pdb;pdb.set_trace()
         return candidate_output, beam_scores, expert_route, beam_idx, importance_loss
 
-    def forward_post_route_uni(self, x, beam_scores, expert_route, use_log=True):
+
+    def calculate_cls_gate_score(self, cls_hidden, output_x):
+
+        if self.route_method == 'uni-cls-route':
+            # cls_hidden = [bz, 768]
+            gate_score = self.gate(cls_hidden) # bz, 1
+        elif self.route_method == 'uni-cls-query-route': # add cls_hiddin on query_token mean pool hidden
+            mean_output = torch.mean(output_x, dim=1) # bz, 768
+            gate_score = self.gate(mean_output+cls_hidden) # bz, 1
+        elif self.route_method == 'uni-cls-cross-route':
+            # cls_hidden as Q, output_x as K, V calculate scaled dot-product attention between Q and K and V
+            # cls_hidden: bz, 768
+            # output_x: bz, 32, 768
+            Q = cls_hidden.unsqueeze(1) # bz, 1, 768
+            K = output_x # bz, 32, 768
+            V = output_x # bz, 32, 768
+            # scaled dot-product attention
+            QK = torch.matmul(Q, K.transpose(-1, -2)) / (K.size(-1) ** 0.5) # bz, 1, 32
+            QK = F.softmax(QK, dim=-1) # bz, 1, 32
+            gate_score = torch.matmul(QK, V) # bz, 1, 768
+            gate_score = gate_score.squeeze(1) # bz, 768
+            gate_score = self.gate(gate_score) # bz, 1
+        return gate_score
+
+
+    def forward_route_uni(self, x, beam_scores, expert_route, use_log=True, cls_hidden=None):
         
         if beam_scores == None:
             batch_size = x.shape[0]
@@ -154,8 +179,6 @@ class UniRouteMoELayer(nn.Module):
             select_expert = [ x for x in range(batch_size*self.num_beams) if x not in select_universal]
             x_masked, x_uniexpert = x[select_expert],x[select_universal]
         num_tokens = x.shape[1]
-
-        import pdb; pdb.set_trace()
 
         def forward_expert(input_x, expert_idx):
             output_x = self.experts[expert_idx].forward(input_x)
@@ -168,8 +191,14 @@ class UniRouteMoELayer(nn.Module):
         logits_gate_lst = list()
         for expert_idx in range(self.num_route_experts): # num_expert-1
             output_x = forward_expert(x_masked, expert_idx)
-            output_x_aver = torch.mean(output_x, dim=1)
-            gate_score = self.gate(output_x_aver)
+
+            if self.route_method == 'post-route-uni':
+                output_x_aver = torch.mean(output_x, dim=1)
+                gate_score = self.gate(output_x_aver)
+
+            elif self.route_method in ['uni-cls-route', 'uni-cls-query-route', 'uni-cls-cross-route'] and cls_hidden is not None:
+                gate_score = self.calculate_cls_gate_score(cls_hidden, output_x)
+
             logits_gate_lst.append(gate_score)
             outputs.append(output_x.unsqueeze(0))
 
@@ -186,14 +215,12 @@ class UniRouteMoELayer(nn.Module):
         # beam_scores torch.Size([bz*(num_beam-1)]), expert_route torch.Size([bz*(num_beam-1), layer_n])
         current_select_expert = expert_route[:,-1] # torch.Size([bz*(num_beam-1)])
 
-        import pdb; pdb.set_trace()
         if self.layer_judge == 'first':
             replicated_tensor = candidate_output_raw.unsqueeze(2).expand(self.num_route_experts, batch_size, self.num_route_beam, num_tokens, self.hidden_size)
             candidate_output_raw = replicated_tensor.contiguous().view(self.num_route_experts, -1, num_tokens, self.hidden_size) # [bz*num_beams, 32,768]
             current_scores_t = current_scores.unsqueeze(1).expand(batch_size, self.num_route_beam, self.num_route_experts)
             current_scores = current_scores_t.contiguous().view(-1, self.num_route_experts) # [bz*(num_beams-1), num_experts-1]
         
-        import pdb; pdb.set_trace()
         candidate_output = candidate_output_raw.permute(1, 0, 2, 3)[beam_idx] # torch.Size([8, 2, 32, 768])
         expert_select_matrix = F.one_hot(current_select_expert, self.num_route_experts)
         if self.weight_type == 'ffn_prob':
@@ -202,8 +229,6 @@ class UniRouteMoELayer(nn.Module):
         else:
             output = candidate_output * expert_select_matrix.unsqueeze(-1).unsqueeze(-1)
         experts_output = torch.sum(output, dim=1) # [bz*num_beams-1, 32, 768]
-
-        import pdb; pdb.set_trace()
 
         ####################
         ### universal expert
@@ -220,22 +245,22 @@ class UniRouteMoELayer(nn.Module):
             output.append(combine_tmp)
         final_output = torch.cat(output) # [bz*num_beam, 32 ,768]
 
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
 
         return final_output, beam_scores, expert_route, beam_idx, importance_loss
     
-    def forward(self, x, attention_mask, beam_scores, expert_route, use_log=True):
+    def forward(self, x, attention_mask, beam_scores, expert_route, cls_hidden):
         """
             if first_layer: x [bz, 32, 768]
             else: x [bz*num_beams, 32, 768]
         """
         if self.route_method == 'pre-route-uni':
             candidate_output, beam_scores, expert_route, beam_idx, importance_loss = self.forward_pre_route(x, beam_scores, expert_route, use_log=True)
-        elif self.route_method in ['post-route-uni']:
-            candidate_output, beam_scores, expert_route, beam_idx, importance_loss = self.forward_post_route_uni(x, beam_scores, expert_route, use_log=True)
+        elif self.route_method in ['post-route-uni', 'uni-cls-route', 'uni-cls-query-route', 'uni-cls-cross-route']:
+            candidate_output, beam_scores, expert_route, beam_idx, importance_loss = self.forward_route_uni(x, beam_scores, expert_route, use_log=True, cls_hidden=cls_hidden)
 
-        import pdb;pdb.set_trace()
         return candidate_output, beam_scores, expert_route, beam_idx, importance_loss
+
 
 
 
@@ -305,7 +330,7 @@ if __name__ == '__main__':
                     num_experts=config.moebert_expert_num,
                     num_beams=config.moebert_num_beams,
                     layer_judge = layer_judge,
-                    route_method = "post-route-uni",
+                    route_method = "uni-cls-cross-rout[e",
                     weight_type="ffn_prob"
                 )
         layer_output = experts_post(x2, None, beam_scores2, expert_route2, False)

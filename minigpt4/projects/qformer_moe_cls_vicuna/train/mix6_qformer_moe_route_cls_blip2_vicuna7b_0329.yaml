@@ -35,9 +35,10 @@ model:
   freeze_t5_proj: False
 
   # moe
+  # general_version: 'cls_route_moe'
   general_version: 'uni_route_moe'
-  moebert_route_method: "post-route-uni"
-  moebert_load_balance: 0.05
+  moebert_route_method: 'uni-cls-cross-route'
+  moebert_load_balance: 0.01
   moebert_expert_num: 3
   moebert_num_beams: 3
   moe_weight_type: 'ffn_prob'
@@ -154,13 +155,13 @@ run:
   save_freq: 1500
 
   weight_decay: 0.05
-  max_epoch: 8
+  max_epoch: 10
   num_workers: 4
   warmup_steps: 600
   iters_per_epoch: 5000
 
   seed: 42
-  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_uni_route/mix_coco_gqa_ao_cocap_textcap_raw_QformerMoE_Post_Route_Universal_lnout_lr5e5_3ex3b_2loss_005_top6layer_textinqf_8epo_0328/"
+  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_mode_cls/mix_coco_gqa_ao_cocap_textcap_raw_QformerMoE_UNI_CLS_Gate_Route_lnout_lr5e5_3ex3b_2loss_001_top6layer_textinqf_10epo_0330/"
   
   amp: True
   resume_ckpt_path: null
@@ -170,7 +171,7 @@ run:
   valid_splits: ["val"]
 
   wandb_log: False
-  # job_name: mix6_uni_route_post_5e5_3ex3b_005_10ep_0319
+  # job_name: mix6_uni_cls_route_post_5e5_3ex3b_005_8ep_0330
 
   device: "cuda"
   world_size: 1

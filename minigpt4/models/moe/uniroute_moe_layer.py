@@ -19,9 +19,9 @@ class UniRouteMoELayer(nn.Module):
         self.weight_type = weight_type
 
         self.route_method = route_method
-        if self.route_method == "pre-route-uni":
-            self.gate = nn.Linear(hidden_size, num_experts, bias=False).float()
-        elif self.route_method in ["post-route-uni"]:
+        if self.route_method in ['pre-route-uni', 'uni-cls-gate-route']:
+            self.gate = nn.Linear(hidden_size, self.num_route_experts, bias=False).float()
+        elif self.route_method in ["post-route-uni",'uni-cls-route', 'uni-cls-query-route', 'uni-cls-cross-route']:
             gate = nn.Linear(hidden_size, 1, bias=False).float()
             self.gate = gate
 
@@ -35,9 +35,8 @@ class UniRouteMoELayer(nn.Module):
         # Compute coefficient of variation (i.e. std/mean) squared.
         return (std_importance_per_expert / mean_importance_per_expert)**2
 
-
     def beam_search(self, current_scores_log, beam_scores, expert_route, batch_size):
-        if self.layer_judge=='first' and self.route_method in ['pre-route-uni', 'post-route-uni']:
+        if self.layer_judge=='first' and self.route_method in ['pre-route-uni', 'post-route-uni','uni-cls-route', 'uni-cls-query-route', 'uni-cls-cross-route','uni-cls-gate-route']:
             # current_scores_log torch.Size([bz, num_experts-1])
             assert beam_scores==None and expert_route==None
             current_scores = torch.exp(current_scores_log)
@@ -79,7 +78,6 @@ class UniRouteMoELayer(nn.Module):
             expert_route = torch.cat([pre_route, beam_experts.unsqueeze(1)], dim=-1)
 
         return beam_scores, expert_route, beam_idx
-
 
     def forward_gate(self, x):
         """
@@ -166,8 +164,16 @@ class UniRouteMoELayer(nn.Module):
             gate_score = self.gate(gate_score) # bz, 1
         return gate_score
 
+    def adjust_cls_hidden(self, cls_hidden, output_x):
+        if cls_hidden.shape[0]/self.num_beams == output_x.shape[0]/self.num_route_beam:
+            cls_hidden_lst = list()
+            for i in range(cls_hidden.shape[0]):
+                if i % self.num_beams != 0:
+                    cls_hidden_lst.append(cls_hidden[i,:])
+            cls_hidden = torch.stack(cls_hidden_lst)
+        return cls_hidden
 
-    def forward_route_uni(self, x, beam_scores, expert_route, use_log=True, cls_hidden=None):
+    def forward_route_uni(self, x, beam_scores, expert_route, cls_hidden=None):
         
         if beam_scores == None:
             batch_size = x.shape[0]
@@ -186,6 +192,9 @@ class UniRouteMoELayer(nn.Module):
         ####################
         ### route expert
         ####################
+        if cls_hidden is not None:
+            cls_hidden = self.adjust_cls_hidden(cls_hidden, x_masked)
+
         outputs = list()
         logits_gate_lst = list()
         for expert_idx in range(self.num_route_experts): # num_expert-1
@@ -194,20 +203,24 @@ class UniRouteMoELayer(nn.Module):
             if self.route_method == 'post-route-uni':
                 output_x_aver = torch.mean(output_x, dim=1)
                 gate_score = self.gate(output_x_aver)
+                logits_gate_lst.append(gate_score)
 
             elif self.route_method in ['uni-cls-route', 'uni-cls-query-route', 'uni-cls-cross-route'] and cls_hidden is not None:
                 gate_score = self.calculate_cls_gate_score(cls_hidden, output_x)
-
-            logits_gate_lst.append(gate_score)
+                logits_gate_lst.append(gate_score)
             outputs.append(output_x.unsqueeze(0))
 
         candidate_output_raw = torch.cat(outputs) # torch.Size([num_expert-1, bz*(num_beam-1), 32, 768])
-        logits_gate = torch.cat(logits_gate_lst,dim=1)# torch.Size([bz*(num_beam-1), num_expert-1])
-        current_scores = F.softmax(logits_gate, dim=-1) # torch.Size([bz*(num_beam-1), num_expert-1])
-        if use_log:
-            current_scores_log = torch.log(current_scores) # 取log之后可以直接相加 torch.Size([bz*(num_beam-1), num_expert-1])
+
+        if self.route_method == 'uni-cls-gate-route':
+            # universal expert with cls_hidden state into nn.Linear(768,num_experts-1)
+            logits_gate = self.gate(cls_hidden)
+            current_scores = F.softmax(logits_gate, dim=-1) # torch.Size([bz*(num_beam-1), num_expert-1])
         else:
-            current_scores_log = current_scores
+            logits_gate = torch.cat(logits_gate_lst,dim=1)# torch.Size([bz*(num_beam-1), num_expert-1])
+            current_scores = F.softmax(logits_gate, dim=-1) # torch.Size([bz*(num_beam-1), num_expert-1])
+
+        current_scores_log = torch.log(current_scores) # 取log之后可以直接相加 torch.Size([bz*(num_beam-1), num_expert-1])
         
         importance_loss = self._importance_auxiliary_loss(current_scores)
         beam_scores, expert_route, beam_idx = self.beam_search(current_scores_log, beam_scores, expert_route, current_scores_log.shape[0])
@@ -254,9 +267,9 @@ class UniRouteMoELayer(nn.Module):
             else: x [bz*num_beams, 32, 768]
         """
         if self.route_method == 'pre-route-uni':
-            candidate_output, beam_scores, expert_route, beam_idx, importance_loss = self.forward_pre_route(x, beam_scores, expert_route, use_log=True)
-        elif self.route_method in ['post-route-uni', 'uni-cls-route', 'uni-cls-query-route', 'uni-cls-cross-route']:
-            candidate_output, beam_scores, expert_route, beam_idx, importance_loss = self.forward_route_uni(x, beam_scores, expert_route, use_log=True, cls_hidden=cls_hidden)
+            candidate_output, beam_scores, expert_route, beam_idx, importance_loss = self.forward_pre_route(x, beam_scores, expert_route)
+        elif self.route_method in ['post-route-uni', 'uni-cls-route', 'uni-cls-query-route', 'uni-cls-cross-route','uni-cls-gate-route']:
+            candidate_output, beam_scores, expert_route, beam_idx, importance_loss = self.forward_route_uni(x, beam_scores, expert_route, cls_hidden=cls_hidden)
 
         return candidate_output, beam_scores, expert_route, beam_idx, importance_loss
 
