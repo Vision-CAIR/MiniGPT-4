@@ -204,6 +204,7 @@ class Blip2VicunaInstruct(Blip2Base):
         self.general_version = general_version
         self.moebert_load_balance = moebert_load_balance
         self.moebert_num_beams = moebert_num_beams
+        self.moebert_route_method = moebert_route_method
 
         self.gate_save_path = gate_save_path
         self.bal_loss_decay_epoch = bal_loss_decay_epoch
@@ -615,26 +616,44 @@ class Blip2VicunaInstruct(Blip2Base):
                         'beam_scores': beam_scores[i].tolist(),
                         'expert_route': expert_route[i].tolist(),
                     })
-                    if self.general_version=='route_moe':
-                        # Route
-                        for layer in [6,7,8,9,10,11]:
-                            if layer in [6,11]:
-                                layer_data  = all_hidden_states[layer][i, :, :]
-                            else:
-                                layer_data  = all_hidden_states[layer][i*self.moebert_num_beams, :, :]
-                            file_path = os.path.join(self.gate_save_path, f'{image_id}_{str(layer)}.npy')
-                            x = layer_data.data.cpu().numpy()
-                            np.save(file_path,x) # 大功告成
-                    elif self.general_version=='uni_route_moe':
-                        import pdb;pdb.set_trace()
-                        for layer in [6,7,8,9,10,11]:
-                            if layer in [6,11]:
-                                layer_data  = all_hidden_states[layer][i, :, :]
-                            else:
-                                layer_data  = all_hidden_states[layer][i*self.moebert_num_beams, :, :]
-                            file_path = os.path.join(self.gate_save_path, f'{image_id}_{str(layer)}.npy')
-                            x = layer_data.data.cpu().numpy()
-                            np.save(file_path,x) # 大功告成
+
+                    # try:
+                    #     if self.general_version=='route_moe':
+                    #         # Route
+                    #         for layer in [6,7,8,9,10,11]:
+                    #             if layer in [6,11]:
+                    #                 layer_data  = all_hidden_states[layer][i, :, :]
+                    #             else:
+                    #                 layer_data  = all_hidden_states[layer][i*self.moebert_num_beams, :, :]
+                    #             file_path = os.path.join(self.gate_save_path, f'{image_id}_{str(layer)}.npy')
+                    #             x = layer_data.data.cpu().numpy()
+                    #             np.save(file_path,x) # 大功告成
+                    #     elif self.general_version=='uni_route_moe':
+                    #         if 'uni' in self.moebert_route_method:
+                    #             # import pdb;pdb.set_trace()
+                    #             for layer in [6,7,8,9,10,11,12]:
+                    #                 if layer in [6,12]:
+                    #                     layer_data  = all_hidden_states[layer][i, :, :]
+                    #                 else:
+                    #                     layer_data  = all_hidden_states[layer]
+                    #                 file_path = os.path.join(self.gate_save_path, f'{image_id}_{str(layer)}.npy')
+                    #                 x = layer_data.data.cpu().numpy()
+                    #                 np.save(file_path,x) # 大功告成   
+                    #         else:
+                    #             # import pdb;pdb.set_trace()
+                    #             for layer in [6,7,8,9,10,11]:
+                    #                 if layer in [6,11]:
+                    #                     layer_data  = all_hidden_states[layer][i, :, :]
+                    #                 else:
+                    #                     layer_data  = all_hidden_states[layer][i*self.moebert_num_beams, :, :]
+                    #                 file_path = os.path.join(self.gate_save_path, f'{image_id}_{str(layer)}.npy')
+                    #                 x = layer_data.data.cpu().numpy()
+                    #                 np.save(file_path,x) # 大功告成
+                            
+                    # except Exception as e:
+                    #     print("Hidden states Save Error....")
+                    #     print(e)
+                        
             except Exception as e:
                 print("Route Gate Save Error....")
                 print(e)

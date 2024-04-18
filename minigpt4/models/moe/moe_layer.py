@@ -17,7 +17,7 @@ class MoELayer(nn.Module):
 
         if route_method in ["gate-token", "gate-sentence", "gate-sentence-cls"]:
             gate = nn.Linear(hidden_size, num_experts, bias=False).float()
-        elif route_method in ["gate-sentence-post"]:
+        elif route_method in ["gate-sentence-post", 'cls-cross']:
             gate = nn.Linear(hidden_size, 1, bias=False).float()
             # self.gates = nn.ModuleList([copy.deepcopy(gate) for i in range(num_experts)])    
         elif route_method in ["gate-sentence-post-cosine"]:
@@ -83,7 +83,7 @@ class MoELayer(nn.Module):
 
         return x, balance_loss, gate_load
 
-    def _forward_gate_sentence_post(self, x, attention_mask):
+    def _forward_gate_sentence_post(self, x, attention_mask, cls_hidden=None):
         """
             x: query_attention_output; torch.Size([bz, 32, 768])
             attention_mask: torch.ones([bz, 32])
@@ -106,14 +106,23 @@ class MoELayer(nn.Module):
         for expert_idx in range(self.num_experts):
             output_x = forward_expert(x_masked, expert_idx)
             outputs.append(output_x.unsqueeze(0))
+
             output_x_aver = output_x.sum(1) / attention_mask.unsqueeze(-1).sum(1) # torch.Size([bz, 768])
             # gate_acore = self.gates[expert_idx](output_x_aver)
             if self.route_method=="gate-sentence-post-cosine":
                 # gate_score = F.cosine_similarity(self.gate.weight, output_x_aver,dim=1).unsqueeze(1)
                 gate_score = F.cosine_similarity(self.gate, output_x_aver,dim=1).unsqueeze(1)
-            else:
+            elif self.route_method=="gate-sentence-post":
                 gate_score = self.gate(output_x_aver)
-
+            elif self.route_method=="cls-cross":
+                Q = cls_hidden.unsqueeze(1) # bz, 1, 768
+                K = output_x # bz, 32, 768
+                V = output_x # bz, 32, 768
+                QK = torch.matmul(Q, K.transpose(-1, -2)) / (K.size(-1) ** 0.5) # bz, 1, 32
+                QK = F.softmax(QK, dim=-1) # bz, 1, 32
+                gate_score = torch.matmul(QK, V) # bz, 1, 768
+                gate_score = gate_score.squeeze(1) # bz, 768
+                gate_score = self.gate(gate_score) # bz, 1
             logits_gate_lst.append(gate_score)
 
         candidate_output = torch.cat(outputs) # torch.Size([num_expert, bz, 32, 768])
@@ -249,8 +258,8 @@ class MoELayer(nn.Module):
             x, balance_loss, gate_load = self._forward_gate_token(x)
         elif self.route_method == "gate-sentence":
             x, balance_loss, gate_load = self._forward_gate_sentence(x, attention_mask)
-        elif self.route_method in ["gate-sentence-post", "gate-sentence-post-cosine"]:
-            x, balance_loss, gate_load = self._forward_gate_sentence_post(x, attention_mask)
+        elif self.route_method in ["gate-sentence-post", "gate-sentence-post-cosine","cls-cross"]:
+            x, balance_loss, gate_load = self._forward_gate_sentence_post(x, attention_mask, cls_hidden)
         elif self.route_method == "gate-sentence-cls":
             x, balance_loss, gate_load = self._forward_gate_sentence(x, attention_mask, cls_hidden)
         else:

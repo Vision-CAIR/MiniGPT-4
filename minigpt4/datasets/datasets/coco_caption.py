@@ -165,28 +165,56 @@ class COCOCapEvalDataset(CaptionEvalDataset):
 
 
 class NoCapsEvalDataset(CaptionEvalDataset):
-    def __init__(self, vis_processor, text_processor, vis_root, ann_paths):
+    def __init__(self, annotations, vis_processor, text_processor, vis_root):
         """
         vis_root (string): Root directory of images (e.g. coco/images/)
         ann_root (string): directory to store the annotation file
         split (string): val or test
         """
-        super().__init__(vis_processor, text_processor, vis_root, ann_paths)
+        self.annotation = annotations
+        self.instruction_pool = [
+            'Briefly describe this image.',
+            'Provide a concise depiction of this image.',
+            'Present a short description of this image.',
+            'Summarize this image in a few words.',
+            'A short image caption:',
+            'A short image description:',
+            'A photo of ',
+            'An image that shows ',
+            'Write a short description for the image. ',
+            'Write a description for the photo.',
+            'Provide a description of what is presented in the photo.',
+            'Briefly describe the content of the image.',
+            'Can you briefly explain what you see in the image?',
+            'Could you use a few words to describe what you perceive in the photo?',
+            'Please provide a short depiction of the picture.',
+            'Using language, provide a short account of the image.',
+            'Use a few words to illustrate what is happening in the picture.',
+        ]
+        self.source = 'no_cap'
+        self.vis_root = vis_root    
+        self.vis_processor = vis_processor
+        self.text_processor = text_processor
 
     def __getitem__(self, index):
         ann = self.annotation[index]
-
-        image_path = os.path.join(self.vis_root, ann["image"])
+        image_name = ann["image"].split("/")[-1]
+        image_path = os.path.join(self.vis_root,image_name)
         image = Image.open(image_path).convert("RGB")
 
         image = self.vis_processor(image)
 
         img_id = ann["img_id"]
+        instruction = random.choice(self.instruction_pool)
+        q_input = instruction
+        llm_input = instruction
 
         return {
             "image": image,
             "image_id": img_id,
-            "instance_id": ann["instance_id"],
+            "q_input": q_input,
+            "llm_input": llm_input,
+            "source": self.source,
         }
 
 

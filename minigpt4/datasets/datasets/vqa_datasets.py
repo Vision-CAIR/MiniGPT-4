@@ -8,6 +8,7 @@
 import torch
 from PIL import Image
 import os
+import random
 
 from minigpt4.datasets.datasets.base_dataset import BaseDataset
 
@@ -73,6 +74,14 @@ class VizWizEvalData(torch.utils.data.Dataset):
         self.loaded_data = loaded_data
         self.root_path = root_path
         self.vis_processor = vis_processor
+        self.instruction_pool =[   
+            '{}',
+            'Q: {} A: ',
+            'Based on the image, respond to this question with a short answer: {}',
+            '{} A short answer to the question is ',
+            'Question: {} Short answer:',
+        ]
+        self.source = 'vizwiz'
 
     def __len__(self):
         return len(self.loaded_data)
@@ -86,15 +95,15 @@ class VizWizEvalData(torch.utils.data.Dataset):
         image_path = os.path.join(self.root_path, img_id)
         image = Image.open(image_path).convert('RGB')
         image = self.vis_processor(image)
-        # question = f"[vqa] Based on the image, respond to this question with a short answer: {question} "
-        # question = f"Based on the image, respond to this question with a short answer: {question} and reply 'unanswerable' if you could not answer it"
         question = question
+        llm_input = random.choice(self.instruction_pool).format(question)
         sample = {
             'image':image,
             'q_input': question,
-            'llm_input': question,
+            'llm_input': llm_input,
             'image_id': img_id,
             'gt_ans': answers,
+            'source': self.source,
         }
         return sample
 
@@ -169,6 +178,14 @@ class HMEvalData(torch.utils.data.Dataset):
         self.loaded_data = loaded_data
         self.root_path = root_path
         self.vis_processor = vis_processor
+        self.instruction_pool =[   
+            '{}',
+            'Q: {} A: ',
+            'Based on the image, respond to this question with a short answer: {}',
+            '{} A short answer to the question is ',
+            'Question: {} Short answer:',
+        ]
+        self.source = 'hm'
 
     def __len__(self):
         return len(self.loaded_data)
@@ -180,15 +197,18 @@ class HMEvalData(torch.utils.data.Dataset):
         image = Image.open(image_path).convert("RGB")
         image = self.vis_processor(image)
         question = ann["text"]
-        question = f"This is an image writting '{question}'. Is this image hateful? Answer yes or no. Answer:"
+        question = f"This is an image writting '{question}'. Is this image hateful? Answer yes or no."
+        llm_input = random.choice(self.instruction_pool).format(question)
         labels = ann["label"]
         
         sample = {
             'image':image,
             'q_input': question,
-            'llm_input': question,
+            'llm_input': llm_input,
             'image_id':  image_id,
             'gt_ans': labels,
+            'source': self.source,
+
         }
 
         return sample
@@ -198,6 +218,14 @@ class VSREvalData(torch.utils.data.Dataset):
         self.loaded_data = loaded_data
         self.root_path = root_path
         self.vis_processor = vis_processor
+        self.instruction_pool =[   
+            '{}',
+            'Q: {} A: ',
+            'Based on the image, respond to this question with a short answer: {}',
+            '{} A short answer to the question is ',
+            'Question: {} Short answer:',
+        ]
+        self.source = 'vsr'
 
     def __len__(self):
         return len(self.loaded_data)
@@ -208,15 +236,18 @@ class VSREvalData(torch.utils.data.Dataset):
         image = Image.open(image_path).convert("RGB")
         image = self.vis_processor(image)
         question = ann["caption"]
-        question = f'Based on the image, is this statement true or false? {question}'
+        question = f'Is the statement: {question}, true or false?'
+        llm_input = random.choice(self.instruction_pool).format(question)
         labels = 'true' if ann["label"] == 1 else 'false'
 
         sample = {
             'image':image,
             'q_input': question,
-            'llm_input': question,
+            'llm_input': llm_input,
             'image_id':  ann["image"],
             'gt_ans': labels,
+            'source': self.source,
+
         }
 
         return sample

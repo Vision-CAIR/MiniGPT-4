@@ -60,11 +60,17 @@ class Blip2T5InstructQformerMoE(Blip2Base):
         max_output_txt_len=256,
         apply_lemmatizer=False,
         qformer_text_input=True,
+        general_version='base',
+        moebert_num_beams=2,
         moebert_expert_num=5,
         moebert_route_method="gate-sentence",
         moebert_load_balance = 0.1,
         moe_topk = 1,
-        use_balance_loss=True,
+        use_balance_loss = True,
+        moe_weight_type = "l2_norm",
+        gate_save_path = None,
+        bal_loss_decay_epoch = 3,
+        ln_position = "out",
     ):
         """
         apply_lemmatizer: when set to True, postprocess predict_answers() result with lemmas.
@@ -93,10 +99,61 @@ class Blip2T5InstructQformerMoE(Blip2Base):
         #     logging.info("freeze vision encoder")
         # print('Loading VIT Done')
 
-        print('Initing MoE Q-Former')
-        self.Qformer, self.query_tokens = self.init_Qformer(
-            num_query_token, self.visual_encoder.num_features
-        )
+        print('Initing & Loading Qformer')
+        if general_version in ['naive_moe', 'route_moe', 'uni_route_moe', 'cls_route_moe']:
+            if general_version == 'naive_moe':
+                self.Qformer, self.query_tokens = self.init_QformerMoE(
+                    num_query_token=num_query_token, 
+                    vision_width=self.visual_encoder.num_features,
+                    moebert_expert_num=moebert_expert_num,
+                    moebert_route_method=moebert_route_method,
+                    moebert_load_balance=moebert_load_balance,
+                    moe_topk=moe_topk,
+                    use_balance_loss=use_balance_loss,
+                    moe_weight_type=moe_weight_type,
+                    cross_attention_freq=2,
+                    ln_position=ln_position,
+                )
+            elif general_version == 'route_moe':
+                self.Qformer, self.query_tokens = self.init_RouteMoEQformer(
+                    num_query_token=num_query_token, 
+                    vision_width=self.visual_encoder.num_features,
+                    moebert_expert_num=moebert_expert_num,
+                    moebert_num_beams=moebert_num_beams,
+                    route_method=moebert_route_method,
+                    moe_weight_type=moe_weight_type,
+                    cross_attention_freq=2,
+                    ln_position=ln_position,
+                )
+            elif general_version == 'uni_route_moe':
+                self.Qformer, self.query_tokens = self.init_RouteMoEQformerUni(
+                    num_query_token=num_query_token, 
+                    vision_width=self.visual_encoder.num_features,
+                    moebert_expert_num=moebert_expert_num,
+                    moebert_num_beams=moebert_num_beams,
+                    route_method=moebert_route_method,
+                    moe_weight_type=moe_weight_type,
+                    cross_attention_freq=2,
+                    ln_position=ln_position,
+                )
+            elif general_version == 'cls_route_moe':
+                print("init_route_cls_moe")
+                self.Qformer, self.query_tokens = self.init_RouteCLSMoEQformer(
+                    num_query_token=num_query_token, 
+                    vision_width=self.visual_encoder.num_features,
+                    moebert_expert_num=moebert_expert_num,
+                    moebert_num_beams=moebert_num_beams,
+                    route_method=moebert_route_method,
+                    moe_weight_type=moe_weight_type,
+                    cross_attention_freq=2,
+                    ln_position=ln_position,
+                )
+
+        elif general_version == 'base':
+            self.Qformer, self.query_tokens = self.init_Qformer(
+                num_query_token, self.visual_encoder.num_features
+            )
+
         
         if not qformer_text_input:
             self.Qformer.bert.embeddings.word_embeddings = None
@@ -131,7 +188,12 @@ class Blip2T5InstructQformerMoE(Blip2Base):
 
         # load BLIP2 Pretrain
         print("Loading BLIP2 Parameters from :", q_former_model)
-        self.load_from_pretrained(url_or_filename=q_former_model)
+        if general_version not in ['base']:
+            self.load_from_pretrained(
+                url_or_filename=q_former_model
+            )
+            # init MoE Layer(init moe ffn by blip2 query ffn)
+            self.adjust_param_qformer()
 
         # freeze qformer        
         if freeze_qformer:
@@ -156,6 +218,38 @@ class Blip2T5InstructQformerMoE(Blip2Base):
         self._lemmatizer = None
 
         self.qformer_text_input = qformer_text_input
+        self.general_version = general_version
+        self.moebert_load_balance = moebert_load_balance
+        self.moebert_num_beams = moebert_num_beams
+
+        self.gate_save_path = gate_save_path
+        self.bal_loss_decay_epoch = bal_loss_decay_epoch
+
+    def adjust_param_qformer(self):
+        # init MoE Layer(init moe ffn by blip2 query ffn)
+        state_dict = self.Qformer.state_dict()
+        for name, param in self.Qformer.named_parameters():
+            if "_query" in name and "experts.experts" in name:
+                pattern = r'\.experts\.experts\.\d+'
+                key_orig = re.sub(pattern, '', name)
+                param.data.copy_(state_dict[key_orig]) # copy state_dict[key_orig] to param
+            if "experts.intermediate_query" in name or "experts.output_query" in name:
+                key_orig = re.sub(r'experts\.', '', name)
+                param.data.copy_(state_dict[key_orig]) # copy state_dict[key_orig] to param
+            if "_query" in name and "experts" not in name: # raw ffn_query not update
+                param.requires_grad = False
+            ln_pattern = r"bert\.encoder\.layer\.\d+\.expert_ln\.(weight|bias)"
+            if re.match(ln_pattern, name):
+                key_orig = re.sub('expert_ln', 'output_query.LayerNorm', name)
+                param.data.copy_(state_dict[key_orig])
+            d1_pattern = r"bert\.encoder\.layer\.(\d+)\.experts(\.|\.experts\.\d+\.)dense1\.(weight|bias)"
+            if re.match(d1_pattern, name):
+                key_orig = re.sub(r'experts(\.|\.experts\.\d+\.)dense1', 'intermediate_query.dense', name)
+                param.data.copy_(state_dict[key_orig])
+            d2_pattern = r"bert\.encoder\.layer\.(\d+)\.experts(\.|\.experts\.\d+\.)dense2\.(weight|bias)"
+            if re.match(d2_pattern, name):
+                key_orig = re.sub(r'experts(\.|\.experts\.\d+\.)dense2', 'output_query.dense', name)
+                param.data.copy_(state_dict[key_orig])
 
     def forward(self, samples):
         
@@ -196,9 +290,13 @@ class Blip2T5InstructQformerMoE(Blip2Base):
             )
         
         query_output_to_linear = query_output.last_hidden_state[:,:query_tokens.size(1),:]
-        # gate_loss = query_output.gate_loss
+
+        if self.general_version not in ['base']:
+            gate_loss = query_output.gate_loss # only available in QformerMoE
+        
         inputs_t5 = self.t5_proj(query_output_to_linear)
         atts_t5 = torch.ones(inputs_t5.size()[:-1], dtype=torch.long).to(image.device)
+        
 
         with self.maybe_autocast(dtype=torch.bfloat16):
             input_tokens = self.t5_tokenizer(
@@ -232,7 +330,13 @@ class Blip2T5InstructQformerMoE(Blip2Base):
                 return_dict=True,
                 labels=targets,
             )
-            loss = outputs.loss
+            if self.general_version not in ['base']:
+                if samples['epoch'] > self.bal_loss_decay_epoch:
+                    loss = outputs.loss
+                else:
+                    loss = outputs.loss + self.moebert_load_balance * gate_loss
+            else:
+                loss = outputs.loss
 
             # final_loss = loss + self.moebert_load_balance * gate_loss
             return {"loss": loss}
@@ -449,12 +553,18 @@ class Blip2T5InstructQformerMoE(Blip2Base):
         apply_lemmatizer = cfg.get("apply_lemmatizer", False)
 
         qformer_text_input = cfg.get("qformer_text_input", True)
-        
+
+        general_version = cfg.get("general_version", False)
+        moebert_num_beams = cfg.get("moebert_num_beams", 2)
         moebert_expert_num = cfg.get("moebert_expert_num", 5)
         moebert_route_method = cfg.get("moebert_route_method", "gate-sentence")
         moebert_load_balance = cfg.get("moebert_load_balance", 0.1)
         moe_topk = cfg.get("moe_topk", 1)
         use_balance_loss = cfg.get("use_balance_loss", True)
+        moe_weight_type = cfg.get("moe_weight_type",'l2_norm')
+        gate_save_path = cfg.get("gate_save_path", None)
+        bal_loss_decay_epoch = cfg.get("bal_loss_decay_epoch", 3)
+        ln_position = cfg.get("ln_position","out")
 
         model = cls(
             vit_model=vit_model,
@@ -474,11 +584,17 @@ class Blip2T5InstructQformerMoE(Blip2Base):
             max_output_txt_len=max_output_txt_len,
             apply_lemmatizer=apply_lemmatizer,
             qformer_text_input=qformer_text_input,
+            general_version=general_version,
+            moebert_num_beams=moebert_num_beams,
             moebert_expert_num=moebert_expert_num,
             moebert_route_method=moebert_route_method,
             moebert_load_balance=moebert_load_balance,
             moe_topk=moe_topk,
             use_balance_loss=use_balance_loss,
+            moe_weight_type=moe_weight_type,
+            gate_save_path=gate_save_path,
+            bal_loss_decay_epoch=bal_loss_decay_epoch,
+            ln_position=ln_position,
         )
 
         if qformer_text_input:

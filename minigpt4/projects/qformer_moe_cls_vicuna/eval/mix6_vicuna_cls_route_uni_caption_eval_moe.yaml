@@ -1,0 +1,116 @@
+ # Copyright (c) 2022, salesforce.com, inc.
+ # All rights reserved.
+ # SPDX-License-Identifier: BSD-3-Clause
+ # For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+
+model:
+  arch: blip2_vicuna_instruct
+  model_type: vicuna7b_pretrain
+  load_pretrained: True
+  load_finetuned: True
+  vit_model: eva_clip_g
+  pretrained: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
+  # finetuned: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_mode_cls/mix_coco_gqa_ao_cocap_textcap_raw_QformerMoE_CLS_Cross_Universal_lnout_lr5e5_4ex4b_2loss_001_top6layer_textinqf_10epo_0330/20240330222/checkpoint_4.pth"
+  finetuned: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_mode_cls/mix_coco_gqa_ao_cocap_textcap_raw_QformerMoE_CLS_Cross_Universal_lnout_lr5e5_4ex4b_2loss_001_top6layer_textinqf_10epo_0330/20240330222/checkpoint_4.pth"
+  q_former_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/blip2/blip2_vicuna7b/blip2_pretrained_vicuna7b.pth"
+
+  # vit encoder
+  image_size: 224
+  drop_path_rate: 0
+  use_grad_checkpoint: False
+  vit_precision: "fp16"
+
+  # Q-Former
+  num_query_token: 32
+  qformer_text_input: True
+
+  # vicuna
+  llm_model: "/mnt/pfs-guan-ssai/nlu/wanghanzi/models/vicuna-7b-v1.1"
+  prompt: ""
+  max_txt_len: 256
+  max_output_txt_len: 256
+
+  # freeze
+  freeze_vit: True
+  freeze_llm: True
+  freeze_qformer: False
+  freeze_t5_proj: False
+
+  # moe
+  # general_version: 'uni_route_moe'
+  # moebert_route_method: 'uni-cls-cross-route'
+  # moebert_load_balance: 0.01
+  # moebert_expert_num: 4
+  # moebert_num_beams: 4
+  # moe_weight_type: 'ffn_prob'
+  # use_balance_loss: False
+  # ln_position: "out"
+  
+  general_version: 'uni_route_moe'
+  moebert_route_method: 'uni-cls-cross-route'
+  moebert_load_balance: 0.01
+  moebert_expert_num: 4
+  moebert_num_beams: 4
+  moe_weight_type: 'ffn_prob'
+  use_balance_loss: False
+  ln_position: "out"
+  gate_save_path: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/route_save/mix_coco_gqa_ao_cocap_textcap_raw_QformerMoE_CLS_Cross_Universal_lnout_lr5e5_4ex4b_2loss_001_top6layer_textinqf_10epo_0330_ckpt_4_zero_shot/"
+
+
+datasets:
+  coco_vqa:    # 658104
+    type: vqa_v2_eval
+    batch_size: 4
+    vis_processor:
+      train:
+        name: "blip2_image_eval"
+        image_size: 224
+      eval:
+        name: "blip2_image_eval"
+        image_size: 224
+    text_processor:
+      eval:
+        name: "blip_caption"
+      train:
+        name: "blip_caption"
+
+evaluation_datasets:
+  vizwiz:
+    eval_file_path: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/VizWiz/val.json
+    img_path: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/VizWiz/val    
+    max_new_tokens: 20
+    batch_size: 32
+  hm:
+    eval_file_path: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/hm_data/dev_seen.jsonl
+    img_path: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/hm_data/
+    max_new_tokens: 20
+    batch_size: 32
+  vsr:
+    eval_file_path: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/visual-spatial-reasoning/data
+    img_path: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/visual-spatial-reasoning/images
+    max_new_tokens: 20
+    batch_size: 20
+  nocap:
+    eval_file_path: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/NoCap/nocaps_val.json
+    img_path: /mnt/pfs-guan-ssai/nlu/wanghanzi/data/NoCap/images
+    max_new_tokens: 20
+    batch_size: 20
+    
+run:
+  task: instruction_tuning
+  # optimizer
+  seed: 42
+  output_dir: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_mode_cls/eval/mix_coco_gqa_ao_cocap_textcap_raw_QformerMoE_CLS_Cross_Universal_lnout_lr5e5_4ex4b_2loss_001_top6layer_textinqf_10epo_0330/"
+  save_path: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_mode_cls/eval/mix_coco_gqa_ao_cocap_textcap_raw_QformerMoE_CLS_Cross_Universal_lnout_lr5e5_4ex4b_2loss_001_top6layer_textinqf_10epo_0330_ckpt4/"
+  
+  amp: True
+  resume_ckpt_path: null
+
+  evaluate: True
+  test_splits: ["test"]
+
+  device: "cuda"
+  world_size: 1
+  dist_url: "env://"
+  distributed: True
+  

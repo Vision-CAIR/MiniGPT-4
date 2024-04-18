@@ -50,7 +50,7 @@ preprocess:
           name: "blip_image_train"
           image_size: 224
         eval:
-          name: "blip_image_eval"
+          name: "blip2_image_eval"
           image_size: 224
     text_processor:
         train:

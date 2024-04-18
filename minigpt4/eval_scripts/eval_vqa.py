@@ -31,7 +31,7 @@ def eval_parser():
     parser = argparse.ArgumentParser(description="Demo")
     parser.add_argument(
         "--device",
-        default=0,
+        default=3,
         help="device to run the model",
     )
     parser.add_argument(
@@ -40,7 +40,8 @@ def eval_parser():
         help="path to configuration file.")
     parser.add_argument(
         "--dataset",
-        default=['vizwiz','hm'],
+        default=['vizwiz','hm','vsr'],
+        # default=['vsr'],
         type=list_of_str,
         help="dataset to evaluate",
     )
@@ -85,6 +86,8 @@ print(cfg._convert_node_to_json(cfg.config))
 setup_logger()
 device = torch.device("cuda:{}".format(args.device) if torch.cuda.is_available() else "cpu")
 
+print("----------------------------------", device, "----------------------------------")
+
 model, vis_processor, _ = init_model(cfg, device)
 model.eval()
 
@@ -113,7 +116,8 @@ if 'vizwiz' in args.dataset:
     predicts = []
     total_acc = []
     for samples in tqdm(eval_dataloader):
-        samples['image'] = samples['image'].half().to(device)
+        # samples['image'] = samples['image'].half().to(device)
+        samples['image'] = samples['image'].to(device)
         texts = samples['q_input']
         gt_answers = samples['gt_ans']
         image_ids = samples['image_id']
@@ -152,46 +156,6 @@ if 'vizwiz' in args.dataset:
     with open(os.path.join(save_path, f"evaluate_vizwiz.txt"), "a") as f:
         f.write(json.dumps({'agg_metrics': vizwiz_acc}) + "\n")
 
-if 'okvqa' in args.dataset:
-
-    eval_file_path = cfg.evaluation_datasets_cfg["okvqa"]["eval_file_path"]
-    img_path = cfg.evaluation_datasets_cfg["okvqa"]["img_path"]
-    batch_size = cfg.evaluation_datasets_cfg["okvqa"]["batch_size"]
-    max_new_tokens = cfg.evaluation_datasets_cfg["okvqa"]["max_new_tokens"]
-    
-
-    evaluation_annntation_path = os.path.join(eval_file_path, "okvqa_test_split.json")
-    with open(evaluation_annntation_path) as f:
-        ok_vqa_test_split = json.load(f)
-
-    data = OKVQAEvalData(ok_vqa_test_split, vis_processor, img_path)
-    eval_dataloader = DataLoader(data, batch_size=batch_size, shuffle=False)
-    minigpt4_predict = []
-
-    for images, questions, question_ids, img_ids in eval_dataloader:
-        texts = prepare_texts(questions, conv_temp)  # warp the texts with conversation template
-        answers = model.generate(images, texts, max_new_tokens=max_new_tokens, do_sample=False)
-
-        for answer, question_id, question, img_id in zip(answers, question_ids, questions, img_ids):
-            result = dict()
-            answer = answer.lower().replace('<unk>','').strip()
-            result['answer'] = answer
-            result['question_id'] = int(question_id)
-            minigpt4_predict.append(result)
-
-    file_save_path= os.path.join(save_path,"okvqa.json")
-    with open(file_save_path,'w') as f:
-        json.dump(minigpt4_predict, f)
-
-    annFile = os.path.join(eval_file_path,"mscoco_val2014_annotations_clean.json")
-    quesFile = os.path.join(eval_file_path,"OpenEnded_mscoco_val2014_questions_clean.json" )
-
-    vqa = VQA(annFile, quesFile)
-    vqaRes = vqa.loadRes(file_save_path, quesFile)
-
-    vqaEval = VQAEval(vqa, vqaRes, n=2)
-    vqaEval.evaluate()
-    print ("Overall OKVQA Accuracy is: %.02f\n" %(vqaEval.accuracy['overall']), flush=True)
 
 if 'iconvqa' in args.dataset:
 
@@ -220,37 +184,8 @@ if 'iconvqa' in args.dataset:
 
     print('iconqa Acc: ', count / len(iconqa_text_val) * 100.0, flush=True)
 
-if 'gqa' in args.dataset:
 
-    eval_file_path = cfg.evaluation_datasets_cfg["gqa"]["eval_file_path"]
-    img_path = cfg.evaluation_datasets_cfg["gqa"]["img_path"]
-    batch_size = cfg.evaluation_datasets_cfg["gqa"]["batch_size"]
-    max_new_tokens = cfg.evaluation_datasets_cfg["gqa"]["max_new_tokens"]
-
-    gqa = json.load(open(eval_file_path))
-    data = GQAEvalData(gqa, vis_processor, img_path)
-    eval_dataloader = DataLoader(data, batch_size=batch_size, shuffle=False)
-    count=0
-    total=0
-    minigpt4_predict = []
-    for images, texts, labels in tqdm(eval_dataloader):
-        texts = prepare_texts(texts, conv_temp)  # warp the texts with conversation template
-        answers = model.generate(images, texts, max_new_tokens=max_new_tokens, do_sample=False)
-
-        for answer, label in zip(answers, labels):
-            result = dict()
-            result['pred'] = answer.lower().replace('<unk>','').strip()
-            result['gt'] = label
-            minigpt4_predict.append(result)
-            if answer.lower() == label:
-                count+=1
-            total+=1
-    print('gqa val:', count / total * 100, flush=True)
-
-    file_save_path = os.path.join(save_path, "gqa.json")
-    with open(file_save_path,'w') as f:
-        json.dump(minigpt4_predict, f)
-
+# import pdb;pdb.set_trace()
 if 'vsr' in args.dataset:
 
     img_path = cfg.evaluation_datasets_cfg["vsr"]["img_path"]
@@ -258,16 +193,17 @@ if 'vsr' in args.dataset:
     max_new_tokens = cfg.evaluation_datasets_cfg["vsr"]["max_new_tokens"]
     from datasets import load_dataset
 
-    annotation = load_dataset("cambridgeltl/vsr_zeroshot", split='test')
+    annotation = load_dataset("/mnt/pfs-guan-ssai/nlu/wanghanzi/data/visual-spatial-reasoning/vsr_zeroshot", split='test')
     data = VSREvalData(annotation, vis_processor, img_path)
     eval_dataloader = DataLoader(data, batch_size=batch_size, shuffle=False)
     count=0
     total=0
 
     minigpt4_predict = []
-    
+    # import pdb;pdb.set_trace()
     for samples in tqdm(eval_dataloader):
 
+        samples['image'] = samples['image'].half().to(device)
         texts = samples['q_input']
         labels = samples['gt_ans']
         image_ids = samples['image_id']
@@ -293,9 +229,11 @@ if 'vsr' in args.dataset:
                 count+=1
             total+=1
     print('vsr test:', count / total * 100, flush=True)
-    # file_save_path = os.path.join(save_path,"vsr.json")
-    # with open(file_save_path,'w') as f:
-    #     json.dump(minigpt4_predict, f)
+
+    vsr_result =  count / total * 100
+    with open(os.path.join(save_path, f"evaluate_vsr.txt"), "a") as f:
+        f.write(json.dumps({'agg_metrics': vsr_result}) + "\n")
+
 
 if 'hm' in args.dataset:
 
@@ -349,7 +287,84 @@ if 'hm' in args.dataset:
             total+=1
         print(answers)
 
-    print('hm val:', count / total * 100, flush=True)
+    hm_val = count / total * 100
+    print('hm val:', hm_val, flush=True)
     file_save_path = os.path.join(save_path, "hm.json")
     with open(file_save_path,'w') as f:
         json.dump(predict, f)
+
+    with open(os.path.join(save_path, f"evaluate_hm.txt"), "a") as f:
+        f.write(json.dumps({'agg_metrics': hm_val}) + "\n")
+
+
+if 'gqa' in args.dataset:
+
+    eval_file_path = cfg.evaluation_datasets_cfg["gqa"]["eval_file_path"]
+    img_path = cfg.evaluation_datasets_cfg["gqa"]["img_path"]
+    batch_size = cfg.evaluation_datasets_cfg["gqa"]["batch_size"]
+    max_new_tokens = cfg.evaluation_datasets_cfg["gqa"]["max_new_tokens"]
+
+    gqa = json.load(open(eval_file_path))
+    data = GQAEvalData(gqa, vis_processor, img_path)
+    eval_dataloader = DataLoader(data, batch_size=batch_size, shuffle=False)
+    count=0
+    total=0
+    minigpt4_predict = []
+    for images, texts, labels in tqdm(eval_dataloader):
+        texts = prepare_texts(texts, conv_temp)  # warp the texts with conversation template
+        answers = model.generate(images, texts, max_new_tokens=max_new_tokens, do_sample=False)
+
+        for answer, label in zip(answers, labels):
+            result = dict()
+            result['pred'] = answer.lower().replace('<unk>','').strip()
+            result['gt'] = label
+            minigpt4_predict.append(result)
+            if answer.lower() == label:
+                count+=1
+            total+=1
+    print('gqa val:', count / total * 100, flush=True)
+
+    file_save_path = os.path.join(save_path, "gqa.json")
+    with open(file_save_path,'w') as f:
+        json.dump(minigpt4_predict, f)
+
+if 'okvqa' in args.dataset:
+
+    eval_file_path = cfg.evaluation_datasets_cfg["okvqa"]["eval_file_path"]
+    img_path = cfg.evaluation_datasets_cfg["okvqa"]["img_path"]
+    batch_size = cfg.evaluation_datasets_cfg["okvqa"]["batch_size"]
+    max_new_tokens = cfg.evaluation_datasets_cfg["okvqa"]["max_new_tokens"]
+    
+
+    evaluation_annntation_path = os.path.join(eval_file_path, "okvqa_test_split.json")
+    with open(evaluation_annntation_path) as f:
+        ok_vqa_test_split = json.load(f)
+
+    data = OKVQAEvalData(ok_vqa_test_split, vis_processor, img_path)
+    eval_dataloader = DataLoader(data, batch_size=batch_size, shuffle=False)
+    minigpt4_predict = []
+
+    for images, questions, question_ids, img_ids in eval_dataloader:
+        texts = prepare_texts(questions, conv_temp)  # warp the texts with conversation template
+        answers = model.generate(images, texts, max_new_tokens=max_new_tokens, do_sample=False)
+
+        for answer, question_id, question, img_id in zip(answers, question_ids, questions, img_ids):
+            result = dict()
+            answer = answer.lower().replace('<unk>','').strip()
+            result['answer'] = answer
+            result['question_id'] = int(question_id)
+            minigpt4_predict.append(result)
+
+    file_save_path= os.path.join(save_path,"okvqa.json")
+    with open(file_save_path,'w') as f:
+        json.dump(minigpt4_predict, f)
+
+    annFile = os.path.join(eval_file_path,"mscoco_val2014_annotations_clean.json")
+    quesFile = os.path.join(eval_file_path,"OpenEnded_mscoco_val2014_questions_clean.json" )
+
+    vqa = VQA(annFile, quesFile)
+    vqaRes = vqa.loadRes(file_save_path, quesFile)
+
+    vqaEval = VQAEval(vqa, vqaRes, n=2)
+    vqaEval.evaluate()
+    print ("Overall OKVQA Accuracy is: %.02f\n" %(vqaEval.accuracy['overall']), flush=True)

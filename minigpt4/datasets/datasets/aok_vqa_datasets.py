@@ -133,6 +133,7 @@ class AOKVQAEvalDataset(VQAEvalDataset, __DisplMixin):
     def collater(self, samples):
         (
             image_list,
+            image_id_list,
             question_list,
             question_id_list,
             choices_list,
@@ -142,10 +143,11 @@ class AOKVQAEvalDataset(VQAEvalDataset, __DisplMixin):
             q_input_list,
             gt_answers_list,
             source_list,
-        ) = ([], [], [], [], [], [], [], [], [], [])
+        ) = ([], [], [], [], [], [], [], [], [], [], [])
 
         for sample in samples:
             image_list.append(sample["image"])
+            image_id_list.append(sample["image_id"])
             question_list.append(sample["text_input"])
             question_id_list.append(sample["question_id"])
             choices_list.append(sample["choices"])
@@ -158,6 +160,7 @@ class AOKVQAEvalDataset(VQAEvalDataset, __DisplMixin):
 
         return {
             "image": torch.stack(image_list, dim=0),
+            "image_id": image_id_list,
             "text_input": question_list,
             "question_id": question_id_list,
             "choices": choices_list,
@@ -192,6 +195,7 @@ class AOKVQAEvalDataset(VQAEvalDataset, __DisplMixin):
         image_path = os.path.join(self.vis_root, ann["image"])
         image = Image.open(image_path).convert("RGB")
 
+        image_id = ann["image"]
         image = self.vis_processor(image)
         question = self.text_processor(ann["question"])
 
@@ -213,6 +217,7 @@ class AOKVQAEvalDataset(VQAEvalDataset, __DisplMixin):
 
         return {
             "image": image,
+            "image_id":image_id,
             "q_input": question,
             # "q_input": llm_input,
             "llm_input": llm_input,

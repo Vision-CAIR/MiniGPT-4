@@ -44,29 +44,30 @@ model:
   moe_weight_type: 'ffn_prob'
   use_balance_loss: False
   ln_position: "out"
+  gate_save_path: "/mnt/pfs-guan-ssai/nlu/wanghanzi/experiments/blip2/vicuna7b/qformer_moe_route/route_save/mix_coco_gqa_ao_cocap_textcap_raw_QformerMoE_CLS_Cross_Universal_lnout_lr5e5_4ex4b_2loss_001_top6layer_textinqf_10epo_0330/"
 
 datasets:
-  # gqa:
-  #   type: balanced_sft_raw_eval
-  #   batch_size: 32
-  #   vis_processor:
-  #     eval:
-  #       name: "blip2_image_eval"
-  #       image_size: 224
-  #   text_processor:
-  #     eval:
-  #       name: "blip_caption"
+  gqa:
+    type: balanced_sft_raw_eval
+    batch_size: 32
+    vis_processor:
+      eval:
+        name: "blip2_image_eval"
+        image_size: 224
+    text_processor:
+      eval:
+        name: "blip_caption"
 
-  # coco_vqa:    # 658104
-  #   type: vqa_v2_eval
-  #   batch_size: 32
-  #   vis_processor:
-  #     eval:
-  #       name: "blip2_image_eval"
-  #       image_size: 224
-  #   text_processor:
-  #     eval:
-  #       name: "blip_caption"
+  coco_vqa:    # 658104
+    type: vqa_v2_eval
+    batch_size: 32
+    vis_processor:
+      eval:
+        name: "blip2_image_eval"
+        image_size: 224
+    text_processor:
+      eval:
+        name: "blip_caption"
 
   coco_caption: # 414113 train
     type: coco_cap_eval
@@ -79,26 +80,26 @@ datasets:
       eval:
         name: "blip_caption"
   
-  # ok_vqa: # train, valid (9009, 5046)
-  #   type: ok_vqa_eval
-  #   batch_size: 32
-  #   vis_processor:
-  #     eval:
-  #       name: "blip2_image_eval"
-  #       image_size: 224
-  #   text_processor:
-  #     eval:
-  #       name: "blip_caption"
+  ok_vqa: # train, valid (9009, 5046)
+    type: ok_vqa_eval
+    batch_size: 32
+    vis_processor:
+      eval:
+        name: "blip2_image_eval"
+        image_size: 224
+    text_processor:
+      eval:
+        name: "blip_caption"
 
-  # aok_vqa: # train: 17056, val: 1145
-  #   batch_size: 32
-  #   vis_processor:
-  #     eval:
-  #       name: "blip2_image_eval"
-  #       image_size: 224
-  #   text_processor:
-  #     eval:
-  #       name: "blip_caption"
+  aok_vqa: # train: 17056, val: 1145
+    batch_size: 32
+    vis_processor:
+      eval:
+        name: "blip2_image_eval"
+        image_size: 224
+    text_processor:
+      eval:
+        name: "blip_caption"
 
   textcaps_caption: # train: 109765, val: 15830
     batch_size: 32
@@ -135,7 +136,8 @@ run:
   evaluate: True
   test_splits: ["val"]
   # test_splits: ["test"]
-
+  wandb_log: False
+  
   device: "cuda"
   world_size: 1
   dist_url: "env://"
