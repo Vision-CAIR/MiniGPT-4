@@ -1,0 +1,584 @@
+question_id,question,gt_ans,base_ans,moe_ans
+20655442,is the gentleman in the bottom part or in the top of the photo?,top,bottom,top
+201640486,what shape is that watch?,square,round,square
+202012752,is there a silver mobile phone or television?,yes,no,yes
+201704522,which kind of animal is above the grass?,cow,cows,cow
+201669483,what kind of dessert is the candle on?,cupcake,cake,cupcake
+20654994,does the coat look uncomfortable and long?,no,yes,no
+20308283,does the oven door that looks square seem to be white?,no,yes,no
+20257432,what is the female person standing in?,water,sand,water
+201056243,which gender is the spectator that is watching the soccer player?,male,female,male
+201621574,which color is the floor?,brown,light brown,brown
+20543021,is the fence behind the elephant tall and wooden?,no,yes,no
+20157030,is the small utensil on the right side?,no,yes,no
+20473008,who is in front of the woman?,boy,child,boy
+201498360,does the device to the right of the keyboard look smooth and large?,no,yes,no
+202244084,what dessert is grouped?,cupcakes,cupcake,cupcakes
+202208386,which kind of sign is on the road?,traffic sign,street sign,traffic sign
+20929669,is the vest behind a wheelchair?,yes,no,yes
+20929645,is the old person in front of the mirror?,yes,no,yes
+201758047,what is the color of the paper container?,brown,white,brown
+2012848,does the white shirt look sleeveless?,yes,no,yes
+202218847,what kind of cooking utensil is above the flower pot?,pan,cutting board,pan
+202000853,is the brown fence behind the leafy bush?,yes,no,yes
+201410953,does the toilet brush have a different color than the art work?,no,yes,no
+202119760,is the floor made of the same material as the wall?,no,yes,no
+20709926,what kind of vehicle is the woman in front of?,car,bus,car
+20609498,what is located on top of the spoon that is shown in this image?,fork,cake,fork
+20119194,what kind of clothing isn't black?,dress,skirt,dress
+201481480,what is the woman to the right of the bag wearing?,pants,eye glasses,pants
+201879394,what is the mirror made of?,metal,glass,metal
+20412222,what items of furniture are to the left of the boy?,tables,chairs,tables
+202270905,who is wearing a suit?,skateboarder,guy,skateboarder
+202073384,what is higher than the tall trees?,sky,zebra,sky
+202286815,is the backpack on the left side?,yes,no,yes
+20781688,are the trousers the same color as the shoes?,no,yes,no
+201982992,who is the coffee table in front of?,man,boy,man
+20647391,does the man look young and tall?,yes,no,yes
+202244532,what vegetables are not orange?,beans,carrots,beans
+20452280,what type of furniture is sitting next to the fresh flowers?,chair,table,chair
+20394891,are there blue knives in the photo?,yes,no,yes
+20647362,what is holding onto the pants?,belt,glove,belt
+201067756,what is the shape of the table behind the other table?,square,round,square
+201110826,how hard are the plates?,hard,soft,hard
+20794158,which material was used to make the white plate?,porcelain,glass,porcelain
+201438594,what is the weight of the batter?,heavy,light,heavy
+202246359,what is the item of furniture that the laptop is on called?,computer desk,table,computer desk
+20756669,does the shelf look brown?,yes,no,yes
+201548783,what is using the spices?,blender,woman,blender
+2017250,is the shirt bright and black and white?,no,yes,no
+20827295,does the towel look thick?,no,yes,no
+201319456,is the shape of the window frame different than the plate?,yes,no,yes
+201738987,what's the pitcher throwing?,baseball,ball,baseball
+201621549,are there beds or lamps in the picture?,no,yes,no
+201411057,is the white toilet to the left of the toilet brush made of plastic?,yes,no,yes
+20753378,how long is the bed?,short,long,short
+201920402,which place is it?,field,park,field
+20385653,which kind of device is not on?,keyboard,screen,keyboard
+201509796,what is in front of the wall?,motorcycle,flowers,motorcycle
+201998145,is the vase blue and square?,no,yes,no
+201404151,does that grass have long length and green color?,yes,no,yes
+20295531,what is she doing?,sleeping,lying,sleeping
+201988059,is the tape white?,no,yes,no
+201981998,what type of device is made of the same material as the remote the man is to the left of?,phone,keyboard,phone
+201497850,what device is not large?,computer mouse,computer,computer mouse
+20667821,what is the woman wearing?,shirt,shorts,shirt
+20245857,what's the light fixture in front of?,fence,trees,fence
+201763732,does the mirror look small and round?,no,yes,no
+201303132,do the curtains and the cups have the same color?,yes,no,yes
+201574332,do you see any men to the right of the fence made of metal?,no,yes,no
+20511525,is the sun large and orange?,yes,no,yes
+201751873,how large is the wire net?,small,large,small
+201885393,what is the palm tree inside of?,fence,planter,fence
+202174362,which kind of appliance is to the right of the stove?,coffee maker,refrigerator,coffee maker
+202156847,what are the elephants doing?,standing,walking,standing
+20306535,who wears a shirt?,man,woman,man
+201175275,what is the curtain in front of?,window,door,window
+201393599,which kind of clothing is dark?,shirt,jeans,shirt
+20157228,which kind of food is round?,pancake,pancakes,pancake
+202243990,what is the color of the food on the right of the image?,black,white,black
+201080434,how clean are the trousers the catcher is wearing?,clean,dirty,clean
+201879789,how large is the bike below the sky?,large,small,large
+202162622,which kind of furniture is not black?,bed,table,bed
+202081002,what is the house made of?,wood,plastic,wood
+20953088,who is wearing the polo shirt?,player,man,player
+2059604,who is in front of the person that is crouching?,batter,catcher,batter
+20245856,the light fixture is in front of what?,fence,trees,fence
+201902880,are there boxes to the right of the device that is sitting next to the mouse pad?,no,yes,no
+201676341,what does the person hold?,controller,wii controller,controller
+201110987,do you see a baby in this picture that is standing?,no,yes,no
+20204506,what color is the rug?,black,gray,black
+20692405,what is in front of the cabinet?,rug,sink,rug
+20706026,what device is the keyboard behind of?,headphones,monitor,headphones
+20710050,what vehicle is behind the person that is wearing a shirt?,car,bus,car
+201505028,which color is the surfboard?,orange,pink,orange
+202208419,is the bus blue?,no,yes,no
+201623919,is the black stove to the left or to the right of the oven below the microwave?,right,left,right
+202240213,who is wearing the glasses?,girl,guy,girl
+202244079,what dessert is it?,cupcakes,cupcake,cupcakes
+20752343,which kind of furniture is hard?,cabinet,cabinets,cabinet
+20857196,is the white powder lying next to a calculator?,no,yes,no
+201983080,how large are the closed books on top of the coffee table?,small,large,small
+202223389,who is in front of the car?,people,man,people
+20602905,do you think the horse is walking?,no,yes,no
+201902907,is the plastic device to the left of the monitor that is silver?,no,yes,no
+2046643,what is sitting on the table made of wood?,glass,bowl,glass
+201576684,which color does the animal the tag is on have?,brown,white,brown
+201207098,is there broccoli in the image that is not cooked?,no,yes,no
+201902406,what device is underneath the desk?,computer,speaker,computer
+202073385,what is higher than the trees?,sky,pole,sky
+201303519,how tall is the chair that the man stands beside of?,short,tall,short
+201055653,is that garbage can green and large?,no,yes,no
+201536489,who is sitting?,spectators,people,spectators
+201462312,what is the person on top of the field holding?,bat,baseball bat,bat
+201434237,what device is below the light plane on the pavement?,phone,cell phone,phone
+2098081,are there any bottles or cups that are made of plastic?,no,yes,no
+201669614,what is on the cake stand made of metal?,cupcake,cupcakes,cupcake
+201889383,does the mountain side appear to be white?,yes,no,yes
+201080523,is the catcher on the left side or on the right of the picture?,right,left,right
+2075239,do these animals all have the same type?,no,yes,no
+202240212,who is wearing glasses?,girl,guy,girl
+201156008,are both the helmet and the bat made of the same material?,no,yes,no
+202218839,what is the name of the cooking utensil that is hang from the hook?,pan,cutting board,pan
+20827715,what is the light fixture in front of?,window,plant,window
+201983731,are the papers to the left or to the right of the waiting person that is following the woman?,right,left,right
+201110579,how big is the round cake?,small,large,small
+201030796,what items of clothing are long?,pants,pajamas,pants
+20395003,is the cake to the left or to the right of the knife that looks blue?,left,right,left
+202100965,which color is the vehicle to the left of the skateboarder?,silver,white,silver
+20740872,is the plate different in color than the mug?,no,yes,no
+20647844,does the man that is not old appear to be asian?,no,yes,no
+20783027,are there bar stools or tables?,yes,no,yes
+20668045,is there a soft blanket or couch?,yes,no,yes
+201804770,is the vase next to the lamp white and triangular?,yes,no,yes
+20706140,what is in front of the device in the middle?,headphones,cup,headphones
+2044572,what is the man covered by?,umbrella,coat,umbrella
+20411603,does the purple thing above the dessert look small?,yes,no,yes
+20441879,does the bookcase have the same color as the microwave?,no,yes,no
+201987375,is there a bench near the tool?,yes,no,yes
+20667460,are the shorts long or short?,short,long,short
+20247595,what place is pictured?,lawn,yard,lawn
+20978315,is the girl that is walking brunette and young?,no,yes,no
+20416780,is this a clean table?,yes,no,yes
+20381490,does the book look closed?,yes,no,yes
+202012588,do you see flowers behind the person on the right?,no,yes,no
+202244102,what dessert is fresh?,cupcakes,cupcake,cupcakes
+20984434,how old is the skater in the middle of the photo?,young,16,young
+20856646,is the color of the bed the same as that of the snack?,no,yes,no
+2066025,who is holding the baseball mitt that is made of leather?,boy,girl,boy
+20361400,is the ground dry or wet?,wet,dry,wet
+202223273,do you see any hats that are blue?,no,yes,no
+20891295,does the blue dress look long?,yes,no,yes
+202081480,does the mouse have the same shape as the laptop computer?,no,yes,no
+201030353,what surrounds the shuttle?,stars,pillow,stars
+202006685,are there cups or breads in this picture?,no,yes,no
+20618818,who is wearing the shirt?,man,girl,man
+20183295,which color do the pants have?,gray,blue,gray
+201616068,what is that rug in front of?,toilet,sink,toilet
+201434358,is the plane above a camera?,no,yes,no
+201030297,what shape is the wii controller to the right of the wii remotes?,round,square,round
+201411014,which gender is the person that the mirror is above?,male,female,male
+2066094,is the person to the left of the girl happy and young?,no,yes,no
+20673080,what is the piece of furniture that the empty bag is resting on called?,chair,table,chair
+201623664,is the sink that is not turned on silver and curved?,yes,no,yes
+202240305,who is standing?,girl,people,girl
+202218731,what is the shape of the chalkboard?,square,rectangle,square
+20622007,what is located on top of the horses that the window is over?,hair,hat,hair
+201909091,which color is the metal table?,black,gray,black
+20169881,what color are the empty tables?,black,green,black
+202023267,is the color of the blanket different than that of the bed?,yes,no,yes
+20178000,does the cooking utensil on top of the table look red or tan?,red,tan,red
+20953087,who is wearing a polo shirt?,player,man,player
+201935960,what's standing on the floor?,shelf,bowl,shelf
+20480092,is the lamp that is not tall both metallic and black?,yes,no,yes
+20248008,who is wearing the pants?,woman,lady,woman
+20536265,what is the animal that the bison is behind?,giraffe,rhino,giraffe
+201952700,above what are the wires hanging?,train,sky,train
+20287680,what's the batter wearing?,helmet,pants,helmet
+202240953,what color do you think the shirt is?,black,purple,black
+201079976,"which kind of furniture is not clean, the table or the bed?",table,bed,table
+2091058,how big is the brown dirt?,small,large,small
+202243428,what type of vehicle is that?,truck,motorcycle,truck
+202265790,who do you think is eating the donut?,woman,girl,woman
+201556579,what is the name of the tall item of furniture?,shelf,desk,shelf
+20618836,who is sitting?,people,girl,people
+20667753,does the young woman seem to be adult and blond?,yes,no,yes
+20709969,who is wearing the pants?,woman,man,woman
+20412528,does the person to the left of the other person seem to be talking or posing?,talking,posing,talking
+201247081,what is the chair in front of?,plant,door,plant
+201411240,of what material the toilet brush?,plastic,wood,plastic
+20258542,does the shirt have the same color as the chair?,yes,no,yes
+201064990,who eats the hamburger?,boy,girl,boy
+201759403,what is the color of the door that is behind the mat?,black,brown,black
+202125985,what kind of furniture is folding?,chairs,chair,chairs
+201571143,does the suitcase that is not big look square?,yes,no,yes
+2076819,"how do the cars look like, dense or sparse?",dense,sparse,dense
+202060111,what's the couch in front of?,curtains,window,curtains
+201400101,what color is the round mirror?,brown,black,brown
+201902915,what device sits on top of the mouse pad?,computer mouse,keyboard,computer mouse
+20861304,how wide is the door?,wide,narrow,wide
+20866120,who is holding the white food inside the fridge?,woman,girl,woman
+201068396,what is the person to the left of the water bottle pointing at?,cell phone,phone,cell phone
+20865990,what's the weight of the bottle?,heavy,light,heavy
+2076574,who is the entrance that is made of stone bigger than?,man,people,man
+20637228,is the pot to the left or to the right of the pan?,left,right,left
+201497941,is the large monitor to the right or to the left of the white thing that is on top of the desk?,left,right,left
+20573433,is the toilet the same color as the bottle?,yes,no,yes
+201638955,are the old men to the left of a car?,yes,no,yes
+201676091,is the controller in the top part or in the bottom of the image?,bottom,top,bottom
+202244344,how thick is the food inside the container?,thick,thin,thick
+201576603,who is wearing a jacket?,child,boy,child
+201756488,what fruit has the same color as the banana bunch?,banana,apple,banana
+201908887,what is located on top of the plate?,sandwiches,sandwich,sandwiches
+20511713,how large are the sparse clouds?,small,large,small
+202101231,is the lamp to the right or to the left of the car?,left,right,left
+201826611,who is looking up?,man,elephant,man
+201886910,is the container to the right of the eggplant round and small?,no,yes,no
+201207171,"what food is not sliced, the apples or the vegetables?",vegetables,apples,vegetables
+20786132,is the woman wearing a skirt?,no,yes,no
+20782939,which kind of device is the man watching?,laptop,computer,laptop
+20632010,is the baseball mitt bright?,yes,no,yes
+201412269,who is wearing the goggles?,skier,man,skier
+201446976,what material is the cup above the sink?,plastic,glass,plastic
+202122169,are there vases to the right of the curtains?,no,yes,no
+202003773,how large is the black desk on top of the floor?,small,large,small
+20349903,what color do you think the cellphones to the right of the cell phone have?,white,silver,white
+201669553,what kind of food is on the table?,cookies,dessert,cookies
+20183241,is there a woman in the image that is young?,no,yes,no
+201467424,are the couch and the sky the same color?,no,yes,no
+201889329,who is skiing?,skier,people,skier
+201804491,is the fireplace square and black?,yes,no,yes
+2076709,does the window that is not narrow look gray?,no,yes,no
+201676493,is the table sitting beside a shelf?,yes,no,yes
+201143394,which kind of furniture is long?,table,tables,table
+201438806,is the man behind or in front of the net?,behind,front,behind
+201492366,is the tall tree behind the fence made of metal?,no,yes,no
+20716935,is the jacket that is made of cotton yellow or gray?,gray,yellow,gray
+202156907,are the elephants in front of the small flowers?,yes,no,yes
+201752849,is the shirt regular and long?,no,yes,no
+20257407,are there people to the right of the life vest?,no,yes,no
+201887285,what is in the brown basket?,broccoli,eggplant,broccoli
+202240198,who is looking up?,girl,woman,girl
+201247267,is the rug on top of the carpet striped and beige?,yes,no,yes
+201407219,what color is the net?,black,green,black
+201055765,which kind of vehicle are the trees behind of?,car,cars,car
+201896251,is there any pizza or plate in this image?,no,yes,no
+202258138,is the bag near the fence made of plastic or cloth?,cloth,plastic,cloth
+20508330,are the small books on the right side or on the left?,right,left,right
+201859615,does that basket look white and large?,yes,no,yes
+2075742,how wide are the skis on the bottom of the plane?,wide,narrow,wide
+20489732,is the striped pillow comfortable and blue?,yes,no,yes
+202012733,what is located on top of the device the man is looking at?,remote control,screen,remote control
+20204598,is the color of the chair blue?,no,yes,no
+202006451,what is underneath the table?,chair,stool,chair
+20942146,what is the girl in front of?,trees,palm trees,trees
+202023467,what is in front of the bookshelf?,bed,chair,bed
+202023617,is the chair to the left of the rug both covered and metallic?,yes,no,yes
+201574445,do you think the door is small?,no,yes,no
+201079954,what are the drapes around of?,window,windows,window
+202126032,what does the tennis racket hit?,tennis ball,ball,tennis ball
+201401762,are the mountains dark and rocky?,yes,no,yes
+20508099,how big is the table made of wood?,small,large,small
+20381235,what is under the device the computer monitor is above?,desk,chair,desk
+20573771,what kind of furniture is shown in this photograph?,cabinet,cabinets,cabinet
+20508714,who is wearing a shirt?,woman,girl,woman
+202004171,does the poster look small and black and white?,yes,no,yes
+20710412,who is standing?,child,people,child
+201428581,does the remote control to the right of the person appear to be white and small?,yes,no,yes
+2017338,which kind of animal isn't large?,goat,sheep,goat
+20412197,what are the pieces of furniture called?,tables,chairs,tables
+20136709,does the toilet look round and white?,yes,no,yes
+201737996,which shape is the bag on the left of the picture?,square,round,square
+20349766,who is looking down?,woman,girl,woman
+20753489,does the curtain in front of the other curtain seem to be small and dark?,yes,no,yes
+201599882,does the pillow on top of the other pillow look uncomfortable and soft?,no,yes,no
+201639020,what devices are on the sidewalk in the image?,phones,speakers,phones
+20667603,what is in front of the couch made of cloth?,coffee table,table,coffee table
+201528184,behind what kind of furniture is the stove?,table,cabinets,table
+202162523,does the pillow have striped pattern and white color?,yes,no,yes
+201976456,is the street made of concrete both hard and gray?,yes,no,yes
+20489646,is the bench next to the bed long and beige?,yes,no,yes
+201056218,what's underneath the ball?,grass,net,grass
+201998232,what kind of furniture is the statue behind of?,table,chair,table
+20667515,what kind of furniture is low?,coffee table,couch,coffee table
+20827681,which kind of furniture is in front of the sofa?,coffee table,bar stools,coffee table
+201391912,what's the sofa made of?,wood,leather,wood
+201455942,where is that sign?,road,desert,road
+201175314,what is the cat doing?,standing,walking,standing
+201482076,what is the man to the left of the berries doing?,posing,sitting,posing
+201393603,which kind of clothing is not dark?,sock,socks,sock
+20962415,which color are the numbers?,black,white,black
+20120540,what color does the fence that is in front of the bench have?,gray,silver,gray
+201640171,which side of the picture is the light bulb on?,right,left,right
+20262798,what is in front of the dress?,kite,skirt,kite
+20656831,which place is it?,street,hotel,street
+2056096,is the large mirror on the right side of the photo?,yes,no,yes
+201482362,do you see men to the left of the bag in the bottom part of the photo?,no,yes,no
+201739319,what is the young person wearing?,hat,cap,hat
+20673118,the toilet paper that is to the right of the chair is resting on what?,table,floor,table
+201429053,what is the appliance to the right of the container that is smaller than the vacuum?,stove,refrigerator,stove
+201570646,what is the cabinet made of?,glass,wood,glass
+201109135,which place is it?,street,road,street
+202000675,how clean is the concrete sidewalk?,dirty,clean,dirty
+202223387,who is in front of the car that is presented in this scene?,people,man,people
+201570847,what height is the person that is to the left of the suitcase?,tall,short,tall
+20381153,is the color of the keyboard the same as the color of the plant?,no,yes,no
+201935187,what is in front of the lamp that is in front of the building?,tree,bush,tree
+202159192,is the license plate both blue and rectangular?,no,yes,no
+201030798,do the pants have purple color and striped pattern?,no,yes,no
+201735383,what is the laptop sitting beside?,chicken,book,chicken
+201504737,what is on the surfboard behind the sign?,flower,ball,flower
+2017261,is the shirt black and white or colorful?,colorful,black and white,colorful
+202162013,"what kind of furniture is not white, the bed or the bookcase?",bookcase,bed,bookcase
+20157055,how large is the fork on top of the table?,small,large,small
+20427484,is the shirt both long sleeved and beige?,yes,no,yes
+201188393,what is the color of that jacket?,brown,black,brown
+202270989,who is wearing a helmet?,skateboarder,guy,skateboarder
+2046245,is the table made of the same material as the bench?,yes,no,yes
+201735282,in which part of the picture is the black towel?,right,left,right
+202244207,what kind of food is triangular?,rice,cookies,rice
+2066119,who is the old person sitting next to?,girl,boy,girl
+201738992,what is the pitcher that looks skinny holding?,baseball,ball,baseball
+201065002,what does that boy wear?,sandal,shirt,sandal
+20870472,is the player next to the other player caucasian and male?,yes,no,yes
+202246227,what kind of device is white?,laptop,computer,laptop
+202036675,is the leafy vegetable to the left of the yellow food?,no,yes,no
+20866023,what's the poster hang from?,wall,door,wall
+201972837,who is wearing the hair clip?,woman,child,woman
+201956961,are the dvds inside the tv stand open or closed?,closed,open,closed
+201109525,is the red vehicle behind the vehicle on the left?,yes,no,yes
+201759225,what kind of clothing is hanging?,coats,jackets,coats
+201908821,what are the forks inside of?,napkin,tray,napkin
+20827485,what item of furniture is behind the coffee table?,sofa,couch,sofa
+20262704,who is wearing a skirt?,girl,child,girl
+201972701,is the cloud different in color than the sky?,yes,no,yes
+201663040,are the cabinets to the right of the drawers open and wooden?,no,yes,no
+20899954,what does the bowl contain?,tomatoes,tomato,tomatoes
+20911211,does the person near the traffic signal appear to be riding or skating?,riding,skating,riding
+201509845,are the pots both dirty and full?,yes,no,yes
+202036705,"in which part of the picture is the black olive, the top or the bottom?",top,bottom,top
+201393766,what color is the chair?,brown,black,brown
+20285113,does the dark chair on the carpet look round?,no,yes,no
+201621771,does the speaker that is to the left of the other speaker look black and high?,no,yes,no
+20340401,what is the image showing?,patio,yard,patio
+20157224,what food is brown?,pancake,pancakes,pancake
+20226957,is the thin woman to the right or to the left of the adult person?,left,right,left
+201878353,which kind of clothing is red?,coat,jacket,coat
+202102551,does the sink look small and rectangular?,no,yes,no
+201429131,what is the pipe made of?,plastic,metal,plastic
+20753261,"which kind of furniture is narrow, the dresser or the bed?",bed,dresser,bed
+20673098,the toilet paper to the right of the toilet is resting on what?,chair,floor,chair
+201360718,who is wearing a shirt?,boy,girl,boy
+201407334,are there men behind the fence that is presented in this photograph?,no,yes,no
+20480221,which kind of furniture is tall?,bookcase,bookshelf,bookcase
+20782927,who is the man in front of?,people,man,people
+201548765,does the appliance to the left of the alcohol have large size and black color?,no,yes,no
+202121530,does the countertop seem to be blue and antique?,no,yes,no
+201663423,are there any ovens near the drawers?,yes,no,yes
+20573542,what is that mat in front of?,toilet,shower curtain,toilet
+201663614,is the tap small and closed?,yes,no,yes
+202228610,does the window that is made of glass look square?,yes,no,yes
+202169380,is the woman on the right side or on the left of the image?,right,left,right
+20954213,does that luggage cart look still?,yes,no,yes
+20226568,what is the item of furniture below the light fixture near the curtain?,chair,table,chair
+20716955,what is the cord on?,bed,wall,bed
+202012480,what pieces of furniture is the woman in front of?,cabinets,shelves,cabinets
+201303338,what ethnic group is the person that is wearing a jacket?,caucasian,white,caucasian
+201713525,who is using the brush?,woman,lady,woman
+20169805,does this flag look red?,no,yes,no
+20753250,what kind of furniture is not covered?,dresser,drawer,dresser
+20744306,is the huge stadium dirty and empty?,no,yes,no
+202100814,on which side of the photo is the bowl?,right,left,right
+20810927,what is hanging from the large tree?,ornament,ornaments,ornament
+202121662,how are the items of furniture below the chandelier called?,chairs,shelves,chairs
+20942029,how large is the surfboard that looks white?,large,small,large
+202073386,the wide sky is higher than what?,trees,tree,trees
+20673057,"in which part of the photo is the empty bag, the bottom or the top?",top,bottom,top
+201556583,"which piece of furniture is not tall, the shelf or the office chair?",office chair,shelf,office chair
+202144693,what is in front of the man that is in front of the sign?,blender,crate,blender
+20837053,what is the umbrella sitting behind of?,table,luggage,table
+20211083,what is the dessert that is inside the glass?,ice cream,cheesecake,ice cream
+201030786,what are the striped clothing items in this photo?,pants,pajamas,pants
+20621758,is the garage near the door open and yellow?,no,yes,no
+20119066,the man to the right of the woman is wearing what?,suit,tie,suit
+20715810,what is in front of the sea foam?,sand,rock,sand
+20472801,do the jeans and the gloves have the same color?,yes,no,yes
+20940011,what is on the sink?,soap,bottle,soap
+20472963,who is playing?,boy,child,boy
+202243932,are the beans inside a bowl?,yes,no,yes
+201235679,what are the fruits to the left of the shelves?,bananas,apples,bananas
+20518372,is the towel white and short?,yes,no,yes
+20673099,what item of furniture is the toilet paper to the right of the toilet resting on?,chair,table,chair
+201346560,is the large vehicle to the right or to the left of the vehicle that is parked along the street?,left,right,left
+201621303,is the floor made of the same material as the desk?,no,yes,no
+202244150,are the cupcakes rainbow colored?,yes,no,yes
+202000602,what do both the utility pole and the fence have in common?,material,color,material
+20473052,who is swinging the bat?,boy,child,boy
+201616070,what is the rug in front of?,toilet,sink,toilet
+201739320,what is the player wearing?,hat,cap,hat
+202102532,is the switch different in color than the washing machine?,no,yes,no
+20462196,what is the color of the house made of wood?,gray,brown,gray
+201571131,is the suitcase that looks square large and brown?,no,yes,no
+20984152,which place is it?,street,city,street
+20262705,who is wearing the skirt?,girl,child,girl
+20866064,is that woman short or is she tall?,tall,short,tall
+202286708,is the caucasian woman posing or looking down?,looking down,posing,looking down
+201235647,do the fruits on top of the basket have large size and green color?,no,yes,no
+20886945,do the mouse and the curtain have the same color?,no,yes,no
+201640602,where are the people to the left of the bulb sitting?,restaurant,table,restaurant
+20177947,which kind of cooking utensil is curved?,cutting board,pan,cutting board
+20434818,who is resting?,boy,man,boy
+202125978,which kind of furniture is it?,chairs,chair,chairs
+201804724,is there a black lamp or mirror?,no,yes,no
+202162379,is the bedroom that is not dirty both white and small?,yes,no,yes
+201527825,what is in front of the appliance that is to the right of the girl?,table,cake,table
+201711163,which kind of furniture is to the left of the instrument?,shelf,bookshelf,shelf
+20515106,what is going through the grass the zebras are standing in?,fence,nothing,fence
+201467530,is the table made of metal or wood?,metal,glass,metal
+20461952,is the coat gray?,yes,no,yes
+201996733,what is the name of the parked aircraft?,helicopter,ship,helicopter
+201444866,what type of weather do you see?,cloudy,overcast,cloudy
+201143188,which kind of furniture is uncomfortable?,chairs,chair,chairs
+201951735,is the van pink and metallic?,yes,no,yes
+202121590,are the curtains to the right of a shelf?,no,yes,no
+20119207,are the glasses on the right side or on the left?,right,left,right
+20536038,how is the weather?,cloudless,clear,cloudless
+201065645,do you see women that are brunette?,yes,no,yes
+202284773,what is common to the tray and the cup?,material,color,material
+20899648,how is the food to the left of the drink in the middle of the photo called?,sandwich,hamburger,sandwich
+20982337,is the tall man to the left or to the right of the glasses that are not big?,right,left,right
+201795606,do the shorts that are made of jeans look short and blue?,yes,no,yes
+20340789,which place is it?,school,street,school
+20667504,which kind of furniture is rectangular?,coffee table,couch,coffee table
+202240326,are there any girls to the right of the tennis racket?,yes,no,yes
+202003720,what are the devices that are in front of the cords called?,laptops,computers,laptops
+201346598,is this a small motorcycle?,no,yes,no
+20756908,what kind of clothing is red?,robe,shirt,robe
+20691665,what is hanging from the wall?,towels,mirror,towels
+20645648,which color is the toilet paper on the right?,white,yellow,white
+201987416,is the tool red and metallic?,yes,no,yes
+20411623,which kind of fruit is it?,apples,apple,apples
+201935909,which kind of furniture is wooden?,shelf,bookshelf,shelf
+20679215,is the giraffe to the right of the house both skinny and yellow?,yes,no,yes
+201908948,what are the knives inside of?,napkin,tray,napkin
+201497684,what is the shape of that cd?,round,square,round
+201393709,is the window behind a fan?,yes,no,yes
+202173883,is the color of the coffee machine different than the window?,yes,no,yes
+202174627,what is the table in front of?,bench,window,bench
+201481451,who is staring?,woman,people,woman
+201887130,is the cabbage to the right of the other cabbage both leafy and red?,no,yes,no
+202036640,is the spinach on the left side?,no,yes,no
+201068428,who is wearing a sweatshirt?,girl,child,girl
+20836777,what is the bag that is not large hanging from?,table,pole,table
+20468356,do the lawn and the polo shirt have a different colors?,yes,no,yes
+202218754,are there any pans?,yes,no,yes
+201509811,what is on the stone?,motorcycle,flowers,motorcycle
+201873677,does the flag that is to the left of the bucket have large size and blue color?,yes,no,yes
+20204731,what's plugged into the laptop?,charger,power cord,charger
+20345134,what do you think is the tennis racket made of metal going into?,tennis ball,ground,tennis ball
+201430728,is the door made of wood closed or open?,closed,open,closed
+20385811,where is the bag?,ground,floor,ground
+201983173,what shape are the pillows that look big?,square,round,square
+201455835,which place is it?,road,desert,road
+201859401,does the cream look open and brown?,no,yes,no
+202265747,who is wearing a shirt?,woman,girl,woman
+202102615,what is the name of this items of furniture?,cabinets,cabinet,cabinets
+20836322,what watercraft has the same color as the shirts in this image?,boats,sailboat,boats
+201030233,is the color of the pillow the same as that of the shuttle?,yes,no,yes
+201498206,is the computer to the left or to the right of the device in the middle?,right,left,right
+201996679,"how does the digital device that is to the left of the telephone appear to be, on or off?",off,on,off
+202240222,who is wearing shorts?,girl,woman,girl
+20752339,what kind of furniture in the image is made of wood?,cabinet,cabinets,cabinet
+201640219,what size is the dress the women wear?,large,medium,large
+201663386,do you see an oven near the cabinet to the left of the drawers?,yes,no,yes
+20692294,are the books to the left or to the right of the wood cabinet?,left,right,left
+201663403,do you see ovens next to the countertop in this picture?,yes,no,yes
+20178058,which color are the french fries the burger is next to?,brown,gold,brown
+20827171,does the side table that is not big look wooden and long?,no,yes,no
+202012582,what is the name of the pieces of furniture behind the person in the bottom of the image?,cabinets,shelves,cabinets
+201759431,is the door behind the mat open and rectangular?,no,yes,no
+20567759,does the dry beach look wide and sandy?,no,yes,no
+20936136,is the fence on the left side?,no,yes,no
+20136474,are the trousers and the towels the same color?,no,yes,no
+202100414,does the flying airplane above the sailboat look clean and white?,yes,no,yes
+201804695,on which side of the image is the lamp?,left,right,left
+20753349,what is the width of the bed next to the power outlet?,narrow,wide,narrow
+201902747,what is the device that is not silver?,keyboard,speaker,keyboard
+20567632,is the shirt both irregular and black?,no,yes,no
+20442044,what is the door made of?,glass,wood,glass
+20503737,is the sticker both white and rectangular?,no,yes,no
+201143176,what kind of furniture is light brown?,chairs,chair,chairs
+201935811,what kind of furniture is the wall behind of?,shelf,bookshelf,shelf
+20757029,do you see any food?,no,yes,no
+201055988,what kind of vehicle is behind the small trash can?,car,cars,car
+20710104,how is the weather in this scene?,cloudy,cold,cloudy
+201687544,what is worn on the person the oar is to the left of?,shorts,shirt,shorts
+201887207,what is the vegetable to the left of the purple cabbage called?,cauliflower,broccoli,cauliflower
+202248991,what color is the suv that is not little?,black,silver,black
+201037065,the sign behind the girl is of which shape?,octagonal,rectangular,octagonal
+20896282,what is the container made of?,plastic,glass,plastic
+20183028,is the purse black?,yes,no,yes
+20491689,does the ground look covered and dry?,yes,no,yes
+201676008,which color is the wire shelf?,silver,brown,silver
+20673079,what is the bag resting on?,chair,floor,chair
+20573773,which kind of furniture is it?,cabinet,cabinets,cabinet
+201109572,is the truck to the left or to the right of the vehicle the traffic light is above?,right,left,right
+20853947,how tall is the field?,short,5 feet,short
+201481493,are there any women to the right of the glasses that the man is wearing?,yes,no,yes
+20287603,is that batter playing?,no,yes,no
+20753257,which kind of furniture is not thick?,dresser,drawer,dresser
+201896041,is the table to the left or to the right of the lady that is standing behind the cake?,right,left,right
+20427836,is the blue chair on the left side?,no,yes,no
+2097607,are there screens to the right of the monitor that is not off?,no,yes,no
+20456334,on which side of the image are the shelves?,left,right,left
+201055773,is that jersey pink and sleeveless?,yes,no,yes
+20442165,what kind of furniture is above the countertop?,cabinet,cabinets,cabinet
+20452279,what is sitting next to the flowers?,chair,vase,chair
+20716785,what is the item of furniture that is the same color as the cord called?,bed,nightstand,bed
+202119974,which kind of furniture is metallic?,table,shelf,table
+201510205,which place is it?,restaurant,hotel,restaurant
+201639021,what devices are on the sidewalk?,phones,speakers,phones
+20480115,does the metal lamp have black color?,yes,no,yes
+20514965,do the mountains look brown?,no,yes,no
+20709968,who is wearing pants?,woman,man,woman
+20609175,"which is less healthy, the whipped cream or the strawberry?",whipped cream,strawberry,whipped cream
+201391832,what is the device that the man that is not sad holds?,wii controller,controller,wii controller
+20183235,how old is the person in the bottom part of the image?,old,young,old
+201887054,what is in front of the vehicle in the top of the photo?,table,basket,table
+20241172,what is the plate made of?,porcelain,glass,porcelain
+201803715,are the artwork and the couch the same color?,no,yes,no
+201047424,"which type of clothing is not ugly, the suit or the dress shirt?",suit,dress shirt,suit
+202041968,do you see door that is not closed?,no,yes,no
+201143182,what kind of furniture is hard?,chairs,chair,chairs
+201342366,"on which side is the white truck, the left or the right?",left,right,left
+201482336,is the bag that looks brown sitting on top of a towel?,no,yes,no
+20786209,what is the color of the container?,orange,red,orange
+202082179,is the monitor to the left or to the right of the tall lamp?,left,right,left
+201682381,does the wrist band made of cloth look black or red?,red,black,red
+20183008,on which side of the image is the purse?,left,right,left
+201976505,what color does the license plate have?,white,yellow,white
+201873675,is the flag that is to the left of the bucket white or blue?,blue,white,blue
+201434245,which kind of device is above the pavement?,phone,cell phone,phone
+20733990,the trees are surrounding what?,sand,beach,sand
+201175686,is the mirror both small and clean?,no,yes,no
+201462407,does the white jersey look dirty?,no,yes,no
+201621315,is that picture frame white and high?,no,yes,no
+20982537,who is standing at the table?,woman,people,woman
+201766010,is the dirt behind the beach dirty and dark brown?,yes,no,yes
+201509795,what is in front of the green wall?,motorcycle,flowers,motorcycle
+201570645,what type of material is the cabinet made of?,glass,wood,glass
+201982741,is the happy man behind a coffee table?,yes,no,yes
+20341174,what are the doors on the front of the school made of?,metal,glass,metal
+201047191,are the metal glasses clean and black?,yes,no,yes
+20385288,what material is the calculator that is to the right of the charger made of?,plastic,metal,plastic
+201676339,what does she hold?,controller,wii controller,controller
+20715746,what is the weight of the fine sand?,heavy,light,heavy
+20434839,who is sitting?,boy,man,boy
+20149623,what shape is the brown thing in the cabinet?,square,rectangle,square
+20785906,what is the fire hydrant in front of?,cone,tree,cone
+201623784,are the cabinets below the stove wooden and open?,no,yes,no
+201556510,how large do you think is the desk the office chair is next to?,small,large,small
+201883195,what kind of furniture is to the right of the lamp above the table?,bed,desk,bed
+20631691,who is standing before the catcher?,batter,umpire,batter
+202133575,who is wearing the shirt?,skateboarder,man,skateboarder
+202265827,does the shoe look low and black?,no,yes,no
+201434069,does the watch look black and narrow?,yes,no,yes
+20611554,is this container large or small?,large,small,large
+201510418,are there any knives that are clean in the picture?,yes,no,yes
+202023304,what is the piece of furniture behind the bed?,closet,chair,closet
+201663704,what pieces of furniture are to the left of the dishwasher?,drawers,cabinets,drawers
+201235672,what are the fruits on top of the basket?,bananas,apples,bananas
+201143241,are the chairs near the flowers comfortable or uncomfortable?,uncomfortable,comfortable,uncomfortable
+201882885,what is the device on top of the desk that is to the right of the bed called?,television,phone,television
+20171085,is the long pen white and thin?,no,yes,no
+20984562,do you see cars to the right of the black van?,yes,no,yes
+20618748,what material is used to make the tennis rackets in front of the people?,metal,plastic,metal
+202248875,is the sidewalk made of the same material as the building?,no,yes,no
+20818695,what is the person on the home plate doing?,playing,waiting,playing
+201796090,who is holding the brown basket?,woman,girl,woman
+201997571,what is around the table the ceiling is above?,chairs,windows,chairs
+202161927,are both the window and the heater made of the same material?,no,yes,no
+201080374,is the lamp that is not turned-on silver and tall?,yes,no,yes
+201935188,what is in front of the lamp?,tree,bush,tree
+20516144,what do you think are the busy people watching?,train,bus,train
+2066026,who is holding the baseball mitt?,boy,girl,boy

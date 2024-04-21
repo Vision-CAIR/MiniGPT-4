@@ -1,0 +1,51 @@
+cluster,sample_id,image,text_input
+0,00000005284602,train2014/COCO_train2014_000000052846.jpg,What is the color of the curtains near the cat?
+0,00000049791503,train2014/COCO_train2014_000000497915.jpg,"Is the photo focused on people, or does it have more emphasis on the food?"
+0,00000007103801,train2014/COCO_train2014_000000071038.jpg,What type of surface are the players on?
+0,00000034258904,train2014/COCO_train2014_000000342589.jpg,Can you elaborate on the purpose of such gatherings or ceremonies involving military personnel?
+0,00000057631701,train2014/COCO_train2014_000000576317.jpg,Is there any text visible on the white casing?
+0,00000042200803,train2014/COCO_train2014_000000422008.jpg,Is this image more likely to represent a home setting or a farm stand?
+0,00000056390403,train2014/COCO_train2014_000000563904.jpg,What could be the goal or intention behind this science project?
+0,00000006118404,train2014/COCO_train2014_000000061184.jpg,"What other amenities can be found at this location, aside from the pool and hot tub?"
+0,00000014518601,train2014/COCO_train2014_000000145186.jpg,Is the person eating indoors or outdoors?
+0,00000046064303,train2014/COCO_train2014_000000460643.jpg,"In addition to the flowers, is there anything else noteworthy about the display?"
+1,00000033487201,train2014/COCO_train2014_000000334872.jpg,How many people are in the image?
+1,00000051864701,train2014/COCO_train2014_000000518647.jpg,Is the blood on the person's costume real or fake?
+1,00000031409203,train2014/COCO_train2014_000000314092.jpg,Can you elaborate on the importance of photography during gatherings or events?
+1,00000055135903,train2014/COCO_train2014_000000551359.jpg,Is it likely winter or summer based on the man's clothing and surroundings?
+1,00000025373302,train2014/COCO_train2014_000000253733.jpg,Is there any information about the artist provided alongside the display?
+1,00000010243203,train2014/COCO_train2014_000000102432.jpg,Is the image focused on a competitive game or a recreational activity?
+1,00000033286703,train2014/COCO_train2014_000000332867.jpg,What might be some potential reasons for the woman to use both devices simultaneously?
+1,00000036051700,train2014/COCO_train2014_000000360517.jpg,Is there an iron present in the image?
+1,00000028444804,train2014/COCO_train2014_000000284448.jpg,What atmosphere does the image convey with the combination of food and location?
+1,00000006991703,train2014/COCO_train2014_000000069917.jpg,Describe the photo in terms of color; is it colored or black and white?
+2,00000003347100,train2014/COCO_train2014_000000033471.jpg,What are the colors of the bus in the image?
+2,00000023573401,train2014/COCO_train2014_000000235734.jpg,Is the person primarily in the air or on the water during the action captured in the image?
+2,00000051862704,train2014/COCO_train2014_000000518627.jpg,Can you discuss the role of local businesses like Essex Beds in a community?
+2,00000029829704,train2014/COCO_train2014_000000298297.jpg,What kind of activity or event might the couple be participating in or have just completed?
+2,00000030616103,train2014/COCO_train2014_000000306161.jpg,Is there a person present in the photo looking out onto the street at the birds?
+2,00000007224903,train2014/COCO_train2014_000000072249.jpg,"What kind of special equipment is one of the players wearing, and what could be the reason behind it?"
+2,00000047395703,train2014/COCO_train2014_000000473957.jpg,What might be some benefits of spending time in natural settings like the one in the image?
+2,00000003946003,train2014/COCO_train2014_000000039460.jpg,Is there any indication of a party taking place in the gated community in the image?
+2,00000013697002,train2014/COCO_train2014_000000136970.jpg,"Is the girl on the street, sidewalk, or grass?"
+2,00000018009804,train2014/COCO_train2014_000000180098.jpg,What potential challenges can rusty bridges pose?
+3,00000005284600,train2014/COCO_train2014_000000052846.jpg,Where is the cat positioned in the image?
+3,00000041624803,train2014/COCO_train2014_000000416248.jpg,Are they playing or preparing for a ride?
+3,00000033521703,train2014/COCO_train2014_000000335217.jpg,Why is it important to dress appropriately for cold and freezing weather like this?
+3,00000033452902,train2014/COCO_train2014_000000334529.jpg,Is the person eating alone or with others?
+3,00000021444504,train2014/COCO_train2014_000000214445.jpg,"What could be the purpose of their visit to the forest, and what could it be an indication of?"
+3,00000013885904,train2014/COCO_train2014_000000138859.jpg,Why is there a fine associated with honking in this particular area?
+3,00000009022502,train2014/COCO_train2014_000000090225.jpg,Is there any water or moisture visible on the plant?
+3,00000030445504,train2014/COCO_train2014_000000304455.jpg,Is it common for dogs to observe construction activities through windows? What does it say about their behavior?
+3,00000009791600,train2014/COCO_train2014_000000097916.jpg,What is the person doing in the ocean?
+3,00000042666303,train2014/COCO_train2014_000000426663.jpg,Can you provide more details about the person's costume?
+4,00000033487200,train2014/COCO_train2014_000000334872.jpg,Are the people in the image skiing downhill or cross-country skiing?
+4,00000046375802,train2014/COCO_train2014_000000463758.jpg,Is there any indication of the player's age or appearance?
+4,00000057389200,train2014/COCO_train2014_000000573892.jpg,Is this image taken at an indoor or outdoor market?
+4,00000048977804,train2014/COCO_train2014_000000489778.jpg,What does the play tea party indicate about the girl's imagination and social development?
+4,00000011674104,train2014/COCO_train2014_000000116741.jpg,Can you tell us more about Mel Tormé and why there might be a street named after him?
+4,00000022905203,train2014/COCO_train2014_000000229052.jpg,Is this a formal or casual outfit?
+4,00000022437104,train2014/COCO_train2014_000000224371.jpg,What could be a possible activity for someone who wants to relax in this place?
+4,00000046857002,train2014/COCO_train2014_000000468570.jpg,Is the woman sitting next to a wall or under a sign?
+4,00000026958002,train2014/COCO_train2014_000000269580.jpg,What is another name for a flying disk?
+4,00000007926903,train2014/COCO_train2014_000000079269.jpg,What are some possible benefits of having a self-serve display like this?

@@ -1,0 +1,26 @@
+index,sample,score,cluster
+27401,Which part of the refrigerator is open in the image?,0.5127622,0
+49763,What kind of setting is the refrigerator in?,0.51868355,0
+30294,Is it possible to see the contents of the refrigerator without opening it?,0.5191581,0
+42055,What is the condition of the inside of the refrigerator? Is it empty or filled with items?,0.5247839,0
+43161,What is the appearance of the refrigerator?,0.5277605,0
+99388,What is the person in the image doing?,0.47477952,1
+77298,What is the person in the image doing?,0.47477952,1
+59097,What is the person in the image doing?,0.47477952,1
+66255,What is the person in the image doing?,0.47477952,1
+86615,What is the person in the image doing?,0.47477952,1
+115803,Where is the green double decker bus driving?,0.4995665,2
+146828,Where is the red double decker bus going?,0.5058334,2
+151300,Where are the school buses located in the image?,0.506711,2
+114640,How many double decker buses are visible in the image?,0.50813323,2
+109250,How many buses are parked in the image?,0.510201,2
+175140,What is the relationship between the giraffe and the zebras in the image?,0.44464087,3
+196862,Is there any difference in the position of the zebra and the giraffe compared to the other animals?,0.4492914,3
+170716,What animals are seen in the image with the zebra?,0.4523584,3
+176675,What type of zebra can be seen in the image?,0.4543082,3
+198457,What is the behavior of the giraffes and the zebra in the image?,0.45466667,3
+234995,What is the posture of the person holding the snowboard?,0.4798909,4
+226459,What is the skateboarder's posture while riding the skateboard?,0.48544216,4
+240530,What is the skateboarder doing while riding the skateboard?,0.48881644,4
+247117,What is the skateboarder doing while riding the skateboard?,0.48881644,4
+226652,How many snowboards are present in the image?,0.48972085,4

@@ -1,0 +1,303 @@
+dataset,question,answer,index,image,origin_dataset,class
+Open_VQA_images,What is in the image?,['platform or tunnel'],1,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/places365/val_256/Places365_val_00000698.jpg,places365,Place
+Open_VQA_images,How many tusks does the elephant on the right have?,['1'],33,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000076351.jpg,vqav2,Counting
+Open_VQA_images,What kind of animals are these?,['elephants'],65,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000511724.jpg,vqav2,Others
+Open_VQA_images,What color is the horse in the foreground?,['white'],97,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000196706.jpg,vqav2,Color
+Open_VQA_images,Is this dog driving the bus?,['no'],129,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000411187.jpg,vqav2,Reasoning
+Open_VQA_images,What does the sign say above the woman's head?,['fresh berries'],161,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000117352.jpg,vqav2,OCR
+Open_VQA_images,Are there other pictures on the sign?,['no'],193,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000245983.jpg,vqav2,OCR
+Open_VQA_images,Are there any clouds in the sky?,['yes'],225,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000001374.jpg,vqav2,Others
+Open_VQA_images,Has the boy taken a bite of the sandwich yet?,['no'],257,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000578330.jpg,vqav2,Others
+Open_VQA_images,What is the title of this book?,['bible stories: with songs & fingerplays whole people of god library'],289,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/514cSEpvv5L.jpg,ocrvqa,OCR
+Open_VQA_images,What is in the image?,['Living room or waiting room'],2,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/places365/val_256/Places365_val_00017116.jpg,places365,Place
+Open_VQA_images,Is there a clock on the building?,['yes'],34,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000069873.jpg,vqav2,Others
+Open_VQA_images,What color is the bus?,['green'],66,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000442701.jpg,vqav2,Color
+Open_VQA_images,How many kayaks are on the beachfront?,['10'],98,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000381123.jpg,vqav2,Counting
+Open_VQA_images,What is on the mug?,['cat'],130,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000527906.jpg,vqav2,Others
+Open_VQA_images,What print on the throw is the dog sleeping on?,['leopard'],162,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000383448.jpg,vqav2,Others
+Open_VQA_images,Would it be dangerous to fly a plane in the sky right now?,['yes'],194,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000080462.jpg,vqav2,Reasoning
+Open_VQA_images,What animal is in the photo?,['horse'],226,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000436127.jpg,vqav2,Others
+Open_VQA_images,Which side is the double-decker bus?,['right'],258,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000531036.jpg,vqav2,Spatial
+Open_VQA_images,What is the title of this book?,['israel my beloved'],290,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51qS1HIBH-L.jpg,ocrvqa,OCR
+Open_VQA_images,What is in the image?,['supermarket or food retail area'],3,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/places365/val_256/Places365_val_00012129.jpg,places365,Place
+Open_VQA_images,What is in the glass?,['juice'],35,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000278226.jpg,vqav2,Others
+Open_VQA_images,What is the man in the background resting his head on?,['pillow'],67,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000538721.jpg,vqav2,Others
+Open_VQA_images,What does the big red sign on the left say?,['toyota'],99,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000560797.jpg,vqav2,OCR
+Open_VQA_images,What sport is being played?,['baseball'],131,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000100909.jpg,vqav2,Action
+Open_VQA_images,How many slats are on the back of the bench?,['1'],163,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000136464.jpg,vqav2,Counting
+Open_VQA_images,Is there a horse in the stable?,['yes'],195,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000469603.jpg,vqav2,Others
+Open_VQA_images,What is the hydraulic lift in the back used for?,['towing'],227,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000253506.jpg,vqav2,Reasoning
+Open_VQA_images,What is the man holding?,['video game controller'],259,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000490022.jpg,vqav2,Others
+Open_VQA_images,Is this a pedagogy book?,['no'],291,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51-WxeHA9jL.jpg,ocrvqa,OCR
+Open_VQA_images,What is in the image?,['department store or Clothing store'],4,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/places365/val_256/Places365_val_00010869.jpg,places365,Place
+Open_VQA_images,What would happen if you folded up the metal triangle on the side of the motorbike?,['it would fall'],36,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000191117.jpg,vqav2,Reasoning
+Open_VQA_images,How many zebras are there?,['3'],68,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000272188.jpg,vqav2,Counting
+Open_VQA_images,What kind of pants is in this photo?,['jeans'],100,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000047940.jpg,vqav2,Others
+Open_VQA_images,What are the people in the distance doing?,['kayaking'],132,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000441496.jpg,vqav2,Action
+Open_VQA_images,What color shirt is the pitcher wearing?,['yellow'],164,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000300655.jpg,vqav2,Color
+Open_VQA_images,How many people are sitting at the table?,['7'],196,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000510657.jpg,vqav2,Counting
+Open_VQA_images,Is the cow tagged?,['yes'],228,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000573067.jpg,vqav2,Others
+Open_VQA_images,Does he have protective gear?,['no'],260,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000374270.jpg,vqav2,Others
+Open_VQA_images,Is this a games related book?,['yes'],292,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51FWsQD3itL.jpg,ocrvqa,OCR
+Open_VQA_images,What is in the image?,['kitchen'],5,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/places365/val_256/Places365_val_00016047.jpg,places365,Place
+Open_VQA_images,Who uses this yellow object?,['firefighters'],37,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000097767.jpg,vqav2,Reasoning
+Open_VQA_images,What kind of place would you see the main object in this picture?,['train station or railway station'],69,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000461973.jpg,vqav2,Place
+Open_VQA_images,What color are the shoes for the woman on the left?,['yellow'],101,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000122542.jpg,vqav2,Color
+Open_VQA_images,What are the color of the lines on the court?,['white'],133,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000502936.jpg,vqav2,Color
+Open_VQA_images,What is on the Plate?,['waffles，bacons and fried egg'],165,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000265227.jpg,vqav2,Others
+Open_VQA_images,What dessert is on the girl's shirt?,['cake with strawberry'],197,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000009270.jpg,vqav2,Others
+Open_VQA_images,Is his pant zipper undone?,['no'],229,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000254990.jpg,vqav2,Others
+Open_VQA_images,What needs to be moved before the dishwasher can be emptied?,['trash can'],261,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000190734.jpg,vqav2,Reasoning
+Open_VQA_images,Is this book related to Arts & Photography?,['yes'],293,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/41Xz5uhEazL.jpg,ocrvqa,OCR
+Open_VQA_images,What is in the image?,['Horse farm or rodeo'],6,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/places365/val_256/Places365_val_00023685.jpg,places365,Place
+Open_VQA_images,What sport is he engaging in?,['skateboarding'],38,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000157352.jpg,vqav2,Action
+Open_VQA_images,Are these ducks or geese?,['geese'],70,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000074711.jpg,vqav2,Others
+Open_VQA_images,Is the lady hungry?,['yes'],102,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000152336.jpg,vqav2,Reasoning
+Open_VQA_images,Is the man's hair long or short?,['long'],134,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000330754.jpg,vqav2,Others
+Open_VQA_images,Is this boy having food in bed?,['no'],166,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000012153.jpg,vqav2,Others
+Open_VQA_images,Is the man skateboarding?,['yes'],198,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000576754.jpg,vqav2,Action
+Open_VQA_images,Are the people dressed up?,['no'],230,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000497555.jpg,vqav2,Reasoning
+Open_VQA_images,Is this a fitness book?,['no'],262,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51yYaBIXCoL.jpg,ocrvqa,OCR
+Open_VQA_images,Is this a romantic book?,['no'],294,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/41bFbetMx8L.jpg,ocrvqa,OCR
+Open_VQA_images,What is in the image?,['Skating rink'],7,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/places365/val_256/Places365_val_00030924.jpg,places365,Place
+Open_VQA_images,Is the background in focus in this photo?,['no'],39,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000300155.jpg,vqav2,Reasoning
+Open_VQA_images,Where is the food?,['on plate'],71,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000241525.jpg,vqav2,Spatial
+Open_VQA_images,Is this a home office?,['yes'],103,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000189842.jpg,vqav2,Place
+Open_VQA_images,What color is the tall vase sitting on the floor?,['brown'],135,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000217562.jpg,vqav2,Color
+Open_VQA_images,"Are the water, sand and sky so calm they look like stripes in this scene?",['yes'],167,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000261744.jpg,vqav2,Spatial
+Open_VQA_images,What is the boy wearing on his back?,['backpack'],199,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000350897.jpg,vqav2,Others
+Open_VQA_images,How many types of food are there on the plate?,['3'],231,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000184951.jpg,vqav2,Counting
+Open_VQA_images,What is the title of this book?,['compact bible dictionary'],263,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51lmqKMbjML.jpg,ocrvqa,OCR
+Open_VQA_images,Is this book related to Law?,['no'],295,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/61xsazUVLfL.jpg,ocrvqa,OCR
+Open_VQA_images,What is in the image?,['baseball field'],8,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/places365/val_256/Places365_val_00017072.jpg,places365,Place
+Open_VQA_images,What is the man riding on?,['skateboard'],40,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000428111.jpg,vqav2,Others
+Open_VQA_images,Is the man taking a photo of the food on the table?,['no'],72,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000450355.jpg,vqav2,Others
+Open_VQA_images,What color is the water?,['blue or green'],104,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000531495.jpg,vqav2,Color
+Open_VQA_images,What is the child in the photo about to do?,['throw baseball'],136,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000073093.jpg,vqav2,Action
+Open_VQA_images,What number of vases are sitting in the window sill?,['4'],168,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000045383.jpg,vqav2,Counting
+Open_VQA_images,How many men are wearing hats?,['nobody'],200,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000179584.jpg,vqav2,Counting
+Open_VQA_images,How many books are on the bed?,['2'],232,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000577995.jpg,vqav2,Counting
+Open_VQA_images,Is this a judicial book?,['no'],264,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/413HtpFyXAL.jpg,ocrvqa,OCR
+Open_VQA_images,Is this book related to Science & Math?,['no'],296,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51eDPujrQqL.jpg,ocrvqa,OCR
+Open_VQA_images,What is in the image?,['swimming pool or water park'],9,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/places365/val_256/Places365_val_00011014.jpg,places365,Place
+Open_VQA_images,What are the black objects arranged on the roadside?,['meter'],41,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000182895.jpg,vqav2,Others
+Open_VQA_images,What are the yellow characters on the bus?,['magic bus'],73,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000237254.jpg,vqav2,Others
+Open_VQA_images,What color is the truck?,['green and grey'],105,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000094202.jpg,vqav2,Color
+Open_VQA_images,What is the woman doing that is considered by many as unhealthy?,['smoking'],137,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000355197.jpg,vqav2,Reasoning
+Open_VQA_images,How many forks are in this picture?,['1'],169,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000467726.jpg,vqav2,Counting
+Open_VQA_images,Do the names of the cross streets reflect the natural scenery?,['yes'],201,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000543215.jpg,vqav2,OCR
+Open_VQA_images,Is Santa in the sleigh?,['no'],233,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000433652.jpg,vqav2,Others
+Open_VQA_images,Is this a journey related book?,['yes'],265,images/ocrvqa/image_1w/51rLTCtk7RL.jpg,ocrvqa,OCR
+Open_VQA_images,Is this book related to Engineering & Transportation?,['no'],297,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51rJPwbGbJL.jpg,ocrvqa,OCR
+Open_VQA_images,What is in the image?,['supermarket'],10,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/places365/val_256/Places365_val_00016304.jpg,places365,Place
+Open_VQA_images,What are the items along the right hand side of the photo?,['motorcycles'],42,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000535519.jpg,vqav2,Others
+Open_VQA_images,Are the animals the same color?,['yes'],74,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000061564.jpg,vqav2,Color
+Open_VQA_images,How many bikes have helmets?,['0'],106,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000342515.jpg,vqav2,Counting
+Open_VQA_images,Is the man going to fall if he maintains the current position?,['no'],138,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000068166.jpg,vqav2,Reasoning
+Open_VQA_images,Are the men in the dark suits arresting the soldiers?,['no'],170,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000491064.jpg,vqav2,Reasoning
+Open_VQA_images,Is the cat wearing a bow tie?,['yes'],202,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000271907.jpg,vqav2,Others
+Open_VQA_images,What is the man trying to put inside his jacket?,['bottle'],234,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000521906.jpg,vqav2,Others
+Open_VQA_images,Who is the author of this book?,['richmond p. hobson jr'],266,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51JJtrbFa2L.jpg,ocrvqa,OCR
+Open_VQA_images,Who wrote this book?,['don c. seitz'],298,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51ENqF9EstL.jpg,ocrvqa,OCR
+Open_VQA_images,What is in the image?,['lock chamber or pool or pond'],11,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/places365/val_256/Places365_val_00029405.jpg,places365,Place
+Open_VQA_images,What kind of animal is implied by the stylized design on the plane's tail?,['bird'],43,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000370325.jpg,vqav2,Reasoning
+Open_VQA_images,What kind of ball is she holding?,['tennis'],75,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000054796.jpg,vqav2,Others
+Open_VQA_images,How many vehicles are in the picture?,['2'],107,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000240589.jpg,vqav2,Counting
+Open_VQA_images,"Which clock is facing toward the sun, left or right?",['left'],139,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000133051.jpg,vqav2,Spatial
+Open_VQA_images,Who is the Queen of the Country in which this was probably taken?,['elizabeth'],171,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000487692.jpg,vqav2,Reasoning
+Open_VQA_images,What food is that?,['donuts'],203,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000005754.jpg,vqav2,Others
+Open_VQA_images,What kind of truck is pictured?,['dump'],235,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000349794.jpg,vqav2,Others
+Open_VQA_images,Who is the author of this book?,['joseph campbell'],267,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51Ch1WaWsKL.jpg,ocrvqa,OCR
+Open_VQA_images,Which city is this book about?,['Hong Kong'],299,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51dIJghzlUL.jpg,ocrvqa,OCR
+Open_VQA_images,What is in the image?,['shower or bathroom'],12,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/places365/val_256/Places365_val_00001166.jpg,places365,Place
+Open_VQA_images,Is the toilet seat down?,['no'],44,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000191705.jpg,vqav2,Others
+Open_VQA_images,What color wheels are on the object this person is riding?,['green'],76,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000229553.jpg,vqav2,Color
+Open_VQA_images,Is the person going uphill or downhill?,['uphill'],108,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000288442.jpg,vqav2,Action
+Open_VQA_images,What do people do from the top of ski slope?,['ski'],140,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000487861.jpg,vqav2,Action
+Open_VQA_images,How many blocks does not have a  bird on it?,['1'],172,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000176527.jpg,vqav2,Counting
+Open_VQA_images,What color is this bus?,['white'],204,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000138040.jpg,vqav2,Color
+Open_VQA_images,Is the couch white?,['yes'],236,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000509824.jpg,vqav2,Color
+Open_VQA_images,Is this book related to Travel?,['yes'],268,images/ocrvqa/image_1w/51PS3GY96CL.jpg,ocrvqa,OCR
+Open_VQA_images,What is the title of this book?,['minneapolis to mobile: via the mississippi and tennessee'],300,images/ocrvqa/image_1w/51NTHWXAMCL.jpg,ocrvqa,OCR
+Open_VQA_images,What is in the image?,['restaurant'],13,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/places365/val_256/Places365_val_00021330.jpg,places365,Place
+Open_VQA_images,What is being photographed in the picture?,['wine bottle'],45,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000093089.jpg,vqav2,Others
+Open_VQA_images,What is the clock made of?,['metal'],77,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000514402.jpg,vqav2,Others
+Open_VQA_images,Is the person on the left playing a video game?,['yes'],109,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000346185.jpg,vqav2,Others
+Open_VQA_images,What food is on top of the wrapper?,['pizza'],141,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000212766.jpg,vqav2,Others
+Open_VQA_images,Is the bear eating?,['no'],173,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000559006.jpg,vqav2,Action
+Open_VQA_images,What is sitting on the desk next to the bookshelf?,['computer'],205,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000539439.jpg,vqav2,Spatial
+Open_VQA_images,Is the train going around the bend?,['yes'],237,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000326863.jpg,vqav2,Action
+Open_VQA_images,Is this book related to Cookbooks or food or wine?,['yes'],269,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/41Y6f0ZCe7L.jpg,ocrvqa,OCR
+Open_VQA_images,Is this a crafts or hobbies related book?,['yes'],301,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51U6fIwjHQL.jpg,ocrvqa,OCR
+Open_VQA_images,What is in the image?,['amusement arcade'],14,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/places365/val_256/Places365_val_00008331.jpg,places365,Place
+Open_VQA_images,Where is the American flag?,['bus window'],46,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000338625.jpg,vqav2,Others
+Open_VQA_images,What color is this mans wetsuit?,['black'],78,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000357659.jpg,vqav2,Color
+Open_VQA_images,How many bells?,['3'],110,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000577821.jpg,vqav2,Counting
+Open_VQA_images,What is the green item?,['broccoli'],142,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000321395.jpg,vqav2,Others
+Open_VQA_images,What are the two kids sitting on?,['bench'],174,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000207548.jpg,vqav2,Others
+Open_VQA_images,Does the man look convinced that he will make the jump?,['yes'],206,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000349860.jpg,vqav2,Reasoning
+Open_VQA_images,Is it an overcast day?,['no'],238,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000040681.jpg,vqav2,Reasoning
+Open_VQA_images,Who is the author of this book?,['george macdonald'],270,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/41p7ry7cmRL.jpg,ocrvqa,OCR
+Open_VQA_images,Is this book related to Arts & Photography?,['yes'],302,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51dPhn51lYL.jpg,ocrvqa,OCR
+Open_VQA_images,What is he holding in his hands?,['leash'],15,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000154053.jpg,vqav2,Others
+Open_VQA_images,How many people are in the water?,['0'],47,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000387388.jpg,vqav2,Counting
+Open_VQA_images,What animal is in the picture?,['cow'],79,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000199516.jpg,vqav2,Others
+Open_VQA_images,Was that picture taken a long time ago?,['yes'],111,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000443689.jpg,vqav2,Reasoning
+Open_VQA_images,How many boats do you see in this picture?,['2'],143,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000421757.jpg,vqav2,Counting
+Open_VQA_images,Does the man look like he's in pain?,['no'],175,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000228135.jpg,vqav2,Reasoning
+Open_VQA_images,What is the lamp sitting on?,['shelf'],207,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000443797.jpg,vqav2,Spatial
+Open_VQA_images,What kind of the animal?,['dog'],239,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000089880.jpg,vqav2,Others
+Open_VQA_images,What is the title of this book?,['photovoltaic systems'],271,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51FZTN7NR2L.jpg,ocrvqa,OCR
+Open_VQA_images,Do the waves look intense?,['yes'],16,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000340658.jpg,vqav2,Reasoning
+Open_VQA_images,Is the bear alive?,['yes'],48,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000523529.jpg,vqav2,Others
+Open_VQA_images,How many towers are on the building?,['1'],80,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000301817.jpg,vqav2,Counting
+Open_VQA_images,Is this motorcycle real?,['no'],112,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000191117.jpg,vqav2,Others
+Open_VQA_images,What is the man doing?,['This man is looking at his phone while waiting for the subway.'],144,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000283642.jpg,vqav2,Action
+Open_VQA_images,The shadow of what utensil is seen on the main plate?,['fork'],176,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000545289.jpg,vqav2,Reasoning
+Open_VQA_images,Is the man in the mountains?,['yes'],208,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000252507.jpg,vqav2,Place
+Open_VQA_images,How many people are skiing?,['2'],240,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000469961.jpg,vqav2,Counting
+Open_VQA_images,Who is the author of this book?,['peter robinson'],272,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51j2Jwfc9QL.jpg,ocrvqa,OCR
+Open_VQA_images,Is this a residential setting?,['no'],17,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000072582.jpg,vqav2,Reasoning
+Open_VQA_images,What electronic device is different from the rest in the 4 images?,['mouse'],49,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000297426.jpg,vqav2,Reasoning
+Open_VQA_images,Is this person wearing a tie?,['no'],81,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000082157.jpg,vqav2,Others
+Open_VQA_images,Are there zebras in this picture?,['no'],113,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000402619.jpg,vqav2,Others
+Open_VQA_images,Is the stadium full?,['no'],145,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000144938.jpg,vqav2,Others
+Open_VQA_images,How many metal fences are in front of the minivan?,['4'],177,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000086220.jpg,vqav2,Counting
+Open_VQA_images,What room is this?,['bathroom'],209,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000503663.jpg,vqav2,Place
+Open_VQA_images,Does this look like a picture taken in the US?,['no'],241,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000199252.jpg,vqav2,Reasoning
+Open_VQA_images,This book is mainly about one place in England?,['no'],273,images/ocrvqa/image_1w/51XyfS1isJL.jpg,ocrvqa,OCR
+Open_VQA_images,Is the area crowded?,['no'],18,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000505455.jpg,vqav2,Others
+Open_VQA_images,Which man has a beard?,['middle or the man wearing a beige shirt or the man wearing a white shirt'],50,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000052966.jpg,vqav2,Spatial
+Open_VQA_images,What is the group's mode of transportation?,['bicycles'],82,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000353577.jpg,vqav2,Others
+Open_VQA_images,What is underneath the window?,['table'],114,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000142246.jpg,vqav2,Spatial
+Open_VQA_images,How many laptops on the desk?,['3'],146,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000516916.jpg,vqav2,Counting
+Open_VQA_images,Is the monitor on?,['yes'],178,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000519471.jpg,vqav2,Others
+Open_VQA_images,Is she wearing something on her head?,['yes'],210,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000567276.jpg,vqav2,Others
+Open_VQA_images,Does the liquid in the glass have a froth at the top?,['yes'],242,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000090802.jpg,vqav2,Others
+Open_VQA_images,What is the title of this book?,['free appropriate public education: the law and children with disabilities'],274,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51St6G07hkL.jpg,ocrvqa,OCR
+Open_VQA_images,How many hands are being used to hold the sandwich?,['1'],19,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000336487.jpg,vqav2,Counting
+Open_VQA_images,How many giraffes are there?,['3'],51,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000150301.jpg,vqav2,Counting
+Open_VQA_images,Is the surface the woman is sitting on hot or cold?,['cold'],83,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000221864.jpg,vqav2,Others
+Open_VQA_images,What color are these two trains?,['yellow and white'],115,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000432332.jpg,vqav2,Color
+Open_VQA_images,What kinds of fruit are on the plate?,['oranges and bananas'],147,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000022090.jpg,vqav2,Others
+Open_VQA_images,How many people are standing?,['4'],179,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000384114.jpg,vqav2,Counting
+Open_VQA_images,Do you see a person here?,['yes'],211,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000526028.jpg,vqav2,Others
+Open_VQA_images,What does the sign say?,['no parking on side of street'],243,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000088517.jpg,vqav2,OCR
+Open_VQA_images,Is this book related to Comics & Graphic Novels?,['no'],275,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51ZUkP9AdlL.jpg,ocrvqa,OCR
+Open_VQA_images,How many people are wearing shorts?,['3'],20,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000477655.jpg,vqav2,Counting
+Open_VQA_images,Is the man wearing a blue shirt wearing a hat?,['yes'],52,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000315352.jpg,vqav2,Others
+Open_VQA_images,Is he on a motorcycle?,['yes'],84,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000160190.jpg,vqav2,Others
+Open_VQA_images,What color are the stripes on the plane?,['yellow'],116,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000173584.jpg,vqav2,Color
+Open_VQA_images,Is this motorcycle being ridden safely?,['no'],148,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000436972.jpg,vqav2,Reasoning
+Open_VQA_images,How many helmets are shown?,['2'],180,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000470423.jpg,vqav2,Counting
+Open_VQA_images,Is the bike green in the picture?,['no'],212,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000108679.jpg,vqav2,Color
+Open_VQA_images,Is the woman at the forefront of the photograph wearing a necklace?,['yes'],244,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000143948.jpg,vqav2,Others
+Open_VQA_images,What is the title of this book?,"['by their fruits: the story of shakerism in south union, kentucky']",276,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/41TlNWQj8uL.jpg,ocrvqa,OCR
+Open_VQA_images,What does the text say?,['joe d photography'],21,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000226662.jpg,vqav2,OCR
+Open_VQA_images,What color is the bird?,['red and white and gray'],53,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000008665.jpg,vqav2,Color
+Open_VQA_images,What is the full name starting with O and ending in A of the sponsors?,['obra'],85,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000343769.jpg,vqav2,OCR
+Open_VQA_images,Is the pizza ready to eat?,['yes'],117,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000029357.jpg,vqav2,Others
+Open_VQA_images,How many players on the field?,['5'],149,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000381430.jpg,vqav2,Counting
+Open_VQA_images,What are the main colors of the court?,['blue and grey'],181,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000480173.jpg,vqav2,Color
+Open_VQA_images,How many zebras?,['4'],213,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000182240.jpg,vqav2,Counting
+Open_VQA_images,Is the person stretching to hit the ball?,['no'],245,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000331856.jpg,vqav2,Action
+Open_VQA_images,Is this book related to Law?,['yes'],277,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/31YRZVCQMPL.gif,ocrvqa,OCR
+Open_VQA_images,What is the man doing?,['skateboarding'],22,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000337843.jpg,vqav2,Action
+Open_VQA_images,How many different color controllers are there?,['2'],54,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000248089.jpg,vqav2,Counting
+Open_VQA_images,What color is his hair?,['gray or white'],86,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000262895.jpg,vqav2,Color
+Open_VQA_images,Does this sandwich contain meat?,['yes'],118,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000541926.jpg,vqav2,Others
+Open_VQA_images,What color is the girl's shirt?,['pink'],150,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000053952.jpg,vqav2,Color
+Open_VQA_images,Does the man have a ponytail?,['yes'],182,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000314147.jpg,vqav2,Others
+Open_VQA_images,Is the light from the lamp reflecting on the floor?,['yes'],214,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000268052.jpg,vqav2,Spatial
+Open_VQA_images,Can you cook here?,['no'],246,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000252342.jpg,vqav2,Reasoning
+Open_VQA_images,Who is the author of this book?,['linda lowery'],278,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/618FvUWzeaL.jpg,ocrvqa,OCR
+Open_VQA_images,What color is the baseball cap?,['white'],23,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000460623.jpg,vqav2,Color
+Open_VQA_images,Are these professional players?,['no'],55,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000181278.jpg,vqav2,Reasoning
+Open_VQA_images,What name is on the street sign to the left?,['haight'],87,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000539768.jpg,vqav2,OCR
+Open_VQA_images,What color is the plate?,['white'],119,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000536403.jpg,vqav2,Color
+Open_VQA_images,Is it sunny?,['yes'],151,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000123244.jpg,vqav2,Others
+Open_VQA_images,What kind of food is this?,['doughnuts or donuts'],183,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000183014.jpg,vqav2,Others
+Open_VQA_images,Are there more than  4 vegetables on the table?,['yes'],215,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000039150.jpg,vqav2,Counting
+Open_VQA_images,Where is this picture taken?,['street'],247,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000489924.jpg,vqav2,Place
+Open_VQA_images,Is this book related to Children's Books?,['yes'],279,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51NZNGJ5R7L.jpg,ocrvqa,OCR
+Open_VQA_images,What color is the backpack of the person on the right?,['blue'],24,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000157928.jpg,vqav2,Color
+Open_VQA_images,How many lights are on the lamp?,['9'],56,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000318330.jpg,vqav2,Counting
+Open_VQA_images,What color is the woodwork in this room?,['brown or dark or black'],88,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000173471.jpg,vqav2,Color
+Open_VQA_images,Is the guy wearing a wristband?,['yes'],120,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000365194.jpg,vqav2,Others
+Open_VQA_images,Cound this be peanut butter?,['yes'],152,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000301762.jpg,vqav2,Others
+Open_VQA_images,What is the blue thing?,['bus'],184,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000571584.jpg,vqav2,Others
+Open_VQA_images,Are these giraffes looking to the right or the left?,['right'],216,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000064746.jpg,vqav2,Spatial
+Open_VQA_images,Does the giraffe have a leaf in it's mouth?,['no'],248,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000475150.jpg,vqav2,Others
+Open_VQA_images,Who is the author of this book?,['mira kirshenbaum'],280,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/41bObJgGy6L.jpg,ocrvqa,OCR
+Open_VQA_images,Is this a busy street?,['yes'],25,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000254919.jpg,vqav2,Others
+Open_VQA_images,Is this the roof?,['no'],57,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000118515.jpg,vqav2,Place
+Open_VQA_images,Are the airplane and birds going in the same direction?,['yes'],89,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000467475.jpg,vqav2,Spatial
+Open_VQA_images,How many pieces of luggage are on the floor?,['1'],121,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000302789.jpg,vqav2,Counting
+Open_VQA_images,Is the person cutting his hair male or female?,['female'],153,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000090011.jpg,vqav2,Others
+Open_VQA_images,Is this a restaurant?,['no'],185,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000567562.jpg,vqav2,Place
+Open_VQA_images,What are the main colors of the toilet?,['black and white'],217,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000482382.jpg,vqav2,Color
+Open_VQA_images,What is the cameraman filming?,['skateboarder'],249,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000396200.jpg,vqav2,Action
+Open_VQA_images,Is this book related to Christian Books & Bibles?,['no'],281,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/41SwAYnErrL.jpg,ocrvqa,OCR
+Open_VQA_images,What is the person doing?,['surfing'],26,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000534210.jpg,vqav2,Action
+Open_VQA_images,Is the woman smiling?,['yes'],58,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000030034.jpg,vqav2,Action
+Open_VQA_images,Who are on the motorcycle?,['a man and a women'],90,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000310553.jpg,vqav2,Others
+Open_VQA_images,Was the suitcase zipper open or closed as the photo was being taken?,['open'],122,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000343914.jpg,vqav2,Others
+Open_VQA_images,Is this guy wearing safety gear?,['yes'],154,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000190841.jpg,vqav2,Others
+Open_VQA_images,What letter is on the hat?,['n'],186,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000021470.jpg,vqav2,OCR
+Open_VQA_images,How many different methods of transportation are shown?,['1'],218,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000185904.jpg,vqav2,Counting
+Open_VQA_images,What color is the seat lid?,['blue'],250,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000552074.jpg,vqav2,Color
+Open_VQA_images,Is this a religious book?,['yes'],282,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51siqSTLLHL.jpg,ocrvqa,OCR
+Open_VQA_images,What is in the vase?,['flowers'],27,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000478282.jpg,vqav2,Others
+Open_VQA_images,What is flying above the boat?,['bird'],59,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000331455.jpg,vqav2,Spatial
+Open_VQA_images,What is the dog doing?,['watching tv or looking at the tv'],91,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000137595.jpg,vqav2,Action
+Open_VQA_images,What does the sign say?,['7 46'],123,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000256195.jpg,vqav2,OCR
+Open_VQA_images,How many elephants are laying down?,['2'],155,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000184446.jpg,vqav2,Counting
+Open_VQA_images,Does the main color of the man's tee shirt appear on the surfboard?,['yes'],187,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000395462.jpg,vqav2,Reasoning
+Open_VQA_images,What sport is shown here?,['surfing'],219,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000147132.jpg,vqav2,Action
+Open_VQA_images,Is anyone swimming?,['no'],251,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000152000.jpg,vqav2,Others
+Open_VQA_images,Is this book related to Cookbooks or food or wine?,['yes'],283,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/41Qb90x5eWL.jpg,ocrvqa,OCR
+Open_VQA_images,Does the man have any hair on top of his head?,['yes'],28,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000539717.jpg,vqav2,Others
+Open_VQA_images,Are they having a party?,['yes'],60,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000389644.jpg,vqav2,Others
+Open_VQA_images,Is the light red?,['no'],92,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000325391.jpg,vqav2,Color
+Open_VQA_images,Is the horse good at jumping?,['yes'],124,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000129735.jpg,vqav2,Reasoning
+Open_VQA_images,What kind of pants is he wearing?,['jeans'],156,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000521689.jpg,vqav2,Others
+Open_VQA_images,Is the sky clear or does it look like a storm is coming?,['storm coming'],188,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000035897.jpg,vqav2,Reasoning
+Open_VQA_images,What is the man on the right doing near the flowers?,['cutting cake'],220,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000172513.jpg,vqav2,Action
+Open_VQA_images,Is the sun shining?,['yes'],252,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000547886.jpg,vqav2,Others
+Open_VQA_images,Which character does this book mainly introduce？,['peyton manning'],284,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/51JTg6UXitL.jpg,ocrvqa,OCR
+Open_VQA_images,Are there flowers in the small vase?,['yes'],29,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000272889.jpg,vqav2,Others
+Open_VQA_images,What material is the bench made of?,['stone'],61,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000124949.jpg,vqav2,Others
+Open_VQA_images,Does this picture have a lot of people in it?,['no'],93,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000434488.jpg,vqav2,Others
+Open_VQA_images,Are they riding bikes?,['no'],125,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000058614.jpg,vqav2,Action
+Open_VQA_images,Is all the food on the plate vegetables?,['no'],157,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000251531.jpg,vqav2,Others
+Open_VQA_images,What should you do at this sign?,['stop'],189,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000013333.jpg,vqav2,OCR
+Open_VQA_images,What is the green food on top of the sandwich?,['lettuce'],221,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000136624.jpg,vqav2,Others
+Open_VQA_images,Are the seat back cushions on this train solid or patterned?,['patterned'],253,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000578168.jpg,vqav2,Others
+Open_VQA_images,Is this book related to Teen & Young Adult?,['yes'],285,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/41CCeXxgCkL.jpg,ocrvqa,OCR
+Open_VQA_images,How many bottles of cleaning wipes are in the room?,['1'],30,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000472704.jpg,vqav2,Counting
+Open_VQA_images,Is this tennis player touching the ground?,['no'],62,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000155131.jpg,vqav2,Action
+Open_VQA_images,Is the sink clean?,['yes'],94,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000197796.jpg,vqav2,Others
+Open_VQA_images,Is there a person on the skateboard to the right?,['yes'],126,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000358664.jpg,vqav2,Spatial
+Open_VQA_images,How many wear knee socks?,['2'],158,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000203096.jpg,vqav2,Counting
+Open_VQA_images,What color is the cabinets?,['white or milky'],190,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000130555.jpg,vqav2,Color
+Open_VQA_images,What room is in the picture?,['bathroom'],222,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000388284.jpg,vqav2,Place
+Open_VQA_images,What material is the tray made of?,['metal'],254,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000431323.jpg,vqav2,Others
+Open_VQA_images,What is the genre of this book?,"[""children's books or Picture book""]",286,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/61NhGWTabhL.jpg,ocrvqa,OCR
+Open_VQA_images,Which man has his eyes closed?,['left or the man in green'],31,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000189919.jpg,vqav2,Spatial
+Open_VQA_images,What kind of bear are these?,['black bears'],63,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000454956.jpg,vqav2,Others
+Open_VQA_images,Which direction is the arrow pointing?,['right'],95,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000081561.jpg,vqav2,Spatial
+Open_VQA_images,How many people are wearing green?,['0'],127,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000351590.jpg,vqav2,Counting
+Open_VQA_images,What type of pants is the rider wearing?,['riding pants'],159,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000003209.jpg,vqav2,Others
+Open_VQA_images,What color are the woman's pants?,['black or dark blue'],191,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000015797.jpg,vqav2,Color
+Open_VQA_images,Are these cats or dogs?,['dogs'],223,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000141538.jpg,vqav2,Others
+Open_VQA_images,Is this a secluded area?,['no'],255,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000506942.jpg,vqav2,Others
+Open_VQA_images,Is this a life story book?,['no'],287,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/515X6xqvG9L.jpg,ocrvqa,OCR
+Open_VQA_images,What do you think is the relationship between these zebras?,['mother and baby'],32,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000364166.jpg,vqav2,Reasoning
+Open_VQA_images,Is this an oven?,['yes'],64,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000533281.jpg,vqav2,Others
+Open_VQA_images,How many people are visibly waiting for the train in the picture?,['0'],96,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000416269.jpg,vqav2,Counting
+Open_VQA_images,Is this broccoli?,['yes'],128,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000239005.jpg,vqav2,Others
+Open_VQA_images,What type of clothing is he wearing on his legs?,['jeans'],160,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000307943.jpg,vqav2,Others
+Open_VQA_images,Does traffic have to stop?,['no'],192,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000573947.jpg,vqav2,Reasoning
+Open_VQA_images,What color is the van?,['black and white'],224,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000045594.jpg,vqav2,Color
+Open_VQA_images,What number is on the sign?,['1'],256,/mnt/pfs-guan-ssai/nlu/dingyifeng/data/COCO/val2014/COCO_val2014_000000290231.jpg,vqav2,OCR
+Open_VQA_images,Who is the author of this book?,['clark  ashton smith'],288,/mnt/pfs-guan-ssai/nlu/wanghanzi/data/OCRVQA/openvqa_part_images/images/612FuiBBbrL.jpg,ocrvqa,OCR
