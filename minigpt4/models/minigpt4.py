@@ -39,7 +39,7 @@ class MiniGPT4(MiniGPTBase):
             prompt_template="",
             max_txt_len=32,
             end_sym='\n',
-            low_resource=False,  # use 8 bit and put vit in cpu
+            low_resource=True,  # use 8 bit and put vit in cpu
             device_8bit=0,  # the device of 8bit model should be set when loading and cannot be changed anymore.
     ):
         super().__init__(
