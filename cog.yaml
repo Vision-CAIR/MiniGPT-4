@@ -1,0 +1,27 @@
+build:
+  gpu: true
+  cuda: "11.3"
+  system_packages:
+    - "libgl1-mesa-glx"
+    - "libglib2.0-0"
+  python_version: "3.8"
+  python_packages:
+    - "torch==1.12.1"
+    - "torchvision"
+    - "transformers==4.28.1"
+    - "gradio==3.28.1"
+    - "omegaconf==2.1.2" 
+    - "iopath"
+    - "timm==0.6.13"
+    - "webdataset==0.2.48"
+    - "opencv-python==4.7.0.72"
+    - "tensorizer"
+    - "decord==0.6.0"
+    - "sentencepiece"
+
+  run: 
+    - "echo 'deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main' | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list"
+    - "curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -"
+    - "apt-get update && apt-get install google-cloud-cli"
+
+predict: "predict.py:Predictor"
